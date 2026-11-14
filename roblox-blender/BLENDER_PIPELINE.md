@@ -11,7 +11,7 @@ Estado al 14-11-2026. Documento de decisiones y de operación.
 | MCP de Roblox Studio | **Configurado; falta activarlo en Studio** | Servidor oficial de Roblox, firma válida. Ver [docs/PROCESOS_MCP.md](docs/PROCESOS_MCP.md) |
 | Skills | 21 instalados + `references/` | Copiados de `arjun988/blender-skills` (MIT) a `.claude/skills/` |
 | Skill de Roblox | Creado | `.claude/skills/roblox-export/`. El repositorio no trae uno para Roblox |
-| Permisos de herramientas | **Pendiente** | El clasificador de seguridad denegó escribir `.claude/settings.json`. Propuesta en `docs/SEGURIDAD_MCP.md`, sección 6a |
+| Permisos de herramientas | **Aplicados** (14-11-2026) | Reglas en `.claude/settings.json`. Detalle en `docs/SEGURIDAD_MCP.md`, sección 6a |
 
 ## 2. Decisión sobre la conexión a Blender
 
@@ -43,6 +43,6 @@ Con el puente, cada paso se ejecuta con `blender_run_script` (scripts en `tools/
 ## 5. Pendiente
 
 1. **Activar** *Enable Studio as MCP server* en Roblox Studio y aprobar los servidores en Claude Code.
-2. **Decidir** si aplicar las reglas de permisos propuestas (`docs/SEGURIDAD_MCP.md`, sección 6a).
+2. **Revisar** las reglas de permisos aplicadas (`docs/SEGURIDAD_MCP.md`, sección 6a) y reiniciar Claude Code para cargarlas.
 3. **Validar** `roblox-export` en Studio: escala, colisión y materiales. Cada punto marcado `VERIFICAR EN STUDIO` debe probarse.
 4. **Confirmar** si el concurso pide algún formato de entrega para los assets.

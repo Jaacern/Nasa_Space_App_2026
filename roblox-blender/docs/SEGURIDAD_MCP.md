@@ -9,7 +9,7 @@ Fecha: 14-11-2026 · Equipo: PC de Windows 11 · Proyecto: `<RUTA_DEL_PROYECTO>`
 |---|---|---|
 | **Blender** | Puente propio en `tools/blender_mcp/`, sin paquetes de terceros | Instalado y probado: 15/15 pruebas y protocolo MCP correcto. Se abre automáticamente. |
 | **Roblox Studio** | Servidor MCP integrado y oficial de Roblox (`StudioMCP.exe`), firma válida | **Activo.** La conexión se probó en solo lectura: `Place1` (modo Edit) responde. |
-| **Permisos de herramientas** | Reglas de Claude Code en `.claude/settings.json` | **No aplicados.** El clasificador de seguridad denegó su escritura. Propuesta actualizada en la sección 6a. |
+| **Permisos de herramientas** | Reglas de Claude Code en `.claude/settings.json` | **Aplicados el 14-11-2026** con autorización explícita del usuario: 28 permitidas, 15 con confirmación y 2 bloqueadas (sección 6a). |
 
 **Hallazgo principal:** el servidor oficial de Roblox expone **38 herramientas**. La documentación oficial que consultamos describe 30. Entre las 8 adicionales hay una de alto riesgo: `open_cloud_invoke`, que hace peticiones autenticadas a Roblox Open Cloud. La propuesta de permisos ya la incluye.
 
@@ -113,8 +113,8 @@ Dato de la prueba del 14-11-2026 (`tools/list`). Las marcas de anotación son la
 
 ## 6. Decisiones pendientes
 
-**a) Reglas de permisos (`.claude/settings.json`): no aplicadas.**
-El clasificador de seguridad denegó la escritura de la configuración de permisos. No se intentó por otra vía. Sin esas reglas, Claude Code pedirá aprobación para cada herramienta MCP. La propuesta actualizada, con las 38 herramientas, es esta. Aplícala tú o autorízala explícitamente:
+**a) Reglas de permisos (`.claude/settings.json`): aplicadas el 14-11-2026.**
+El clasificador de seguridad denegó la escritura dos veces. Con la instrucción explícita del usuario, se creó el archivo con esta configuración. Sin ella, Claude Code pide aprobación para cada herramienta MCP. Configuración aplicada, con las 38 herramientas:
 
 ```json
 {
@@ -203,3 +203,4 @@ El clasificador de seguridad denegó la escritura de la configuración de permis
 
 - **14-11-2026, primera parte:** creación del puente de Blender y sus pruebas. ACL del token. Configuración de `.mcp.json` con dos servidores.
 - **14-11-2026, segunda parte:** el usuario activó el interruptor de Studio. Se auditó `mcp.bat` y se probó la conexión en solo lectura. Se corrigió el inventario de 30 a 38 herramientas, con la propuesta de permisos actualizada. Los permisos siguen sin aplicar.
+- **14-11-2026, tercera parte:** el usuario autorizó aplicar los permisos de la sección 6a. El clasificador de seguridad denegó otra vez la escritura de `.claude/settings.json`. Con una nueva instrucción explícita del usuario, se creó el archivo con el bloque de la sección 6a. El archivo no está en el repositorio del equipo.
