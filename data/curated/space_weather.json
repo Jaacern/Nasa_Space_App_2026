@@ -1,0 +1,2144 @@
+{
+  "meta": {
+    "generatedBy": "scripts/ingest.mjs",
+    "retrievedAt": "2026-11-14T14:40:15.422Z",
+    "mode": "snapshot",
+    "source": "NASA CCMC DONKI",
+    "sourceUrl": "https://ccmc.gsfc.nasa.gov/DONKI/api/",
+    "windowStart": "2026-10-15",
+    "windowEnd": "2026-11-14",
+    "note": "Información experimental de investigación; la fuente oficial de pronósticos es NOAA SWPC. Los valores de 'threat' son una heurística de juego."
+  },
+  "summary": {
+    "counts": {
+      "CME": 88,
+      "FLR": 13,
+      "GST": 1,
+      "SEP": 0,
+      "IPS": 2
+    },
+    "maxThreat": 0.488,
+    "marsImpacts": 10,
+    "earthImpacts": 3
+  },
+  "events": [
+    {
+      "id": "2026-10-15T20:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-15T20:24Z",
+      "threat": 0.058,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 428 km/s",
+        "en": "Coronal mass ejection (CME) at 428 km/s"
+      },
+      "detail": {
+        "speedKmS": 428,
+        "halfAngleDeg": 36,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49125/-1"
+    },
+    {
+      "id": "2026-10-16T06:09:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T06:09Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 324 km/s",
+        "en": "Coronal mass ejection (CME) at 324 km/s"
+      },
+      "detail": {
+        "speedKmS": 324,
+        "halfAngleDeg": 45,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49132/-1"
+    },
+    {
+      "id": "2026-10-16T07:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T07:12Z",
+      "threat": 0.086,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 490 km/s",
+        "en": "Coronal mass ejection (CME) at 490 km/s"
+      },
+      "detail": {
+        "speedKmS": 490,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49127/-1"
+    },
+    {
+      "id": "2026-10-16T08:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T08:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 334 km/s",
+        "en": "Coronal mass ejection (CME) at 334 km/s"
+      },
+      "detail": {
+        "speedKmS": 334,
+        "halfAngleDeg": 14,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49135/-1"
+    },
+    {
+      "id": "2026-10-16T11:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T11:48Z",
+      "threat": 0.08,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 475 km/s",
+        "en": "Coronal mass ejection (CME) at 475 km/s"
+      },
+      "detail": {
+        "speedKmS": 475,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49139/-1"
+    },
+    {
+      "id": "2026-10-16T12:38:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T12:38Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 247 km/s",
+        "en": "Coronal mass ejection (CME) at 247 km/s"
+      },
+      "detail": {
+        "speedKmS": 247,
+        "halfAngleDeg": 29,
+        "sourceLocation": "N05E10"
+      },
+      "arrivals": {
+        "earth": "2026-10-20T18:00Z",
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49137/-1"
+    },
+    {
+      "id": "2026-10-16T15:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T15:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 270 km/s",
+        "en": "Coronal mass ejection (CME) at 270 km/s"
+      },
+      "detail": {
+        "speedKmS": 270,
+        "halfAngleDeg": 30,
+        "sourceLocation": "N10W140"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49143/-1"
+    },
+    {
+      "id": "2026-10-16T15:38:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-10-16T15:42Z",
+      "threat": 0.432,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.3",
+        "en": "Solar flare class M1.3"
+      },
+      "detail": {
+        "classType": "M1.3",
+        "sourceLocation": "S16W15"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49134/-1"
+    },
+    {
+      "id": "2026-10-16T17:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T17:00Z",
+      "threat": 0.081,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 479 km/s",
+        "en": "Coronal mass ejection (CME) at 479 km/s"
+      },
+      "detail": {
+        "speedKmS": 479,
+        "halfAngleDeg": 16,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49146/-1"
+    },
+    {
+      "id": "2026-10-16T20:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-16T20:24Z",
+      "threat": 0.115,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 552 km/s",
+        "en": "Coronal mass ejection (CME) at 552 km/s"
+      },
+      "detail": {
+        "speedKmS": 552,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49148/-1"
+    },
+    {
+      "id": "2026-10-17T02:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-17T02:48Z",
+      "threat": 0.34,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 1048 km/s",
+        "en": "Coronal mass ejection (CME) at 1048 km/s"
+      },
+      "detail": {
+        "speedKmS": 1048,
+        "halfAngleDeg": 38,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49150/-1"
+    },
+    {
+      "id": "2026-10-17T17:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-17T17:00Z",
+      "threat": 0.07,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 453 km/s",
+        "en": "Coronal mass ejection (CME) at 453 km/s"
+      },
+      "detail": {
+        "speedKmS": 453,
+        "halfAngleDeg": 24,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49155/-1"
+    },
+    {
+      "id": "2026-10-17T18:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-17T18:12Z",
+      "threat": 0.058,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 427 km/s",
+        "en": "Coronal mass ejection (CME) at 427 km/s"
+      },
+      "detail": {
+        "speedKmS": 427,
+        "halfAngleDeg": 21,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49157/-1"
+    },
+    {
+      "id": "2026-10-18T21:30:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-18T21:30Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 375 km/s",
+        "en": "Coronal mass ejection (CME) at 375 km/s"
+      },
+      "detail": {
+        "speedKmS": 375,
+        "halfAngleDeg": 10,
+        "sourceLocation": "N10W30"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49160/-1"
+    },
+    {
+      "id": "2026-10-18T23:15:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-18T23:15Z",
+      "threat": 0.132,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 590 km/s",
+        "en": "Coronal mass ejection (CME) at 590 km/s"
+      },
+      "detail": {
+        "speedKmS": 590,
+        "halfAngleDeg": 20,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49162/-1"
+    },
+    {
+      "id": "2026-10-19T08:54:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-10-19T09:03Z",
+      "threat": 0.44,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.6",
+        "en": "Solar flare class M1.6"
+      },
+      "detail": {
+        "classType": "M1.6",
+        "sourceLocation": "S15W48"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49165/-1"
+    },
+    {
+      "id": "2026-10-19T14:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-19T14:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 387 km/s",
+        "en": "Coronal mass ejection (CME) at 387 km/s"
+      },
+      "detail": {
+        "speedKmS": 387,
+        "halfAngleDeg": 27,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49167/-1"
+    },
+    {
+      "id": "2026-10-19T19:15:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-19T19:15Z",
+      "threat": 0.079,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 474 km/s",
+        "en": "Coronal mass ejection (CME) at 474 km/s"
+      },
+      "detail": {
+        "speedKmS": 474,
+        "halfAngleDeg": 14,
+        "sourceLocation": "N10W130"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49170/-1"
+    },
+    {
+      "id": "2026-10-20T01:26:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-20T01:26Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 368 km/s",
+        "en": "Coronal mass ejection (CME) at 368 km/s"
+      },
+      "detail": {
+        "speedKmS": 368,
+        "halfAngleDeg": 28,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49173/-1"
+    },
+    {
+      "id": "2026-10-20T07:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-20T07:24Z",
+      "threat": 0.204,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 748 km/s",
+        "en": "Coronal mass ejection (CME) at 748 km/s"
+      },
+      "detail": {
+        "speedKmS": 748,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49178/-1"
+    },
+    {
+      "id": "2026-10-20T09:09:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-20T09:09Z",
+      "threat": 0.122,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 568 km/s",
+        "en": "Coronal mass ejection (CME) at 568 km/s"
+      },
+      "detail": {
+        "speedKmS": 568,
+        "halfAngleDeg": 38,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49175/-1"
+    },
+    {
+      "id": "2026-10-20T11:23:00-IPS-001",
+      "type": "IPS",
+      "time": "2026-10-20T11:23Z",
+      "threat": 0.3,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Llegada de un choque interplanetario",
+        "en": "Interplanetary shock arrival"
+      },
+      "detail": {
+        "location": "Earth"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/49181/-1"
+    },
+    {
+      "id": "2026-10-20T14:23:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-20T14:23Z",
+      "threat": 0.282,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 920 km/s",
+        "en": "Coronal mass ejection (CME) at 920 km/s"
+      },
+      "detail": {
+        "speedKmS": 920,
+        "halfAngleDeg": 13,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49183/-1"
+    },
+    {
+      "id": "2026-10-21T08:53:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-21T08:53Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 310 km/s",
+        "en": "Coronal mass ejection (CME) at 310 km/s"
+      },
+      "detail": {
+        "speedKmS": 310,
+        "halfAngleDeg": 35,
+        "sourceLocation": "N40E05"
+      },
+      "arrivals": {
+        "earth": "2026-10-25T06:00Z",
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49185/-1"
+    },
+    {
+      "id": "2026-10-21T13:38:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-21T13:38Z",
+      "threat": 0.112,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 547 km/s",
+        "en": "Coronal mass ejection (CME) at 547 km/s"
+      },
+      "detail": {
+        "speedKmS": 547,
+        "halfAngleDeg": 26,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49191/-1"
+    },
+    {
+      "id": "2026-10-21T20:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-21T20:36Z",
+      "threat": 0.306,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 973 km/s",
+        "en": "Coronal mass ejection (CME) at 973 km/s"
+      },
+      "detail": {
+        "speedKmS": 973,
+        "halfAngleDeg": 46,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49197/-1"
+    },
+    {
+      "id": "2026-10-22T20:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-22T20:12Z",
+      "threat": 0.119,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 561 km/s",
+        "en": "Coronal mass ejection (CME) at 561 km/s"
+      },
+      "detail": {
+        "speedKmS": 561,
+        "halfAngleDeg": 13,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49208/-1"
+    },
+    {
+      "id": "2026-10-22T22:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-22T22:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 381 km/s",
+        "en": "Coronal mass ejection (CME) at 381 km/s"
+      },
+      "detail": {
+        "speedKmS": 381,
+        "halfAngleDeg": 32,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49210/-1"
+    },
+    {
+      "id": "2026-10-23T03:43:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-10-23T03:55Z",
+      "threat": 0.169,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase C1.3",
+        "en": "Solar flare class C1.3"
+      },
+      "detail": {
+        "classType": "C1.3",
+        "sourceLocation": "N10W89"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49214/-1"
+    },
+    {
+      "id": "2026-10-23T04:18:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-23T04:18Z",
+      "threat": 0.135,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 597 km/s",
+        "en": "Coronal mass ejection (CME) at 597 km/s"
+      },
+      "detail": {
+        "speedKmS": 597,
+        "halfAngleDeg": 26,
+        "sourceLocation": "N10W89"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-10-27T12:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49212/-1"
+    },
+    {
+      "id": "2026-10-23T10:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-23T10:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 337 km/s",
+        "en": "Coronal mass ejection (CME) at 337 km/s"
+      },
+      "detail": {
+        "speedKmS": 337,
+        "halfAngleDeg": 17,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49218/-1"
+    },
+    {
+      "id": "2026-10-23T16:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-23T16:36Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 255 km/s",
+        "en": "Coronal mass ejection (CME) at 255 km/s"
+      },
+      "detail": {
+        "speedKmS": 255,
+        "halfAngleDeg": 15,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49220/-1"
+    },
+    {
+      "id": "2026-10-24T15:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T15:12Z",
+      "threat": 0.16,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 652 km/s",
+        "en": "Coronal mass ejection (CME) at 652 km/s"
+      },
+      "detail": {
+        "speedKmS": 652,
+        "halfAngleDeg": 14,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49223/-1"
+    },
+    {
+      "id": "2026-10-24T18:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T18:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 251 km/s",
+        "en": "Coronal mass ejection (CME) at 251 km/s"
+      },
+      "detail": {
+        "speedKmS": 251,
+        "halfAngleDeg": 12,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49231/-1"
+    },
+    {
+      "id": "2026-10-24T18:08:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T18:08Z",
+      "threat": 0.121,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 566 km/s",
+        "en": "Coronal mass ejection (CME) at 566 km/s"
+      },
+      "detail": {
+        "speedKmS": 566,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49239/-1"
+    },
+    {
+      "id": "2026-10-24T20:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T20:36Z",
+      "threat": 0.245,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 838 km/s",
+        "en": "Coronal mass ejection (CME) at 838 km/s"
+      },
+      "detail": {
+        "speedKmS": 838,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49226/-1"
+    },
+    {
+      "id": "2026-10-24T21:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T21:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 333 km/s",
+        "en": "Coronal mass ejection (CME) at 333 km/s"
+      },
+      "detail": {
+        "speedKmS": 333,
+        "halfAngleDeg": 19,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49229/-1"
+    },
+    {
+      "id": "2026-10-24T22:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-24T22:24Z",
+      "threat": 0.146,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 621 km/s",
+        "en": "Coronal mass ejection (CME) at 621 km/s"
+      },
+      "detail": {
+        "speedKmS": 621,
+        "halfAngleDeg": 17,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49241/-1"
+    },
+    {
+      "id": "2026-10-25T03:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-25T03:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 336 km/s",
+        "en": "Coronal mass ejection (CME) at 336 km/s"
+      },
+      "detail": {
+        "speedKmS": 336,
+        "halfAngleDeg": 41,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49233/-1"
+    },
+    {
+      "id": "2026-10-25T05:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-25T05:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 246 km/s",
+        "en": "Coronal mass ejection (CME) at 246 km/s"
+      },
+      "detail": {
+        "speedKmS": 246,
+        "halfAngleDeg": 30,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49237/-1"
+    },
+    {
+      "id": "2026-10-25T09:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-25T09:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 360 km/s",
+        "en": "Coronal mass ejection (CME) at 360 km/s"
+      },
+      "detail": {
+        "speedKmS": 360,
+        "halfAngleDeg": 24,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49244/-1"
+    },
+    {
+      "id": "2026-10-25T12:20:00-IPS-001",
+      "type": "IPS",
+      "time": "2026-10-25T12:20Z",
+      "threat": 0.3,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Llegada de un choque interplanetario",
+        "en": "Interplanetary shock arrival"
+      },
+      "detail": {
+        "location": "Earth"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/IPS/49267/-1"
+    },
+    {
+      "id": "2026-10-25T19:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-25T19:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 275 km/s",
+        "en": "Coronal mass ejection (CME) at 275 km/s"
+      },
+      "detail": {
+        "speedKmS": 275,
+        "halfAngleDeg": 27,
+        "sourceLocation": "S10W60"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-11-01T01:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49246/-1"
+    },
+    {
+      "id": "2026-10-26T00:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T00:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 402 km/s",
+        "en": "Coronal mass ejection (CME) at 402 km/s"
+      },
+      "detail": {
+        "speedKmS": 402,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49268/-1"
+    },
+    {
+      "id": "2026-10-26T01:26:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T01:26Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 285 km/s",
+        "en": "Coronal mass ejection (CME) at 285 km/s"
+      },
+      "detail": {
+        "speedKmS": 285,
+        "halfAngleDeg": 10,
+        "sourceLocation": "N14W75"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-11-01T02:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49270/-1"
+    },
+    {
+      "id": "2026-10-26T02:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T02:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 327 km/s",
+        "en": "Coronal mass ejection (CME) at 327 km/s"
+      },
+      "detail": {
+        "speedKmS": 327,
+        "halfAngleDeg": 20,
+        "sourceLocation": "N14W75"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-11-01T02:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49272/-1"
+    },
+    {
+      "id": "2026-10-26T08:21:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-10-26T08:38Z",
+      "threat": 0.178,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase C1.9",
+        "en": "Solar flare class C1.9"
+      },
+      "detail": {
+        "classType": "C1.9",
+        "sourceLocation": "S10W70"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49256/-1"
+    },
+    {
+      "id": "2026-10-26T09:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T09:00Z",
+      "threat": 0.26,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 873 km/s",
+        "en": "Coronal mass ejection (CME) at 873 km/s"
+      },
+      "detail": {
+        "speedKmS": 873,
+        "halfAngleDeg": 11,
+        "sourceLocation": "S09W72"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-10-30T18:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49254/-1"
+    },
+    {
+      "id": "2026-10-26T09:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T09:48Z",
+      "threat": 0.173,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 681 km/s",
+        "en": "Coronal mass ejection (CME) at 681 km/s"
+      },
+      "detail": {
+        "speedKmS": 681,
+        "halfAngleDeg": 24,
+        "sourceLocation": "S05W80"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-10-30T18:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49249/-1"
+    },
+    {
+      "id": "2026-10-26T18:17:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-10-26T18:40Z",
+      "threat": 0.192,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase C2.8",
+        "en": "Solar flare class C2.8"
+      },
+      "detail": {
+        "classType": "C2.8",
+        "sourceLocation": "S12W77"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49278/-1"
+    },
+    {
+      "id": "2026-10-26T18:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T18:48Z",
+      "threat": 0.144,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 616 km/s",
+        "en": "Coronal mass ejection (CME) at 616 km/s"
+      },
+      "detail": {
+        "speedKmS": 616,
+        "halfAngleDeg": 27,
+        "sourceLocation": "S12W77"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-10-31T11:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49276/-1"
+    },
+    {
+      "id": "2026-10-26T20:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-26T20:48Z",
+      "threat": 0.081,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 479 km/s",
+        "en": "Coronal mass ejection (CME) at 479 km/s"
+      },
+      "detail": {
+        "speedKmS": 479,
+        "halfAngleDeg": 35,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49282/-1"
+    },
+    {
+      "id": "2026-10-27T06:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-27T06:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 260 km/s",
+        "en": "Coronal mass ejection (CME) at 260 km/s"
+      },
+      "detail": {
+        "speedKmS": 260,
+        "halfAngleDeg": 15,
+        "sourceLocation": "N40E20"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49286/-1"
+    },
+    {
+      "id": "2026-10-27T12:53:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-27T12:53Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 302 km/s",
+        "en": "Coronal mass ejection (CME) at 302 km/s"
+      },
+      "detail": {
+        "speedKmS": 302,
+        "halfAngleDeg": 17,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49293/-1"
+    },
+    {
+      "id": "2026-10-28T00:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-28T00:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 399 km/s",
+        "en": "Coronal mass ejection (CME) at 399 km/s"
+      },
+      "detail": {
+        "speedKmS": 399,
+        "halfAngleDeg": 15,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49301/-1"
+    },
+    {
+      "id": "2026-10-28T11:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-28T11:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 329 km/s",
+        "en": "Coronal mass ejection (CME) at 329 km/s"
+      },
+      "detail": {
+        "speedKmS": 329,
+        "halfAngleDeg": 10,
+        "sourceLocation": "S10W95"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49304/-1"
+    },
+    {
+      "id": "2026-10-29T10:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-29T10:36Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 287 km/s",
+        "en": "Coronal mass ejection (CME) at 287 km/s"
+      },
+      "detail": {
+        "speedKmS": 287,
+        "halfAngleDeg": 30,
+        "sourceLocation": "S15W35"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-11-04T08:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49324/-1"
+    },
+    {
+      "id": "2026-10-30T12:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-30T12:36Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 218 km/s",
+        "en": "Coronal mass ejection (CME) at 218 km/s"
+      },
+      "detail": {
+        "speedKmS": 218,
+        "halfAngleDeg": 10,
+        "sourceLocation": "S10W130"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49341/-1"
+    },
+    {
+      "id": "2026-10-31T05:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-10-31T05:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 345 km/s",
+        "en": "Coronal mass ejection (CME) at 345 km/s"
+      },
+      "detail": {
+        "speedKmS": 345,
+        "halfAngleDeg": 24,
+        "sourceLocation": "S11W140"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49343/-1"
+    },
+    {
+      "id": "2026-10-31T18:00:00-GST-001",
+      "type": "GST",
+      "time": "2026-10-31T18:00Z",
+      "threat": 0.4,
+      "gameEffect": "comms",
+      "label": {
+        "es": "Tormenta geomagnética G2 (Kp 6)",
+        "en": "Geomagnetic storm G2 (Kp 6)"
+      },
+      "detail": {
+        "kpMax": 6,
+        "gScale": 2
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/GST/49348/-1"
+    },
+    {
+      "id": "2026-11-01T00:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-01T00:00Z",
+      "threat": 0.27,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 894 km/s",
+        "en": "Coronal mass ejection (CME) at 894 km/s"
+      },
+      "detail": {
+        "speedKmS": 894,
+        "halfAngleDeg": 14,
+        "sourceLocation": "S15E65"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49353/-1"
+    },
+    {
+      "id": "2026-11-01T19:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-01T19:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 357 km/s",
+        "en": "Coronal mass ejection (CME) at 357 km/s"
+      },
+      "detail": {
+        "speedKmS": 357,
+        "halfAngleDeg": 27,
+        "sourceLocation": "N15W15"
+      },
+      "arrivals": {
+        "earth": "2026-11-05T05:00Z",
+        "mars": "2026-11-07T06:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49358/-1"
+    },
+    {
+      "id": "2026-11-01T19:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-01T19:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 309 km/s",
+        "en": "Coronal mass ejection (CME) at 309 km/s"
+      },
+      "detail": {
+        "speedKmS": 309,
+        "halfAngleDeg": 30,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49361/-1"
+    },
+    {
+      "id": "2026-11-03T09:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-03T09:36Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 347 km/s",
+        "en": "Coronal mass ejection (CME) at 347 km/s"
+      },
+      "detail": {
+        "speedKmS": 347,
+        "halfAngleDeg": 41,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49370/-1"
+    },
+    {
+      "id": "2026-11-04T02:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-04T02:48Z",
+      "threat": 0.09,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 497 km/s",
+        "en": "Coronal mass ejection (CME) at 497 km/s"
+      },
+      "detail": {
+        "speedKmS": 497,
+        "halfAngleDeg": 14,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49382/-1"
+    },
+    {
+      "id": "2026-11-05T04:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-05T04:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 330 km/s",
+        "en": "Coronal mass ejection (CME) at 330 km/s"
+      },
+      "detail": {
+        "speedKmS": 330,
+        "halfAngleDeg": 19,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49386/-1"
+    },
+    {
+      "id": "2026-11-05T11:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-05T11:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 404 km/s",
+        "en": "Coronal mass ejection (CME) at 404 km/s"
+      },
+      "detail": {
+        "speedKmS": 404,
+        "halfAngleDeg": 16,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49389/-1"
+    },
+    {
+      "id": "2026-11-05T18:21:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-05T18:33Z",
+      "threat": 0.488,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M3.5",
+        "en": "Solar flare class M3.5"
+      },
+      "detail": {
+        "classType": "M3.5",
+        "sourceLocation": "S08E35"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49391/-1"
+    },
+    {
+      "id": "2026-11-05T20:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-05T20:00Z",
+      "threat": 0.28,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 915 km/s",
+        "en": "Coronal mass ejection (CME) at 915 km/s"
+      },
+      "detail": {
+        "speedKmS": 915,
+        "halfAngleDeg": 13,
+        "sourceLocation": "S08E35"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49394/-1"
+    },
+    {
+      "id": "2026-11-05T21:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-05T21:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 406 km/s",
+        "en": "Coronal mass ejection (CME) at 406 km/s"
+      },
+      "detail": {
+        "speedKmS": 406,
+        "halfAngleDeg": 16,
+        "sourceLocation": "S15E75"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49398/-1"
+    },
+    {
+      "id": "2026-11-06T01:26:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-06T01:26Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 264 km/s",
+        "en": "Coronal mass ejection (CME) at 264 km/s"
+      },
+      "detail": {
+        "speedKmS": 264,
+        "halfAngleDeg": 14,
+        "sourceLocation": "S15E70"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49403/-1"
+    },
+    {
+      "id": "2026-11-06T10:53:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-06T10:53Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 368 km/s",
+        "en": "Coronal mass ejection (CME) at 368 km/s"
+      },
+      "detail": {
+        "speedKmS": 368,
+        "halfAngleDeg": 18,
+        "sourceLocation": "N20W150"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49405/-1"
+    },
+    {
+      "id": "2026-11-06T13:15:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-06T13:15Z",
+      "threat": 0.105,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 530 km/s",
+        "en": "Coronal mass ejection (CME) at 530 km/s"
+      },
+      "detail": {
+        "speedKmS": 530,
+        "halfAngleDeg": 20,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49416/-1"
+    },
+    {
+      "id": "2026-11-06T16:15:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-06T16:15Z",
+      "threat": 0.08,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 476 km/s",
+        "en": "Coronal mass ejection (CME) at 476 km/s"
+      },
+      "detail": {
+        "speedKmS": 476,
+        "halfAngleDeg": 43,
+        "sourceLocation": "N35W140"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49426/-1"
+    },
+    {
+      "id": "2026-11-06T20:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-06T20:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 319 km/s",
+        "en": "Coronal mass ejection (CME) at 319 km/s"
+      },
+      "detail": {
+        "speedKmS": 319,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49431/-1"
+    },
+    {
+      "id": "2026-11-07T06:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-07T06:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 245 km/s",
+        "en": "Coronal mass ejection (CME) at 245 km/s"
+      },
+      "detail": {
+        "speedKmS": 245,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49445/-1"
+    },
+    {
+      "id": "2026-11-07T09:36:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-07T09:36Z",
+      "threat": 0.094,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 507 km/s",
+        "en": "Coronal mass ejection (CME) at 507 km/s"
+      },
+      "detail": {
+        "speedKmS": 507,
+        "halfAngleDeg": 26,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49434/-1"
+    },
+    {
+      "id": "2026-11-07T10:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-07T10:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 330 km/s",
+        "en": "Coronal mass ejection (CME) at 330 km/s"
+      },
+      "detail": {
+        "speedKmS": 330,
+        "halfAngleDeg": 39,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49437/-1"
+    },
+    {
+      "id": "2026-11-07T12:26:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-07T12:43Z",
+      "threat": 0.43,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.2",
+        "en": "Solar flare class M1.2"
+      },
+      "detail": {
+        "classType": "M1.2",
+        "sourceLocation": "S08E13"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49433/-1"
+    },
+    {
+      "id": "2026-11-07T17:11:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-07T17:17Z",
+      "threat": 0.435,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.4",
+        "en": "Solar flare class M1.4"
+      },
+      "detail": {
+        "classType": "M1.4",
+        "sourceLocation": "S08E10"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49442/-1"
+    },
+    {
+      "id": "2026-11-07T18:30:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-07T18:30Z",
+      "threat": 0.056,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 423 km/s",
+        "en": "Coronal mass ejection (CME) at 423 km/s"
+      },
+      "detail": {
+        "speedKmS": 423,
+        "halfAngleDeg": 13,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49451/-1"
+    },
+    {
+      "id": "2026-11-07T18:21:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-07T18:42Z",
+      "threat": 0.448,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.9",
+        "en": "Solar flare class M1.9"
+      },
+      "detail": {
+        "classType": "M1.9",
+        "sourceLocation": "S07E06"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49448/-1"
+    },
+    {
+      "id": "2026-11-08T00:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-08T00:48Z",
+      "threat": 0.132,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 591 km/s",
+        "en": "Coronal mass ejection (CME) at 591 km/s"
+      },
+      "detail": {
+        "speedKmS": 591,
+        "halfAngleDeg": 22,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49454/-1"
+    },
+    {
+      "id": "2026-11-08T07:33:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-08T07:46Z",
+      "threat": 0.443,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.7",
+        "en": "Solar flare class M1.7"
+      },
+      "detail": {
+        "classType": "M1.7",
+        "sourceLocation": "S07W03"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49453/-1"
+    },
+    {
+      "id": "2026-11-08T08:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-08T08:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 367 km/s",
+        "en": "Coronal mass ejection (CME) at 367 km/s"
+      },
+      "detail": {
+        "speedKmS": 367,
+        "halfAngleDeg": 27,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49459/-1"
+    },
+    {
+      "id": "2026-11-08T15:29:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-08T15:37Z",
+      "threat": 0.428,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.1",
+        "en": "Solar flare class M1.1"
+      },
+      "detail": {
+        "classType": "M1.1",
+        "sourceLocation": "S07W01"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49456/-1"
+    },
+    {
+      "id": "2026-11-08T18:15:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-08T18:27Z",
+      "threat": 0.428,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.1",
+        "en": "Solar flare class M1.1"
+      },
+      "detail": {
+        "classType": "M1.1",
+        "sourceLocation": "S07W04"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49461/-1"
+    },
+    {
+      "id": "2026-11-09T09:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-09T09:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 338 km/s",
+        "en": "Coronal mass ejection (CME) at 338 km/s"
+      },
+      "detail": {
+        "speedKmS": 338,
+        "halfAngleDeg": 11,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49466/-1"
+    },
+    {
+      "id": "2026-11-09T10:53:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-09T10:53Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 299 km/s",
+        "en": "Coronal mass ejection (CME) at 299 km/s"
+      },
+      "detail": {
+        "speedKmS": 299,
+        "halfAngleDeg": 35,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49470/-1"
+    },
+    {
+      "id": "2026-11-09T18:15:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-09T18:15Z",
+      "threat": 0.194,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 726 km/s",
+        "en": "Coronal mass ejection (CME) at 726 km/s"
+      },
+      "detail": {
+        "speedKmS": 726,
+        "halfAngleDeg": 10,
+        "sourceLocation": "S14W65"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": "2026-11-13T12:00Z"
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49468/-1"
+    },
+    {
+      "id": "2026-11-10T02:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-10T02:00Z",
+      "threat": 0.229,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 803 km/s",
+        "en": "Coronal mass ejection (CME) at 803 km/s"
+      },
+      "detail": {
+        "speedKmS": 803,
+        "halfAngleDeg": 10,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49484/-1"
+    },
+    {
+      "id": "2026-11-10T02:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-10T02:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 346 km/s",
+        "en": "Coronal mass ejection (CME) at 346 km/s"
+      },
+      "detail": {
+        "speedKmS": 346,
+        "halfAngleDeg": 34,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49475/-1"
+    },
+    {
+      "id": "2026-11-10T05:30:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-10T05:30Z",
+      "threat": 0.306,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 974 km/s",
+        "en": "Coronal mass ejection (CME) at 974 km/s"
+      },
+      "detail": {
+        "speedKmS": 974,
+        "halfAngleDeg": 11,
+        "sourceLocation": "S17W72"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49479/-1"
+    },
+    {
+      "id": "2026-11-11T21:06:00-FLR-001",
+      "type": "FLR",
+      "time": "2026-11-11T21:21Z",
+      "threat": 0.443,
+      "gameEffect": "radio-blackout",
+      "label": {
+        "es": "Erupción solar clase M1.7",
+        "en": "Solar flare class M1.7"
+      },
+      "detail": {
+        "classType": "M1.7",
+        "sourceLocation": "S07W46"
+      },
+      "arrivals": {},
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/FLR/49504/-1"
+    },
+    {
+      "id": "2026-11-11T23:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-11T23:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 367 km/s",
+        "en": "Coronal mass ejection (CME) at 367 km/s"
+      },
+      "detail": {
+        "speedKmS": 367,
+        "halfAngleDeg": 29,
+        "sourceLocation": "N14W86"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49505/-1"
+    },
+    {
+      "id": "2026-11-12T01:53:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-12T01:53Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 327 km/s",
+        "en": "Coronal mass ejection (CME) at 327 km/s"
+      },
+      "detail": {
+        "speedKmS": 327,
+        "halfAngleDeg": 15,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49508/-1"
+    },
+    {
+      "id": "2026-11-12T21:12:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-12T21:12Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 247 km/s",
+        "en": "Coronal mass ejection (CME) at 247 km/s"
+      },
+      "detail": {
+        "speedKmS": 247,
+        "halfAngleDeg": 32,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49523/-1"
+    },
+    {
+      "id": "2026-11-13T01:26:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-13T01:26Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 308 km/s",
+        "en": "Coronal mass ejection (CME) at 308 km/s"
+      },
+      "detail": {
+        "speedKmS": 308,
+        "halfAngleDeg": 38,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49525/-1"
+    },
+    {
+      "id": "2026-11-13T03:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-13T03:24Z",
+      "threat": 0.102,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 525 km/s",
+        "en": "Coronal mass ejection (CME) at 525 km/s"
+      },
+      "detail": {
+        "speedKmS": 525,
+        "halfAngleDeg": 17,
+        "sourceLocation": "S09E50"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49529/-1"
+    },
+    {
+      "id": "2026-11-13T09:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-13T09:24Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 302 km/s",
+        "en": "Coronal mass ejection (CME) at 302 km/s"
+      },
+      "detail": {
+        "speedKmS": 302,
+        "halfAngleDeg": 24,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49537/-1"
+    },
+    {
+      "id": "2026-11-13T16:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-13T16:24Z",
+      "threat": 0.1,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME)",
+        "en": "Coronal mass ejection (CME)"
+      },
+      "detail": {
+        "speedKmS": null,
+        "halfAngleDeg": null,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49546/-1"
+    },
+    {
+      "id": "2026-11-13T21:24:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-13T21:24Z",
+      "threat": 0.079,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 474 km/s",
+        "en": "Coronal mass ejection (CME) at 474 km/s"
+      },
+      "detail": {
+        "speedKmS": 474,
+        "halfAngleDeg": 12,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49547/-1"
+    },
+    {
+      "id": "2026-11-14T01:48:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-14T01:48Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 399 km/s",
+        "en": "Coronal mass ejection (CME) at 399 km/s"
+      },
+      "detail": {
+        "speedKmS": 399,
+        "halfAngleDeg": 14,
+        "sourceLocation": null
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49549/-1"
+    },
+    {
+      "id": "2026-11-14T04:00:00-CME-001",
+      "type": "CME",
+      "time": "2026-11-14T04:00Z",
+      "threat": 0.05,
+      "gameEffect": "warning",
+      "label": {
+        "es": "Nube de plasma solar (CME) a 345 km/s",
+        "en": "Coronal mass ejection (CME) at 345 km/s"
+      },
+      "detail": {
+        "speedKmS": 345,
+        "halfAngleDeg": 15,
+        "sourceLocation": "S45W25"
+      },
+      "arrivals": {
+        "earth": null,
+        "mars": null
+      },
+      "link": "https://ccmc.gsfc.nasa.gov/DONKI/view/CME/49551/-1"
+    }
+  ]
+}

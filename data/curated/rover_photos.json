@@ -1,0 +1,73 @@
+{
+  "meta": {
+    "generatedBy": "scripts/ingest.mjs",
+    "retrievedAt": "2026-11-14T15:29:21.742Z",
+    "mode": "snapshot",
+    "source": "NASA Mars Raw Images (Perseverance, Curiosity)",
+    "sourceUrl": "https://mars.nasa.gov/rss/api/",
+    "warnings": []
+  },
+  "count": 6,
+  "photos": [
+    {
+      "id": "ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "rover": "Perseverance",
+      "sol": 2024,
+      "earthDate": "2026-10-30",
+      "camera": "MCZ_LEFT",
+      "title": "Mars Perseverance Sol 2024: Left Mastcam-Z Camera",
+      "imageUrl": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02024/ids/edr/browse/zcam/ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ02_800.jpg",
+      "pageUrl": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ"
+    },
+    {
+      "id": "ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ",
+      "rover": "Perseverance",
+      "sol": 2024,
+      "earthDate": "2026-10-30",
+      "camera": "MCZ_RIGHT",
+      "title": "Mars Perseverance Sol 2024: Right Mastcam-Z Camera",
+      "imageUrl": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02024/ids/edr/browse/zcam/ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ01_800.jpg",
+      "pageUrl": "https://mars.nasa.gov/mars2020/multimedia/raw-images/ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ"
+    },
+    {
+      "id": "NLB_847853302EDR_F1252490NCAM00354M_",
+      "rover": "Curiosity",
+      "sol": 5073,
+      "earthDate": "2026-11-13",
+      "camera": "NAV_LEFT_B",
+      "title": "Mars Curiosity Sol 5073: Left Navigation Camera (Navcam)",
+      "imageUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/ncam/NLB_847853302EDR_F1252490NCAM00354M_-br.jpg",
+      "pageUrl": "https://mars.nasa.gov/msl/multimedia/raw-images/NLB_847853302EDR_F1252490NCAM00354M_"
+    },
+    {
+      "id": "NRB_847853302EDR_F1252490NCAM00354M_",
+      "rover": "Curiosity",
+      "sol": 5073,
+      "earthDate": "2026-11-13",
+      "camera": "NAV_RIGHT_B",
+      "title": "Mars Curiosity Sol 5073: Right Navigation Camera (Navcam)",
+      "imageUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/ncam/NRB_847853302EDR_F1252490NCAM00354M_-br.jpg",
+      "pageUrl": "https://mars.nasa.gov/msl/multimedia/raw-images/NRB_847853302EDR_F1252490NCAM00354M_"
+    },
+    {
+      "id": "RLB_847852011EDR_S1252490RHAZ00303M_",
+      "rover": "Curiosity",
+      "sol": 5073,
+      "earthDate": "2026-11-13",
+      "camera": "RHAZ_LEFT_B",
+      "title": "Mars Curiosity Sol 5073: Rear Left Hazard Avoidance Camera (Rear Hazcam)",
+      "imageUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/rcam/RLB_847852011EDR_S1252490RHAZ00303M_-br.jpg",
+      "pageUrl": "https://mars.nasa.gov/msl/multimedia/raw-images/RLB_847852011EDR_S1252490RHAZ00303M_"
+    },
+    {
+      "id": "RRB_847852011EDR_S1252490RHAZ00303M_",
+      "rover": "Curiosity",
+      "sol": 5073,
+      "earthDate": "2026-11-13",
+      "camera": "RHAZ_RIGHT_B",
+      "title": "Mars Curiosity Sol 5073: Rear Right Hazard Avoidance Camera (Rear Hazcam)",
+      "imageUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/rcam/RRB_847852011EDR_S1252490RHAZ00303M_-br.jpg",
+      "pageUrl": "https://mars.nasa.gov/msl/multimedia/raw-images/RRB_847852011EDR_S1252490RHAZ00303M_"
+    }
+  ]
+}

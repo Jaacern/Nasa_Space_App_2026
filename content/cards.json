@@ -1,0 +1,77 @@
+{
+  "_readme": "Cartas del juego. TODOS los números son VALORES DE JUEGO iniciales (no son datos NASA). Se ajustan jugando. Regla: cada carta debe tener beneficio, costo inmediato y costo diferido (scripts/validate-content.mjs lo comprueba).",
+  "cards": [
+    {
+      "id": "solar-panel",
+      "name": { "es": "Panel solar extra", "en": "Extra solar panel" },
+      "kind": "power",
+      "stackLimit": 4,
+      "sites": ["moon", "mars"],
+      "benefit": { "perSol": { "power": 6 } },
+      "immediateCost": { "power": 10 },
+      "deferredCost": { "afterSols": 8, "note": { "es": "El polvo lo cubre y rinde menos si nadie lo limpia.", "en": "Dust covers it and it produces less if nobody cleans it." }, "effect": { "perSol": { "power": -2 } }, "marsOnly": true },
+      "teaches": { "es": "Los paneles dependen de la luz y del polvo del lugar.", "en": "Panels depend on light and on local dust." },
+      "dataTopic": null
+    },
+    {
+      "id": "regolith-wall",
+      "name": { "es": "Muro de regolito", "en": "Regolith wall" },
+      "kind": "shield",
+      "stackLimit": 3,
+      "sites": ["moon", "mars"],
+      "benefit": { "shield": 1 },
+      "immediateCost": { "power": 15 },
+      "deferredCost": { "afterSols": 1, "note": { "es": "Hay que revisarlo y repararlo: gasta energía cada sol.", "en": "It needs checking and repair: it uses power every sol." }, "effect": { "perSol": { "power": -1 } } },
+      "teaches": { "es": "El suelo del lugar sirve como escudo contra la radiación.", "en": "Local soil can act as a radiation shield." },
+      "dataTopic": "radiation"
+    },
+    {
+      "id": "greenhouse",
+      "name": { "es": "Invernadero", "en": "Greenhouse" },
+      "kind": "air-food",
+      "stackLimit": 2,
+      "sites": ["moon", "mars"],
+      "benefit": { "perSol": { "air": 4 } },
+      "immediateCost": { "power": 20 },
+      "deferredCost": { "afterSols": 1, "note": { "es": "Las luces y el agua gastan energía todos los días.", "en": "Lights and water use power every day." }, "effect": { "perSol": { "power": -4 } } },
+      "teaches": { "es": "Cultivar comida ayuda, pero cuesta energía.", "en": "Growing food helps, but costs power." },
+      "dataTopic": "plants"
+    },
+    {
+      "id": "water-recycler",
+      "name": { "es": "Reciclador de agua", "en": "Water recycler" },
+      "kind": "air",
+      "stackLimit": 2,
+      "sites": ["moon", "mars"],
+      "benefit": { "perSol": { "air": 3 } },
+      "immediateCost": { "power": 12 },
+      "deferredCost": { "afterSols": 10, "note": { "es": "Las piezas se desgastan y rinde menos.", "en": "Parts wear out and it works less well." }, "effect": { "perSol": { "air": -1 } } },
+      "teaches": { "es": "En el espacio el agua se reutiliza una y otra vez.", "en": "In space, water is reused again and again." },
+      "dataTopic": null
+    },
+    {
+      "id": "storm-shelter",
+      "name": { "es": "Refugio de tormenta", "en": "Storm shelter" },
+      "kind": "shield",
+      "stackLimit": 1,
+      "sites": ["moon", "mars"],
+      "benefit": { "unlocksShelter": true },
+      "immediateCost": { "power": 18 },
+      "deferredCost": { "afterSols": 1, "note": { "es": "Cada vez que lo usas gasta energía y la tripulación para otras tareas.", "en": "Each time you use it, it costs power and stops the crew doing other tasks." }, "effect": { "onUse": { "power": -15 } } },
+      "teaches": { "es": "Ante partículas solares, la tripulación se refugia en la zona más protegida.", "en": "During solar particle events, the crew shelters in the best-protected area." },
+      "dataTopic": "radiation"
+    },
+    {
+      "id": "big-antenna",
+      "name": { "es": "Antena potente", "en": "Big antenna" },
+      "kind": "comms",
+      "stackLimit": 1,
+      "sites": ["moon", "mars"],
+      "benefit": { "commsReliable": true },
+      "immediateCost": { "power": 14 },
+      "deferredCost": { "afterSols": 1, "note": { "es": "No acelera la luz: el retraso a Marte sigue igual.", "en": "It cannot speed up light: the delay to Mars stays the same." }, "effect": { "perSol": { "power": -2 } } },
+      "teaches": { "es": "Una antena mejor da una señal más clara, pero no la hace más rápida.", "en": "A better antenna gives a clearer signal, but not a faster one." },
+      "dataTopic": null
+    }
+  ]
+}

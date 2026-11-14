@@ -1,0 +1,97 @@
+{
+  "generatedAt": "2026-11-14T15:32:04.516Z",
+  "params": {
+    "days": 30,
+    "end": "2026-11-14"
+  },
+  "sources": {
+    "donki": {
+      "status": "ok",
+      "ms": 11502,
+      "count": 104,
+      "detail": {
+        "counts": {
+          "CME": 88,
+          "FLR": 13,
+          "GST": 1,
+          "SEP": 0,
+          "IPS": 2
+        },
+        "scenarios": {
+          "quiet-recent": "drizzle (max 0.448, 29 ev)",
+          "sep-2017-storms": "monsoon (max 1, 69 ev)",
+          "gannon-2024-05": "monsoon (max 1, 163 ev)",
+          "oct-2024-x9": "monsoon (max 0.97, 125 ev)"
+        }
+      }
+    },
+    "radlab": {
+      "status": "ok",
+      "ms": 2947,
+      "count": 4,
+      "detail": {
+        "leo-iss": 1,
+        "moon-orbit-lro": 3.03,
+        "moon-orion-artemis1": 4.09,
+        "mars-orbit-liulin": 3.63
+      },
+      "errors": []
+    },
+    "osdr": {
+      "status": "ok",
+      "ms": 6633,
+      "count": 26,
+      "detail": {
+        "bone": 5,
+        "muscle": 5,
+        "immune": 5,
+        "radiation": 5,
+        "plants": 5,
+        "sleep": 1
+      }
+    },
+    "mars": {
+      "status": "ok",
+      "ms": 1140,
+      "count": 1
+    },
+    "rover": {
+      "status": "ok",
+      "ms": 10566,
+      "count": 6
+    },
+    "insight": {
+      "status": "ok",
+      "ms": 517,
+      "count": 7,
+      "detail": {
+        "frozenArchive": true,
+        "latestDataUtc": "2020-10-25T22:29:51Z"
+      }
+    },
+    "apod": {
+      "status": "error",
+      "error": "https://api.nasa.gov/planetary/apod?api_key=*** -> HTTP 500"
+    },
+    "csa": {
+      "status": "ok",
+      "ms": 2160,
+      "count": 64,
+      "detail": {
+        "food-production": [
+          "Reading list:6",
+          "Things to do:14",
+          "Infographics and other visuals:2",
+          "Videos:11"
+        ],
+        "stem-youth": [
+          "Tools:5",
+          "Services:3",
+          "Resources and activities:14",
+          "Additional resources:5",
+          "Stay connected:4"
+        ]
+      }
+    }
+  }
+}

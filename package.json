@@ -1,0 +1,15 @@
+{
+  "name": "nasa-space-apps-2026-outpost",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Junior Astronaut Mission Trainer: juego de outpost con datos reales de NASA y CSA (NASA Space Apps 2026)",
+  "engines": { "node": ">=22.9" },
+  "scripts": {
+    "api": "node --env-file-if-exists=.env server/api.mjs",
+    "ingest": "node --env-file-if-exists=.env scripts/ingest.mjs",
+    "check": "node scripts/check.mjs",
+    "check:live": "node --env-file-if-exists=.env scripts/check.mjs --live",
+    "test": "node --test \"test/**/*.test.mjs\""
+  }
+}

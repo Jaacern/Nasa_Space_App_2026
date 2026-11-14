@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "generatedBy": "scripts/ingest.mjs",
+    "retrievedAt": "2026-11-14T14:36:04.793Z",
+    "mode": "snapshot",
+    "source": "NASA APOD",
+    "sourceUrl": "https://api.nasa.gov/",
+    "note": "Revisar 'copyright': algunas imágenes no son de dominio público."
+  },
+  "apod": {
+    "date": "2026-11-14",
+    "title": "NASA Science",
+    "mediaType": "image",
+    "url": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
+    "hdurl": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
+    "copyright": null
+  }
+}

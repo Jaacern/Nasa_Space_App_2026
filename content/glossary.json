@@ -1,0 +1,11 @@
+{
+  "_readme": "Glosario infantil. Textos borrador: deben ser revisados por una persona antes de mostrarse.",
+  "terms": [
+    { "id": "sol", "es": { "term": "Sol", "text": "Un día en Marte. Dura un poco más que un día en la Tierra." }, "en": { "term": "Sol", "text": "One day on Mars. It is a bit longer than a day on Earth." } },
+    { "id": "dose", "es": { "term": "Dosis de radiación", "text": "Cuánta radiación ha recibido el cuerpo. Si crece demasiado, es peligroso." }, "en": { "term": "Radiation dose", "text": "How much radiation the body has received. Too much is dangerous." } },
+    { "id": "cme", "es": { "term": "CME", "text": "Una gran nube de gas del Sol que viaja por el espacio." }, "en": { "term": "CME", "text": "A huge cloud of gas from the Sun that travels through space." } },
+    { "id": "flare", "es": { "term": "Erupción solar", "text": "Un destello muy fuerte del Sol. Su luz llega en unos 8 minutos." }, "en": { "term": "Solar flare", "text": "A very strong flash from the Sun. Its light arrives in about 8 minutes." } },
+    { "id": "shield", "es": { "term": "Blindaje", "text": "Una capa que protege a la tripulación de la radiación." }, "en": { "term": "Shielding", "text": "A layer that protects the crew from radiation." } },
+    { "id": "delay", "es": { "term": "Retraso de radio", "text": "La señal tarda en llegar. A Marte puede tardar desde 3 hasta 22 minutos." }, "en": { "term": "Radio delay", "text": "A signal takes time to travel. To Mars it can take 3 to 22 minutes." } }
+  ]
+}

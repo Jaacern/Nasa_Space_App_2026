@@ -1,0 +1,528 @@
+{
+  "meta": {
+    "generatedBy": "scripts/ingest.mjs",
+    "retrievedAt": "2026-11-14T15:24:21.188Z",
+    "mode": "snapshot",
+    "source": "NASA OSDR search",
+    "sourceUrl": "https://osdr.nasa.gov/bio/repo/",
+    "license": "Revisar la licencia indicada en cada estudio (p. ej. CC0-1.0)"
+  },
+  "topics": [
+    {
+      "id": "bone",
+      "searchTerm": "bone density spaceflight",
+      "gameSystem": "crew-health",
+      "totalHits": 40,
+      "studies": [
+        {
+          "accession": "OSD-546",
+          "title": "SCD – Stem Cell Differentiation Toward Osteoblast Onboard the International Space Station",
+          "organism": "Homo sapiens",
+          "material": "Cells",
+          "mission": "Soyuz TMA-16M Soyuz TMA-15M",
+          "flightProgram": null,
+          "projectType": "Spaceflight Study",
+          "released": "2019-01-31",
+          "summaryOriginal": "Microgravity produces a variety of physical, chemical, and biological cues leading to an intricate and largely unresolved network of mechanosensitive molecules, transduction pathways, oxidative stress-related responses, and adaptations. The bone loss observed in astronauts and animal models after spaceflight is attribu",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-546",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-471",
+          "title": "Spaceflight-Induced Bone Loss Alters Failure Mode and Reduces Bending Strength in Murine Spinal Segments from Bion-M1",
+          "organism": "Mus musculus",
+          "material": "Caudal Vertebrae 3-4",
+          "mission": "Bion-M1",
+          "flightProgram": "Soyuz",
+          "projectType": "Spaceflight Study",
+          "released": "2023-03-03",
+          "summaryOriginal": "Intervertebral disc herniation rates are quadrupled in astronauts following spaceflight. While bending motions are main contributors to herniation, the effects of microgravity on the bending properties of spinal discs are unknown. Consequently, the goal of this study was to quantify the bending properties of tail discs",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-471",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-351",
+          "title": "Effects of Spaceflight on Bone Microarchitecture in the Axial and Appendicular Skeleton in Growing Ovariectomized Rats from STS-62",
+          "organism": "Rattus norvegicus",
+          "material": "humerus lumbar vertebra 2 femur parietal bone",
+          "mission": "STS-62",
+          "flightProgram": "Space Transportation System (Shuttle), STS-62",
+          "projectType": "Spaceflight Study",
+          "released": "2023-01-20",
+          "summaryOriginal": "This study investigated the effects of a 14-day spaceflight on bone mass, density and microarchitecture in weight bearing (femur and humerus) and non-weight bearing (2nd) lumbar vertebra and calvarium) bones in the context of ovarian hormone insufficiency. 12-week-old Fisher 344 rats were ovariectomized 2 weeks before ",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-351",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-977",
+          "title": "Effects of spaceflight on cancellous and cortical bone in proximal femur in growing rats.",
+          "organism": "Rattus norvegicus",
+          "material": null,
+          "mission": "STS-57 STS-62",
+          "flightProgram": null,
+          "projectType": "Spaceflight Study",
+          "released": "2026-06-16",
+          "summaryOriginal": "Mechanical loading of the skeleton during normal weight bearing plays an important role in bone accrual and turnover balance. We recently evaluated bone microarchitecture in the femoral head in 5.6-week-old male Sprague Dawley rats subjected to a 4-day spaceflight aboard STS-41. Compared to weight bearing ground contro",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-977",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-654",
+          "title": "Toward countering muscle and bone loss with spaceflight: GSK3 as a potential target (Tibia, RR9 and HLU, MicroCT and DXA Scanning)",
+          "organism": "Mus musculus",
+          "material": "Tibia",
+          "mission": "SpaceX-12",
+          "flightProgram": "ISS",
+          "projectType": "Spaceflight Study",
+          "released": "2023-10-04",
+          "summaryOriginal": "We examined the effects of ~30 days of spaceflight on glycogen synthase kinase 3 (GSK3) content and inhibitory serine phosphorylation in murine muscle and bone samples from four separate missions (BION-M1, Rodent Research missions RR1, RR9, and RR18). Spaceflight reduced GSK3b content across all missions, whereas its s",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-654",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "muscle",
+      "searchTerm": "muscle atrophy spaceflight",
+      "gameSystem": "crew-health",
+      "totalHits": 43,
+      "studies": [
+        {
+          "accession": "OSD-781",
+          "title": "Skeletal muscle-on-a-chip in microgravity as a platform for regeneration modeling and drug screening - myoblast data",
+          "organism": "Homo sapiens",
+          "material": "primary cell",
+          "mission": "NG-16",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2024-07-02",
+          "summaryOriginal": "Microgravity has been shown to lead to both muscle atrophy and impaired muscle regeneration. The purpose was to study the efficacy of microgravity to model impaired muscle regeneration in an engineered muscle platform and then to demonstrate the feasibility of performing drug screening in this model. Engineered human m",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-781",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-684",
+          "title": "Human skeletal muscle tissue chip autonomous payload reveals changes in fiber type and metabolic gene expression due to spaceflight",
+          "organism": "Homo sapiens",
+          "material": "Myoblasts",
+          "mission": "SpaceX-21",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Ground Study",
+          "released": "2024-03-07",
+          "summaryOriginal": "Microphysiological systems provide the opportunity to model accelerated changes at the human tissue level in the extreme space environment. Spaceflight-induced muscle atrophy experienced by astronauts shares similar physiological changes to muscle wasting in older adults, known as sarcopenia. These shared attributes pr",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-684",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-691",
+          "title": "Spaceflight increases sarcoplasmic reticulum Ca2+ leak and this cannot be counteracted with BuOE treatment (Soleus muscle from RR-18, Western Blot and ATPase Assays)",
+          "organism": "Mus musculus",
+          "material": "Soleus",
+          "mission": "SpaceX-24",
+          "flightProgram": "ISS",
+          "projectType": "Spaceflight Study",
+          "released": "2024-02-20",
+          "summaryOriginal": "Spending time in a microgravity environment is known to cause significant skeletal muscle atrophy and weakness via muscle unloading, which can be partly attributed to Ca2+ dysregulation. The sarco(endo)plasmic reticulum Ca2+ ATPase (SERCA) pump is responsible for bringing Ca2+ from the cytosol into its storage site, th",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-691",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-488",
+          "title": "Characterizing SERCA Function in Murine Skeletal Muscles after 35-37 Days of Spaceflight from RR-1 and RR-9 (calcium uptake and Western blot in soleus and tibialis anterior)",
+          "organism": "Mus musculus",
+          "material": "Soleus tibialis anterior",
+          "mission": "SpaceX-12 SpaceX-4",
+          "flightProgram": "ISS",
+          "projectType": "Spaceflight Study",
+          "released": "2023-01-20",
+          "summaryOriginal": "It is well established that microgravity exposure causes significant muscle weakness and atrophy via muscle unloading. On Earth, muscle unloading leads to a disproportionate loss in muscle force and size with the loss in muscle force occurring at a faster rate. Although the exact mechanisms are unknown, a role for Ca2+",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-488",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-342",
+          "title": "Targeting myostatin/activin A protects against skeletal muscle and bone loss during spaceflight [plasma proteomics]",
+          "organism": "Mus musculus",
+          "material": "Plasma",
+          "mission": "SpaceX-19",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2020-09-16",
+          "summaryOriginal": "Among the physiological consequences of extended spaceflight are loss of skeletal muscle and bone mass. One signaling pathway that plays an important role in maintaining muscle and bone homeostasis is that regulated by the secreted signaling proteins, myostatin (MSTN) and activin A. Here, we used both genetic and pharm",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-342",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "immune",
+      "searchTerm": "immune spaceflight",
+      "gameSystem": "crew-health",
+      "totalHits": 68,
+      "studies": [
+        {
+          "accession": "OSD-575",
+          "title": "SpaceX Inspiration4 Blood Serum Metabolic Panel and Immune/Cardiac Cytokine Arrays (Comprehensive Metabolic Panel and Multiplex)",
+          "organism": "Homo sapiens",
+          "material": "Serum",
+          "mission": "SpaceX Inspiration4",
+          "flightProgram": null,
+          "projectType": "Spaceflight Study",
+          "released": "2024-05-14",
+          "summaryOriginal": "The SpaceX Inspiration4 mission was a 3-day mission with four private astronauts to low Earth orbit that occurred in September 2021. The crew collected biospecimen samples before, during, and after flight. One of these biospecimen collections included whole blood collected via venipuncture, with serum extracted from bl",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-575",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-54",
+          "title": "Immune responses to the in vitro LPS assault engineered in the spaceflight multi-omics study",
+          "organism": "Homo sapiens",
+          "material": "Cells reference RNA",
+          "mission": "STS-135",
+          "flightProgram": "Space Transportation System (STS)",
+          "projectType": "Spaceflight Study",
+          "released": "1970-01-01",
+          "summaryOriginal": "Microgravity alters the immune response to in vitro LPS assault engineered in spaceflight: A multi-omics study Microgravity can facilitate creation of a potent environment for opportunistic infection by augmenting virulence and suppressing the host defense. Presumably, extraterrestrial infection may trigger potentially",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-54",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-656",
+          "title": "SpaceX Inspiration4 Urine Inflammation Panel (Multiplex, NULISAseq)",
+          "organism": "Homo sapiens",
+          "material": "Urine",
+          "mission": "SpaceX Inspiration4",
+          "flightProgram": null,
+          "projectType": "Spaceflight Study",
+          "released": "2024-05-14",
+          "summaryOriginal": "The SpaceX Inspiration4 mission was a 3-day mission with four private astronauts to low Earth orbit that occurred in September 2021. The crew collected biospecimen samples before, during, and after flight. One of these biospecimen collections included urine from pre-flight and post-flight/recovery timepoints (L-92, L-4",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-656",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-751",
+          "title": "Effects of Space Flight on Inflammasome Activation in the Brain of Mice (Cortex; ECLIA)",
+          "organism": "Mus musculus",
+          "material": "Cortex",
+          "mission": "SpaceX-4",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2025-03-10",
+          "summaryOriginal": "Space exploration exposes astronauts to stressors that alter the immune response, rendering them vulnerable to infections and diseases. In this study, we aimed to determine the levels of inflammasome activation in the brains of mice that were housed in the International Space Station (ISS) for 37 days. C57BL/6 mice wer",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-751",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-752",
+          "title": "Effects of Space Flight on Inflammasome Activation in the Brain of Mice (Hippocampus; ECLIA)",
+          "organism": "Mus musculus",
+          "material": "Hippocampus",
+          "mission": "SpaceX-4",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2025-03-10",
+          "summaryOriginal": "Space exploration exposes astronauts to stressors that alter the immune response, rendering them vulnerable to infections and diseases. In this study, we aimed to determine the levels of inflammasome activation in the brains of mice that were housed in the International Space Station (ISS) for 37 days. C57BL/6 mice wer",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-752",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "radiation",
+      "searchTerm": "space radiation",
+      "gameSystem": "shielding",
+      "totalHits": 239,
+      "studies": [
+        {
+          "accession": "OSD-431",
+          "title": "Microgravity and space radiation exert either opposite or synergic effects on single molecular pathways",
+          "organism": "Homo sapiens",
+          "material": "Cells",
+          "mission": "Soyuz TMA-18M",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2021-12-22",
+          "summaryOriginal": "Microgravity and space radiation (SR) are two highly influential factors affecting humans in space flight. Many health problems reported by astronauts derive from endothelial dysfunction and impaired homeostasis. Here we describe the adaptive response of human, capillary endothelial cells to space. Reference samples on",
+          "evidenceNote": "Estudio con muestras o datos humanos.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-431",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-489",
+          "title": "Quantifying Cancellous Bone Structural Changes in Microgravity: Axial Skeleton Results from the RR-1 Mission",
+          "organism": "Mus musculus",
+          "material": "lumbar vertebra 4",
+          "mission": "SpaceX-4",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2023-02-13",
+          "summaryOriginal": "Objective of this study was to further validate bone degradation in microgravity as site-specific and preferential to weight bearing bone. An objective of this study was to further understand the role of the mechanical environment in controlling the process of bone remodeling, namely local formation and resorption to m",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-489",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-72",
+          "title": "Space environmental factor impacts upon murine colon microbiota and mucosal homeostasis",
+          "organism": "Microbiota",
+          "material": "Feces",
+          "mission": "STS-135",
+          "flightProgram": "Space Transportation System (STS)",
+          "projectType": "Spaceflight Study",
+          "released": "2015-11-30",
+          "summaryOriginal": "We report how high and low linear energy transfer (LET) radiation, microgravity, and elevated dietary iron affect colon microbiota (determined by 16S rDNA pyrosequencing) and colon function. Three independent experiments were conducted: 1) fractionated low LET gamma radiation (137Cs, 3 Gy, RAD), high Fe diet (IRON) (65",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-72",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-583",
+          "title": "Characterization of mouse ocular responses (intraocular pressure) to a 35-day (RR-9) spaceflight mission: Evidence of blood-retinal barrier disruption and ocular adaptations",
+          "organism": "Mus musculus",
+          "material": "Both eyes Both Eyes",
+          "mission": "SpaceX-12",
+          "flightProgram": "ISS",
+          "projectType": "Spaceflight Study",
+          "released": "2023-01-27",
+          "summaryOriginal": "The health risks associated with spaceflight-induced ocular structural and functional damage has become a recent concern for NASA. The goal of the present study was to characterize the effects of spaceflight and reentry to 1 g on the structure and integrity of the retina and blood-retinal barrier (BRB) in the eye. To i",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-583",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-44",
+          "title": "Transcriptomics analysis of etiolated Arabidopsis thaliana seedlings in response to microgravity",
+          "organism": "Arabidopsis thaliana",
+          "material": null,
+          "mission": "STS-131",
+          "flightProgram": "Space Transportation System (STS)",
+          "projectType": "Spaceflight Study",
+          "released": "2015-09-15",
+          "summaryOriginal": "Gene expression profile of two-week-old etiolated Arabidopsis seedlings under microgravity on board space flight BRIC16 were compared with ground grown control in both wild-type and act2-3 mutant plants.",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-44",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "plants",
+      "searchTerm": "plant growth spaceflight",
+      "gameSystem": "food-air",
+      "totalHits": 64,
+      "studies": [
+        {
+          "accession": "OSD-615",
+          "title": "Glycome profiling and immunohistochemistry uncover changes in cell walls of Arabidopsis thaliana roots during spaceflight: Advanced Plant EXperiment (APEX) 03-1 Raw Dataset",
+          "organism": "Arabidopsis thaliana",
+          "material": null,
+          "mission": "SpaceX-5",
+          "flightProgram": "International Space Station, NASA Biological and Physical Sciences Program",
+          "projectType": "Spaceflight Study",
+          "released": "2024-07-16",
+          "summaryOriginal": "This study was conducted to uncover the underlying molecular mechanisms by which microgravity impacts cell wall architecture in the model plant Arabidopsis thaliana using the Vegetable Production System (Veggie) housed on the International Space Station (ISS). Based on our previous space flight studies using the Biolog",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-615",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-971",
+          "title": "Genetic alterations of the putrescine metabolic pathway attenuate plant responses to spaceflight",
+          "organism": "Arabidopsis thaliana",
+          "material": null,
+          "mission": "SpaceX-23",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2026-10-28",
+          "summaryOriginal": "This study investigates the impact of altering the polyamine (putrescine, Put) metabolic pathway on plant responses to spaceflight conditions in Arabidopsis thaliana. By engineering lines with modified Put synthesis and degradation pathways, we observed distinct transcriptional and phenotypic responses to spaceflight. ",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-971",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-177",
+          "title": "Draft Genome Sequences of Two Fusarium oxysporum Isolates Cultured from Infected Zinnia hybrida Plants Grown on the International Space Station",
+          "organism": "Fusarium oxysporum",
+          "material": "Cells",
+          "mission": "SpaceX-3",
+          "flightProgram": "Internation Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2018-03-30",
+          "summaryOriginal": "Draft genome sequences of two Fusarium oxysporum isolates cultured from infected Zinnia hybrida plants grown on the International Space Station",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-177",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-780",
+          "title": "Pick-and-eat space crop production flight testing on the International Space Station (Plate Count Assay using Plant and Hardware Surface Microbes)",
+          "organism": "Microbiota",
+          "material": null,
+          "mission": "SpaceX-16 SpaceX-18",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2025-12-22",
+          "summaryOriginal": "Fresh, nutritious, palatable produce for crew consumption on long-duration spaceflight missions may provide health-promoting, bioavailable nutrients and enhance the dietary experience. VEG-04A and VEG-04B explored growing leafy greens on the International Space Station using the Veggie Vegetable Production System. Two ",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-780",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        },
+        {
+          "accession": "OSD-120",
+          "title": "Genetic dissection of the Arabidopsis spaceflight transcriptome: Are some responses dispensable for the physiological adaptation of plants to spaceflight?",
+          "organism": "Arabidopsis thaliana",
+          "material": null,
+          "mission": "SpaceX-3",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2017-06-08",
+          "summaryOriginal": "Experimentation on the International Space Station has reached the stage where repeated and nuanced transcriptome studies are beginning to illuminate the structural and metabolic differences between plants grown in space compared to plants on the Earth. Genes that are important in establishing the spaceflight responses",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-120",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    },
+    {
+      "id": "sleep",
+      "searchTerm": "sleep spaceflight",
+      "gameSystem": "crew-health",
+      "totalHits": 1,
+      "studies": [
+        {
+          "accession": "OSD-253",
+          "title": "Transcriptional analysis of kidneys from mice flown on the RR-7 mission",
+          "organism": "Mus musculus",
+          "material": "Left kidney",
+          "mission": "SpaceX-15",
+          "flightProgram": "International Space Station (ISS)",
+          "projectType": "Spaceflight Study",
+          "released": "2019-11-08",
+          "summaryOriginal": "The objective of the Rodent Research-7 mission (RR-7) was to study the impact of the space environment on the gut microbiota of two strains of mice and how any changes in-turn affect the immune system, metabolic system, and circadian or daily rhythms. To this end, ten 11-week-old female C57BL/6J and ten 11-week-old fem",
+          "evidenceNote": "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
+          "url": "https://osdr.nasa.gov/bio/repo/data/studies/OSD-253",
+          "kidSummary": {
+            "es": null,
+            "en": null,
+            "reviewedByHuman": false
+          }
+        }
+      ]
+    }
+  ]
+}

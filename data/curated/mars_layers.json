@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "generatedBy": "scripts/ingest.mjs",
+    "retrievedAt": "2026-11-14T14:40:33.278Z",
+    "mode": "snapshot",
+    "source": "NASA Mars Trek WMTS",
+    "sourceUrl": "https://trek.nasa.gov/tiles/apidoc/trekAPI.html?body=mars"
+  },
+  "layers": [
+    {
+      "id": "mola-color",
+      "title": "Mars MGS MOLA color shaded relief (463 m)",
+      "credit": "NASA/JPL-Caltech, Mars Trek, MGS MOLA",
+      "capabilitiesUrl": "https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/WMTSCapabilities.xml",
+      "tileUrlTemplate": "https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/{Style}/{TileMatrixSet}/{TileMatrix}/{TileRow}/{TileCol}.jpg",
+      "style": "default",
+      "tileMatrixSet": "default028mm",
+      "format": "image/jpeg",
+      "crs": "urn:ogc:def:crs:EPSG::104905",
+      "zoomLevels": 8,
+      "note": "CRS marciano (EPSG:104905), no Web Mercator terrestre. Nivel 0 = 2 columnas x 1 fila. Una tesela ausente = sin datos."
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Outpost Run (prototipo)</title>
+  <style>
+    body { font: 16px system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .8rem; background: #e8eefc; }
+    .badge.snapshot { background: #fff1d6; }
+    li { margin: .4rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Outpost Run</h1>
+  <p>Pantalla de arranque de prueba: confirma que el juego puede leer la API local. Reemplázala por el juego real.</p>
+  <h2>Escenarios reales disponibles</h2>
+  <p id="mode"></p>
+  <ul id="list"><li>Cargando…</li></ul>
+  <p><small>Datos: NASA CCMC DONKI. NASA y CSA no patrocinan ni respaldan este proyecto.</small></p>
+
+  <script type="module">
+    const res = await fetch("/api/scenarios");
+    const { meta, scenarios } = await res.json();
+    const mode = res.headers.get("X-Data-Mode") ?? meta.mode;
+    document.getElementById("mode").innerHTML =
+      `Origen: <span class="badge ${mode}">${mode === "live" ? "en vivo" : "copia guardada"}</span> (${meta.retrievedAt.slice(0, 10)})`;
+    document.getElementById("list").innerHTML = scenarios
+      .map((s) => `<li><strong>${s.name.es}</strong> — ${s.difficulty}, ${s.windowStart} a ${s.windowEnd}, amenaza máx. ${s.summary.maxThreat}</li>`)
+      .join("");
+  </script>
+</body>
+</html>

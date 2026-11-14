@@ -1,0 +1,28 @@
+{
+  "_readme": "Constantes de equilibrio. VALORES DE JUEGO iniciales, para ajustar con simulaciones. No son datos NASA salvo lo que se marca como 'fromData'.",
+  "run": { "sols": 30, "cardsOffered": 3, "crewSize": 4 },
+  "start": { "power": 60, "air": 80, "shield": 0, "dose": 0 },
+  "caps": { "power": 100, "air": 100, "shield": 5, "dose": 100 },
+  "perSol": { "crewAirUse": 5, "lifeSupportPower": 10, "shieldUpkeepPerLevel": 1, "airLossIfNoPower": 15 },
+  "powerModes": {
+    "save": { "extraPower": 4, "science": 0 },
+    "normal": { "extraPower": 0, "science": 1 },
+    "science": { "extraPower": -6, "science": 3 }
+  },
+  "sites": {
+    "moon": { "solarGeneration": 20, "lightCycle": { "lightSols": 14, "darkSols": 14, "note": "Simplificación: ciclo día/noche lunar largo. Verificar con una fuente NASA antes de afirmarlo en pantalla." } },
+    "mars": { "solarGeneration": 14, "dustStormChancePerSol": 0.03, "dustStormPowerFactor": 0.4, "note": "Valores de juego. Verificar con una fuente NASA antes de afirmarlos en pantalla." }
+  },
+  "dose": {
+    "limit": 100,
+    "baselinePerSolAtIss": 0.4,
+    "baselineNote": "fromData: la dosis base de cada sitio = baselinePerSolAtIss x siteProfile().doseMultiplierVsIss",
+    "eventFactor": 60,
+    "attenuationPerShieldLevel": 0.6,
+    "shelterMultiplierWithWarning": 0.35,
+    "shelterMultiplierNoWarning": 0.7,
+    "shelterPowerCost": 15,
+    "formula": "dosisEvento = threat * eventFactor / (1 + attenuationPerShieldLevel * shield) * (refugio ? multiplicador : 1)"
+  },
+  "scoring": { "starsByDoseUnder": [60, 35, 15], "scienceForExtraStar": 20 }
+}
