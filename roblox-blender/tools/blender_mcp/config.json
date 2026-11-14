@@ -1,0 +1,7 @@
+{
+  "version": "1.0.0",
+  "port": 9877,
+  "blender_exe": "<RUTA_A_BLENDER_EXE>",
+  "token_file": "%USERPROFILE%\\.claude\\blender_bridge\\token.txt",
+  "notas": "Puerto y rutas del puente. Cambios de puerto o de rutas se hacen aqui, no en el codigo. El token nunca se guarda en el proyecto."
+}

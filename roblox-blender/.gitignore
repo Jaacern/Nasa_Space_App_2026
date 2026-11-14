@@ -1,0 +1,8 @@
+# Registros y resultados locales de pruebas: no se suben
+logs/
+__pycache__/
+*.pyc
+
+# Secretos: nunca en el repositorio
+.env
+*.token

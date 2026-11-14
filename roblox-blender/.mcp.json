@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "blender": {
+      "command": "<RUTA_PYTHON_3.12>",
+      "args": ["<RUTA_DEL_PROYECTO>\\tools\\blender_mcp\\server.py"]
+    },
+    "Roblox_Studio": {
+      "command": "cmd.exe",
+      "args": ["/c", "%LOCALAPPDATA%\\Roblox\\mcp.bat"]
+    }
+  }
+}
