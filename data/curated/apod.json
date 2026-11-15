@@ -5,14 +5,16 @@
     "mode": "snapshot",
     "source": "NASA APOD",
     "sourceUrl": "https://api.nasa.gov/",
-    "note": "Revisar 'copyright': algunas imágenes no son de dominio público."
+    "note": "Si apod.reusable es false, no usar la imagen en el juego. Provisional tras HTTP 500 hasta regenerar con NASA_API_KEY."
   },
   "apod": {
     "date": "2026-11-14",
-    "title": "NASA Science",
+    "title": "NASA Science (provisional)",
     "mediaType": "image",
     "url": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
-    "hdurl": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
-    "copyright": null
+    "hdUrl": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
+    "copyright": null,
+    "reusable": false,
+    "explanation": "Copia provisional tras fallo HTTP 500 en APOD; no reutilizable por incluir el logotipo de NASA. Ejecutar npm run ingest -- --only=apod con NASA_API_KEY."
   }
 }

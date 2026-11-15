@@ -312,7 +312,7 @@ function normStudy(src, id) {
       ? "Estudio con muestras o datos humanos."
       : "No es una medición directa en astronautas: no presentar como efecto exacto en personas.",
     url: `https://osdr.nasa.gov/bio/repo/data/studies/${acc}`,
-    // Se rellena en el paso editorial con IA + revisión humana (ver docs/IA.md)
+    // Se rellena en el paso editorial con IA + revisión humana (ver docs/ia/PROMPTS.md)
     kidSummary: { es: null, en: null, reviewedByHuman: false },
   };
 }

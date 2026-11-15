@@ -68,7 +68,7 @@ export async function getRoverPhotos({ missions = Object.keys(ROVERS), perRover 
 // ---------------------------------------------------------------------------
 // Imagen astronómica del día (APOD). Uso: pantalla de arranque. Requiere clave.
 // ---------------------------------------------------------------------------
-const APOD_SCHEMA = {
+export const APOD_SCHEMA = {
   meta: { source: "string", mode: "string", retrievedAt: "string" },
   apod: { date: "string", title: "string", mediaType: "string", url: "string?", reusable: "boolean", explanation: "string" },
 };

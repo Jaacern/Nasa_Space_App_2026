@@ -11,9 +11,9 @@ import { readFile, readdir } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { CATALOG } from "../src/api/catalog.mjs";
-import { getApod, getCsaResources, getMarsSurfaceWeather, getRoverPhotos, getSpaceWeatherLive } from "../src/api/sources.mjs";
+import { APOD_SCHEMA, getApod, getCsaResources, getMarsSurfaceWeather, getRoverPhotos, getSpaceWeatherLive } from "../src/api/sources.mjs";
 import { request } from "../src/api/http.mjs";
-import { findSecretLeaks, redact } from "../src/api/sanitize.mjs";
+import { findSecretLeaks, redact, validate } from "../src/api/sanitize.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const load = async (p) => JSON.parse(await readFile(path.join(ROOT, p), "utf8"));
@@ -73,6 +73,11 @@ if (osdr) {
 }
 const photos = await load("data/curated/rover_photos.json").catch(() => null);
 if (photos && photos.photos.some((p) => !/^https:\/\/[^/]*nasa\.gov\//i.test(p.imageUrl))) err("rover_photos: imagen fuera de nasa.gov");
+const apod = await load("data/curated/apod.json").catch(() => null);
+if (apod) {
+  for (const p of validate(apod, APOD_SCHEMA, "$")) err(`apod.json: ${p}`);
+  if (!apod.apod?.reusable) warns.push("apod.json marcado reusable: false (provisional o con copyright; regenerar con NASA_API_KEY si se usará en pantalla)");
+}
 
 // --- 3. Fuentes en vivo (opcional) ----------------------------------------------
 if (process.argv.includes("--live")) {

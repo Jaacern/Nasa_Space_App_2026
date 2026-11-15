@@ -20,14 +20,23 @@
   <p><small>Datos: NASA CCMC DONKI. NASA y CSA no patrocinan ni respaldan este proyecto.</small></p>
 
   <script type="module">
-    const res = await fetch("/api/scenarios");
-    const { meta, scenarios } = await res.json();
-    const mode = res.headers.get("X-Data-Mode") ?? meta.mode;
-    document.getElementById("mode").innerHTML =
-      `Origen: <span class="badge ${mode}">${mode === "live" ? "en vivo" : "copia guardada"}</span> (${meta.retrievedAt.slice(0, 10)})`;
-    document.getElementById("list").innerHTML = scenarios
-      .map((s) => `<li><strong>${s.name.es}</strong> — ${s.difficulty}, ${s.windowStart} a ${s.windowEnd}, amenaza máx. ${s.summary.maxThreat}</li>`)
-      .join("");
+    const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    try {
+      const res = await fetch("/api/scenarios");
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { meta, scenarios } = await res.json();
+      const rawMode = res.headers.get("X-Data-Mode") ?? meta?.mode;
+      const modeClass = rawMode === "live" ? "live" : "snapshot";
+      const day = String(meta?.retrievedAt ?? "").slice(0, 10);
+      document.getElementById("mode").innerHTML =
+        `Origen: <span class="badge ${modeClass}">${rawMode === "live" ? "en vivo" : "copia guardada"}</span> (${esc(day)})`;
+      document.getElementById("list").innerHTML = scenarios
+        .map((s) => `<li><strong>${esc(s.name?.es)}</strong> — ${esc(s.difficulty)}, ${esc(s.windowStart)} a ${esc(s.windowEnd)}, amenaza máx. ${esc(s.summary?.maxThreat)}</li>`)
+        .join("");
+    } catch (err) {
+      document.getElementById("mode").textContent = "No se pudo consultar la API local.";
+      document.getElementById("list").textContent = String(err?.message ?? err);
+    }
   </script>
 </body>
 </html>

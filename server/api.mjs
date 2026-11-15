@@ -139,10 +139,17 @@ const indexHtml = () => `<!doctype html><meta charset="utf-8"><title>API local -
 
 // --- Servidor ----------------------------------------------------------------
 const hits = new Map();
+function pruneExpiredHits(now) {
+  for (const [k, v] of hits) {
+    if (now > v.reset) hits.delete(k);
+  }
+}
 function limited(ip) {
   const now = Date.now();
   const h = hits.get(ip);
   if (!h || now > h.reset) {
+    if (h) hits.delete(ip);
+    if (hits.size >= 256) pruneExpiredHits(now);
     hits.set(ip, { n: 1, reset: now + 60_000 });
     return false;
   }
