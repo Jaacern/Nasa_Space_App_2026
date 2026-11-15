@@ -34,6 +34,7 @@ Ui.Fonts = {
 	body = Font.new(TITILLIUM, Enum.FontWeight.Regular),
 	mono = Font.new(MONO, Enum.FontWeight.Medium),
 	monoBold = Font.new(MONO, Enum.FontWeight.Bold),
+	impact = Font.new("rbxasset://fonts/families/Bangers.json"), -- rotulos de momento fuerte
 }
 
 -- Escala de capas.

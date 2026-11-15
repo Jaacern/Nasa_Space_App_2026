@@ -170,7 +170,7 @@ end
 
 function Renderer.spawn(id: number, kind: string, x: number, z: number)
 	local m = take(kind)
-	local e = { m = m, root = m.PrimaryPart, kind = kind, x = x, z = z, x0 = x, z0 = z, x1 = x, z1 = z, a = 1, flash = 0, rise = 0, dx = 0, dz = 0 }
+	local e = { m = m, root = m.PrimaryPart, kind = kind, x = x, z = z, x0 = x, z0 = z, x1 = x, z1 = z, a = 1, flash = 0, rise = 0, dx = 0, dz = 0, kick = 0 }
 	enemies[id] = e
 	e.root.CFrame = CFrame.new(x, -6, z)
 end
@@ -209,6 +209,7 @@ function Renderer.hit(id: number, dmg: number, crit: boolean)
 		end
 	end
 	e.flash = Balance.Juice.FlashTime
+	e.kick = if crit then 1.6 else 1 -- retroceso visual del golpe
 	local pos = Vector3.new(e.x, 5, e.z)
 	if crit then
 		Fx.number(pos, tostring(dmg) .. "!", C.gold, true)
@@ -418,11 +419,20 @@ function Renderer.update(dt: number)
 				e.rise = math.min(1, e.rise + dt / 0.4)
 				moved = true
 			end
+			local kick = e.kick
+			if kick > 0 then
+				kick = math.max(0, kick - dt / Balance.Juice.KickTime)
+				e.kick = kick
+				moved = true
+			end
 			if moved then
 				local y = -6 * (1 - e.rise) * (1 - e.rise)
 				local pos = Vector3.new(e.x, y, e.z)
 				if e.dx * e.dx + e.dz * e.dz > 0.0001 then
-					e.root.CFrame = CFrame.lookAt(pos, pos + Vector3.new(e.dx, 0, e.dz))
+					-- el golpe empuja al enemigo hacia atras y lo inclina un instante
+					local back = kick * Balance.Juice.KickDist
+					pos -= Vector3.new(e.dx, 0, e.dz) * back
+					e.root.CFrame = CFrame.lookAt(pos, pos + Vector3.new(e.dx, 0, e.dz)) * CFrame.Angles(kick * 0.26, 0, 0)
 				else
 					e.root.CFrame = CFrame.new(pos)
 				end

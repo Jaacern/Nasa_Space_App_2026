@@ -138,3 +138,4 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - **Guardado en Studio:** el lugar `Place1` nunca se ha guardado. Hay que hacerlo una vez a mano (Archivo > Guardar en archivo o en Roblox). Después se puede guardar por MCP con `save_place`.
 - **Insignia NASA:** su uso requiere permiso de NASA. El equipo declaró tenerlo. Si no hay permiso escrito, pon `Balance.Branding.NasaInsignia = false`.
 - Cómo manejar Studio desde cualquier IA o terminal: `tools/studio/README.md`.
+- Pulido de combate (15-11-2026, segunda tanda): el enemigo golpeado retrocede e inclina un instante (`Balance.Juice.KickTime`, `KickDist`; `Renderer.hit` y `Renderer.update`). Fuente de impacto Bangers (`Ui.Fonts.impact`) en alertas, título de subida de nivel, pausa y resumen. Probado 75 s en demo: consola limpia.

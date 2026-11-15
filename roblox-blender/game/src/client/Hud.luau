@@ -167,7 +167,7 @@ local function buildHud()
 	r.ticker = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(12, 34), Size = UDim2.fromOffset(446, 24), ZIndex = Z.hudTop, TextWrapped = false, TextTruncate = Enum.TextTruncate.AtEnd })
 	r.ticker.Parent = ticker
 
-	r.alert = label("", 30, { FontFace = F.title, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.24), Size = UDim2.new(0.9, 0, 0, 40), TextXAlignment = CENTER, TextColor3 = T.orange, TextStrokeTransparency = 0.25, TextTransparency = 1, ZIndex = Z.hudTop })
+	r.alert = label("", 44, { FontFace = F.impact, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.24), Size = UDim2.new(0.9, 0, 0, 52), TextXAlignment = CENTER, TextColor3 = T.orange, TextStrokeTransparency = 0.25, TextTransparency = 1, ZIndex = Z.hudTop })
 	r.alert.Parent = h
 	r.alertSub = label("", 20, { FontFace = F.semi, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.24, 44), Size = UDim2.new(0.9, 0, 0, 28), TextXAlignment = CENTER, TextStrokeTransparency = 0.25, TextTransparency = 1, ZIndex = Z.hudTop })
 	r.alertSub.Parent = h
@@ -382,7 +382,7 @@ local function buildOverlays()
 	r.level = lv
 	r.levelTag = label("SUBIDA DE NIVEL", 18, { FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.1), Size = UDim2.new(0.9, 0, 0, 24), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	r.levelTag.Parent = lv
-	r.levelTitle = label("", 32, { FontFace = F.title, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 28), Size = UDim2.new(0.9, 0, 0, 44), TextXAlignment = CENTER, ZIndex = Z.content })
+	r.levelTitle = label("", 46, { FontFace = F.impact, TextColor3 = T.gold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 28), Size = UDim2.new(0.9, 0, 0, 44), TextXAlignment = CENTER, ZIndex = Z.content })
 	r.levelTitle.Parent = lv
 	local row = new("Frame", { Name = "Panel", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.56), Size = UDim2.fromOffset(960, 340), BackgroundTransparency = 1, ZIndex = Z.panel })
 	Ui.list(22, true).Parent = row
@@ -445,7 +445,7 @@ local function buildOverlays()
 	local pa = overlay("Pause")
 	r.pause = pa
 	local pap = centerPanel(pa, 440, 300, "MISIÓN EN PAUSA")
-	label("PAUSA", 34, { FontFace = F.title, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 0, 48), ZIndex = Z.content }).Parent = pap
+	label("PAUSA", 50, { FontFace = F.impact, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 0, 48), ZIndex = Z.content }).Parent = pap
 	button("CONTINUAR", click(function()
 		send("pause")
 	end), { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), ZIndex = Z.content }).Parent = pap
@@ -457,7 +457,7 @@ local function buildOverlays()
 	local su = overlay("Summary", 0.2)
 	r.summary = su
 	local sp = centerPanel(su, 760, 640, "INFORME DE MISIÓN")
-	r.sumTitle = label("", 38, { FontFace = F.title, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 0, 50), ZIndex = Z.content })
+	r.sumTitle = label("", 54, { FontFace = F.impact, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 0, 50), ZIndex = Z.content })
 	r.sumTitle.Parent = sp
 	r.sumSub = label("", 20, { TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 92), Size = UDim2.new(1, 0, 0, 28), TextColor3 = T.dim, ZIndex = Z.content })
 	r.sumSub.Parent = sp
