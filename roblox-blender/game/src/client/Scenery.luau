@@ -562,8 +562,8 @@ local function refreshMoons()
 		m:ScaleTo(size / math.max(0.1, math.max(e.X, e.Y, e.Z)))
 		m:PivotTo(CFrame.new(pos) * rot)
 	end
-	moon(meshes.RockB, "Fobos", 78, Vector3.new(-430, 300, -560), CFrame.Angles(0.5, 0.8, 0.2))
-	moon(meshes.RockC, "Deimos", 34, Vector3.new(470, 380, -610), CFrame.Angles(1.1, 0.3, 0.7))
+	moon(meshes.RockB, "Fobos", 46, Vector3.new(-520, 560, -760), CFrame.Angles(0.5, 0.8, 0.2))
+	moon(meshes.RockC, "Deimos", 22, Vector3.new(560, 640, -820), CFrame.Angles(1.1, 0.3, 0.7))
 end
 
 -- ------------------------------------------------------------ Insignia del menu
@@ -646,19 +646,26 @@ local function buildZones()
 		local ang = math.rad(45 + (i - 1) * 90)
 		local len = maxR - zoneR
 		local midR = (zoneR + maxR) * 0.5
-		local strip = Instance.new("Part")
-		strip.Name = "ZoneLine" .. i
-		strip.Anchored = true
-		strip.CanCollide = false
-		strip.CanQuery = false
-		strip.CanTouch = false
-		strip.CastShadow = false
-		strip.Material = Enum.Material.Neon
-		strip.Color = Color3.fromRGB(190, 210, 240)
-		strip.Transparency = 0.72
-		strip.Size = Vector3.new(0.45, 0.12, len)
-		strip.CFrame = CFrame.new(math.cos(ang) * midR, 0.07, math.sin(ang) * midR) * CFrame.Angles(0, -ang + math.pi * 0.5, 0)
-		strip.Parent = zf
+		-- Frontera discontinua (marcas de topografía), menos invasiva que una línea continua.
+		local _ = midR
+		local dash, gap = 3.2, 3.6
+		local n = math.floor(len / (dash + gap))
+		for k = 0, n - 1 do
+			local rr = zoneR + 2 + k * (dash + gap) + dash * 0.5
+			local strip = Instance.new("Part")
+			strip.Name = "ZoneLine" .. i
+			strip.Anchored = true
+			strip.CanCollide = false
+			strip.CanQuery = false
+			strip.CanTouch = false
+			strip.CastShadow = false
+			strip.Material = Enum.Material.Neon
+			strip.Color = Color3.fromRGB(255, 196, 150)
+			strip.Transparency = 0.6
+			strip.Size = Vector3.new(0.38, 0.1, dash)
+			strip.CFrame = CFrame.new(math.cos(ang) * rr, 0.07, math.sin(ang) * rr) * CFrame.Angles(0, -ang + math.pi * 0.5, 0)
+			strip.Parent = zf
+		end
 
 		-- Baliza de sector en la bisectriz (0, 90, 180, 270 deg)
 		local bAng = math.rad((i - 1) * 90 - 90)

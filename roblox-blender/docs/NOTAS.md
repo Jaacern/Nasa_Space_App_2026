@@ -153,3 +153,11 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - Botones con esquinas de 10 px, número de sección (01–06) en una pieza redondeada y un "labio" inferior en INICIAR MISIÓN y TUTORIAL.
 - El texto del botón pasa a una etiqueta propia: un `UIPadding` desplazaba también al número y al labio (verificado en Studio con `AbsolutePosition`).
 - Verificado: captura `menu` en Studio sin choques de texto. Pendiente: revisión humana del tono y paneles secundarios.
+
+## 11. Sesión del 15-11-2026 (tarde): sincronización, inglés, móvil, visuales y tráiler
+- **Studio iba por delante del repositorio** (~3.850 líneas: modos de arma, cofres por rareza, briefing, mando/táctil, eventos astrofísicos). Se trajo a Git desde la versión 34 del lugar (commit `c895198`). Regla: antes de empujar código a Studio, comparar Studio contra disco; Studio está en Team Create y lo que se empuja queda guardado en la nube.
+- **Idioma:** inglés por defecto, botón ESPAÑOL/ENGLISH arriba a la derecha del menú. `shared/Locale.luau` traduce en vivo todo texto de la interfaz (el código sigue escribiendo en español); traducciones en `shared/LocaleEN.luau` (exactas + formatos con números). Texto nuevo en el juego = añadir su traducción ahí.
+- **Móvil:** probado en el Device Simulator (iPhone XR, 801×413). En táctil con pantalla baja la interfaz escala a un lienzo de ~1090×560 (texto ~13 pt). Atributo `EmuInput` ("touch" | "gamepad" | "kb") fuerza el modo de interfaz en Studio.
+- **Visuales:** `client/Ambience.luau` (bordes de cráter, manchas de regolito, guijarros, polvo en suspensión, nubes, profundidad de campo, sombras más nítidas; baja con la calidad). Líneas de zona discontinuas, lunas más pequeñas y altas, avisos que ya no tapan la barra del jefe.
+- **Captura:** `client/Autopilot.luau` (solo Studio): juega solo y ofrece cámaras de captura; atributos documentados en el propio archivo.
+- **Pendiente manual:** `Lighting.Technology = Future` (P-01) sigue sin poder ponerse por script (verificado: falta capacidad).

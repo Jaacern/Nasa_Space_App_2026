@@ -18,6 +18,7 @@ local Renderer = require(script.Parent.Renderer)
 local Scenery = require(script.Parent.Scenery)
 local Hud = require(script.Parent.Hud)
 local Ui = require(script.Parent.Ui)
+local Ambience = require(script.Parent.Ambience)
 
 local player = Players.LocalPlayer
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -124,6 +125,7 @@ local function applySettings()
 	Hud.setEffectiveQuality(tier)
 	Fx.setQuality(tier)
 	Renderer.setQuality(tier)
+	Ambience.setQuality(tier)
 	local bloom = Lighting:FindFirstChild("Bloom")
 	if bloom and bloom:IsA("BloomEffect") then
 		bloom.Enabled = (tier ~= "low")
@@ -400,12 +402,25 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 -- ------------------------------------------------------------ Arranque
 Renderer.init()
 Scenery.init()
+Ambience.init()
 Hud.init(send, useSkill, applySettings, function()
 	if inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" then
 		setCursorFree(not cursorFree)
 	end
 end)
 applySettings()
+-- Idioma: inglés por defecto, botón EN/ES en el menú (ver Locale.luau y LangButton.luau).
+require(script.Parent.LangButton).start()
+-- Piloto automático y cámaras de captura (solo Studio; ver Autopilot.luau).
+require(script.Parent.Autopilot).start({
+	hud = Hud,
+	renderer = Renderer,
+	send = send,
+	useSkill = useSkill,
+	phase = function()
+		return phase
+	end,
+})
 pcall(function()
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
@@ -459,8 +474,19 @@ local initInputMode = modeFromInputType(UserInputService:GetLastInputType())
 if initInputMode then
 	Hud.setInputMode(initInputMode)
 end
+-- Studio: atributo EmuInput ("touch" | "gamepad" | "kb") fuerza el modo de interfaz para probar móvil y mando.
+local function emuInput(): string?
+	local v = player:GetAttribute("EmuInput")
+	return if RunService:IsStudio() and type(v) == "string" and v ~= "" then v else nil
+end
+player:GetAttributeChangedSignal("EmuInput"):Connect(function()
+	local m = emuInput() or modeFromInputType(UserInputService:GetLastInputType())
+	if m then
+		Hud.setInputMode(m)
+	end
+end)
 UserInputService.LastInputTypeChanged:Connect(function(t)
-	local m = modeFromInputType(t)
+	local m = emuInput() or modeFromInputType(t)
 	if m then
 		if m ~= "kb" then
 			setCursorFree(false)
@@ -670,6 +696,7 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 	Fx.update(dt)
 	Fx.kickUpdate(dt)
 	Scenery.update(dt)
+	Ambience.update(dt)
 	Renderer.update(dt)
 	Ui.tickIcons(dt)
 	local nc, ncTier = Renderer.nearestChest()

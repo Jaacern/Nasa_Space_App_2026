@@ -1,4 +1,9 @@
-# Guion del tráiler (55 segundos)
+# Guion del tráiler
+
+> **Versión vigente (15-11-2026): tráiler de 30 s en inglés**, ya producido. Detalle, reglas oficiales y cómo rehacerlo en [`../../trailer/README.md`](../../trailer/README.md).
+> Motivo del cambio: la guía oficial de Space Apps 2026 exige un video de **30 s o menos**; el guion de 55 s de abajo queda **reemplazado** y se conserva como referencia.
+
+# Versión anterior reemplazada: guion de 55 segundos
 
 Fecha: 14-11-2026. Estado: guion escrito. No hay material grabado.
 Duración objetivo: 55 s (rango permitido: 45 a 60 s). Formato: 1920×1080, 30 FPS.

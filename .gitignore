@@ -4,3 +4,11 @@ scripts/_*
 *.log
 __pycache__/
 *.pyc
+
+# Tráiler: medios pesados fuera de Git (capturas, tomas IA, música y renders)
+trailer/raw/
+trailer/ai/
+trailer/build/
+trailer/*.mp4
+trailer/*.jpg
+trailer/refs/

@@ -1255,6 +1255,9 @@ function Hud.setInputMode(mode: string)
 	end
 	inputMode = mode
 	applyInputLabels()
+	if gui then
+		Hud.refit()
+	end
 end
 
 function Hud.getInputMode(): string
@@ -1332,7 +1335,13 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 	local function rescale()
 		local cam = Workspace.CurrentCamera
 		local vp = if cam then cam.ViewportSize else Vector2.new(1280, 720)
-		uiScale.Scale = math.clamp(math.min(vp.Y / 720, vp.X / 1200), 0.48, 1.8)
+		local sc = math.min(vp.Y / 720, vp.X / 1200)
+		-- Teléfonos (táctil y pantalla baja): lienzo virtual de ~1090x560 para que el texto
+		-- quede sobre 13 pt en vez de 9-10 pt. Medido en el Device Simulator (iPhone XR 801x413).
+		if inputMode == "touch" and vp.Y < 560 then
+			sc = math.min(vp.Y / 560, vp.X / 1000)
+		end
+		uiScale.Scale = math.clamp(sc, 0.48, 1.8)
 	end
 	rescale()
 	buildHud()
@@ -1867,6 +1876,10 @@ function Hud.alert(text: string, kind: string?, sub: string?)
 	r.alert.Text = text
 	r.alert.TextColor3 = if kind == "good" then T.green elseif kind == "info" then T.text else T.orange
 	r.alertSub.Text = sub or ""
+	-- Con la barra de jefe visible, el rótulo baja para no taparla.
+	local y = if r.bossWrap and r.bossWrap.Visible then 0.31 else 0.24
+	r.alert.Position = UDim2.fromScale(0.5, y)
+	r.alertSub.Position = UDim2.new(0.5, 0, y, 48)
 	alertT = if kind == "info" then 1.8 else 3.2
 	if kind == "warn" or kind == nil then
 		Fx.play("warn", 0.8)
@@ -2018,6 +2031,8 @@ function Hud.buff(id: string, level: number)
 	local s = stimuli()
 	local def = (Balance.Upgrades :: any)[id]
 	s.buffName.Text = if def then string.format("%s  ·  NIVEL %s/%d", txt.name, Ui.num(level), def.max) else txt.name
+	-- Con jefe en pantalla, el aviso baja bajo la barra de vida del jefe y el rótulo de alerta.
+	s.buff.Position = if r.bossWrap and r.bossWrap.Visible then UDim2.new(0.5, 0, 0.44, 0) else UDim2.new(0.5, 0, 0, 178)
 	s.buff.Visible = true
 	Ui.pop(s.buff)
 	buffToken += 1
@@ -2127,6 +2142,22 @@ function Hud.update(dt: number, chestPos: Vector3?, chestTier: number?)
 		end
 	else
 		r.arrow.Visible = false
+	end
+end
+
+-- Avanza el panel abierto como lo haría el jugador (piloto automático de Studio):
+-- cierra el briefing, continúa tras una pieza o elige la carta de mayor rareza.
+function Hud.autoAdvance()
+	if r.briefing and r.briefing.Visible then
+		Hud.closeBriefing()
+	elseif r.piece and r.piece.Visible then
+		show(r.piece, false)
+		send("continue")
+		if choiceOpen then
+			show(r.level, true)
+		end
+	elseif r.level and r.level.Visible then
+		Hud.pick(math.random(1, 3))
 	end
 end
 

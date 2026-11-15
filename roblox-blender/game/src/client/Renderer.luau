@@ -611,6 +611,15 @@ function Renderer.chestGot(id: number, tier: number?)
 	end
 end
 
+-- Posiciones de enemigos vivos (las usa el piloto automático de Studio).
+function Renderer.enemyPositions(): { { x: number, z: number, kind: string } }
+	local out = {}
+	for _, e in enemies do
+		table.insert(out, { x = e.x, z = e.z, kind = e.kind })
+	end
+	return out
+end
+
 function Renderer.nearestChest(): (Vector3?, number?)
 	local best: Vector3? = nil
 	local bestTier: number? = nil
