@@ -270,7 +270,23 @@ local function buildMainMenu(compact: boolean)
 		end
 		local bx, by = X + col * (bw + 10), y + row * (bh + gap)
 		local b = button(text, click(fn), { Position = UDim2.fromOffset(bx, by), Size = UDim2.fromOffset(bw, bh), ZIndex = Z.content, TextXAlignment = Enum.TextXAlignment.Left }, kind)
-		new("UIPadding", { PaddingLeft = UDim.new(0, 18) }).Parent = b
+		-- El texto va en una etiqueta propia: un UIPadding desplazaría también al número y al labio.
+			b.Text = ""
+			label(text, 20, { FontFace = F.bold, Position = UDim2.fromOffset(64, 0), Size = UDim2.new(1, -80, 1, 0), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = if kind == "ghost" then T.text else T.bg, ZIndex = Z.content + 1 }).Parent = b
+			-- Forma humana: esquinas redondeadas, número de sección y "labio" inferior en los botones de acción.
+			local corner = b:FindFirstChildOfClass("UICorner")
+			if corner then
+				corner.CornerRadius = UDim.new(0, 10)
+			end
+			local chip = new("Frame", { Position = UDim2.fromOffset(8, 8), Size = UDim2.fromOffset(40, bh - 16), BackgroundColor3 = T.bg, BackgroundTransparency = if kind == "ghost" then 0.2 else 0.35, BorderSizePixel = 0, ZIndex = Z.content + 1 })
+			new("UICorner", { CornerRadius = UDim.new(0, 7) }).Parent = chip
+			label(string.format("%02d", n + 1), 16, { FontFace = F.monoBold, TextXAlignment = CENTER, Size = UDim2.fromScale(1, 1), TextColor3 = if kind == "primary" or kind == "gold" then T.gold else T.cyanHi, ZIndex = Z.content + 2 }).Parent = chip
+			chip.Parent = b
+			if kind == "primary" or kind == "gold" then
+				local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 5), BackgroundColor3 = if kind == "gold" then Color3.fromHex("#B07F0E") else Color3.fromHex("#0086A6"), BorderSizePixel = 0, ZIndex = Z.content })
+				new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
+				lip.Parent = b
+			end
 		b.Parent = m
 		if sub and not compact then
 			-- el subtitulo vive dentro del boton, a la derecha: no choca con el paisaje ni con el boton vecino

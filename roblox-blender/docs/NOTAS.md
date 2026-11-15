@@ -148,3 +148,8 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - Quinta tanda (15-11-2026): los 12 datos de las cartas se contrastaron con `science.nasa.gov` y se reescribieron para ceñirse a la fuente. Tabla con citas en `docs/NASA_APIS.md` sección 10.
 - Sexta tanda (15-11-2026): retroceso de cámara al disparar (`Fx.kickBack`, `Fx.kickUpdate`; se dispara en `Renderer.shot`). Probado 40 s de demo en Studio: consola limpia; lugar guardado. Encargo a DeepSeek no completado (solo búsquedas, saldo mensual crítico); el cambio se hizo a mano.
 - Séptima tanda (15-11-2026), revisión de interfaz: los subtítulos del menú pasan dentro de cada botón (alineados a la derecha, textos más cortos, contraste oscuro en botones claros); el contador de enfriamiento de habilidades ya no deja ver la tecla debajo. Probado en Studio: menú sin choques, consola limpia, lugar guardado.
+
+## 10. Menú principal: forma humana (15-11-2026)
+- Botones con esquinas de 10 px, número de sección (01–06) en una pieza redondeada y un "labio" inferior en INICIAR MISIÓN y TUTORIAL.
+- El texto del botón pasa a una etiqueta propia: un `UIPadding` desplazaba también al número y al labio (verificado en Studio con `AbsolutePosition`).
+- Verificado: captura `menu` en Studio sin choques de texto. Pendiente: revisión humana del tono y paneles secundarios.
