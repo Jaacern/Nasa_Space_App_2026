@@ -972,3 +972,57 @@ body {
     justify-content: center;
   }
 }
+
+
+/* === Pantalla de carga (LoadingManager) — sobria, institucional =========== */
+#loader-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020409;
+  transition: opacity 0.6s ease;
+}
+.loader-box { width: min(420px, 82vw); text-align: center; }
+.loader-title {
+  font-family: var(--font-display, "Michroma", sans-serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.42em;
+  color: #f8fafc;
+  margin-bottom: 0.5rem;
+}
+.loader-sub {
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.62rem;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.3rem;
+}
+.loader-track {
+  height: 2px;
+  background: rgba(148, 163, 184, 0.18);
+  overflow: hidden;
+}
+#loader-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #0b3d91, #38bdf8);
+  transition: width 0.25s ease;
+}
+.loader-label {
+  margin-top: 0.7rem;
+  font-family: var(--font-mono, "IBM Plex Mono", monospace);
+  font-size: 0.58rem;
+  color: #475569;
+  min-height: 1em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

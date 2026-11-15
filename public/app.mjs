@@ -15,10 +15,15 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
 import { createMission, getSolContext, stepSol } from "../src/sim/run.mjs";
 import { loadWorldState } from "../src/data/worldState.mjs";
 
 let useLiveMode = false;
+const PREFERS_REDUCED_MOTION = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
 let world = null;
 let balance = null;
 let cardsData = null;
@@ -39,6 +44,7 @@ let flatPortalsList = [];
 let syncOutpost3DCallback = null;
 let toggleBlenderGridCallback = null;
 let setCameraPresetCallback = null;
+let perfSnapshot = null;
 
 const esc = (s) =>
   String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
@@ -363,7 +369,7 @@ const HALO_PORTAL_FRAGMENT = `
     float angle = atan(centered.y, centered.x);
 
     float wave = fbm(vec2(cos(angle) * 2.3 + uTime * 0.25, sin(angle) * 2.3 - uTime * 0.2));
-    float portalEdge = r + wave * 0.14;
+    float portalEdge = r + wave * 0.05;
 
     float outerAlpha = 1.0 - smoothstep(0.68, 0.96, portalEdge);
     if (outerAlpha <= 0.005) discard;
@@ -385,16 +391,67 @@ const HALO_PORTAL_FRAGMENT = `
 
     vec3 coreColor = mix(holoScan, nasaTex.rgb * 1.16, clamp(paintMask, 0.0, 1.0));
 
-    float rimGlow = smoothstep(0.58, 0.82, portalEdge) * (1.0 - smoothstep(0.82, 0.97, portalEdge));
-    float innerFlare = smoothstep(0.68, 0.80, portalEdge) * 0.65;
+    float rimGlow = smoothstep(0.78, 0.9, portalEdge) * (1.0 - smoothstep(0.9, 0.97, portalEdge));
+    float innerFlare = smoothstep(0.8, 0.88, portalEdge) * 0.2;
 
-    vec3 finalRgb = coreColor + uPortalColor * (rimGlow * 2.2 + innerFlare);
+    vec3 finalRgb = coreColor + uPortalColor * (rimGlow * 0.8 + innerFlare);
     float finalAlpha = outerAlpha * uPassFade * 0.92;
     gl_FragColor = vec4(finalRgb, finalAlpha);
   }
 `;
 
 // Shader Volumétrico de Propulsión con Diamantes de Mach (Shock Diamonds + Turbulencia de Plasma)
+const SUN_VERTEX = `
+  varying vec2 vUv;
+  varying vec3 vNormalW;
+  varying vec3 vViewDir;
+  void main() {
+    vUv = uv;
+    vNormalW = normalize(mat3(modelMatrix) * normal);
+    vec4 wPos = modelMatrix * vec4(position, 1.0);
+    vViewDir = normalize(cameraPosition - wPos.xyz);
+    gl_Position = projectionMatrix * viewMatrix * wPos;
+  }
+`;
+
+const SUN_FRAGMENT = `
+  uniform float uTime;
+  varying vec2 vUv;
+  varying vec3 vNormalW;
+  varying vec3 vViewDir;
+
+  float hash(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+  float noise(vec2 p) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    return mix(mix(hash(i), hash(i + vec2(1, 0)), f.x), mix(hash(i + vec2(0, 1)), hash(i + vec2(1, 1)), f.x), f.y);
+  }
+  float fbm4(vec2 p) {
+    float v = 0.0;
+    float a = 0.5;
+    for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.1; a *= 0.5; }
+    return v;
+  }
+
+  void main() {
+    // Granulación solar animada en dos escalas
+    float g1 = fbm4(vUv * 22.0 + vec2(uTime * 0.012, 0.0));
+    float g2 = fbm4(vUv * 60.0 - vec2(0.0, uTime * 0.02));
+    float gran = g1 * 0.72 + g2 * 0.28;
+    // Gradiente térmico: núcleo blanco -> naranja -> rojo profundo en celdas frías
+    vec3 hot = vec3(1.0, 0.98, 0.9);
+    vec3 mid = vec3(1.0, 0.62, 0.18);
+    vec3 cool = vec3(0.72, 0.18, 0.04);
+    vec3 col = mix(cool, mid, smoothstep(0.25, 0.6, gran));
+    col = mix(col, hot, smoothstep(0.62, 0.95, gran));
+    // Oscurecimiento de limbo (borde del disco mas frio/tenue, como en fotografia solar real)
+    float limb = clamp(dot(normalize(vNormalW), normalize(vViewDir)), 0.0, 1.0);
+    col *= mix(0.42, 1.12, pow(limb, 0.6));
+    gl_FragColor = vec4(col * 1.9, 1.0);
+  }
+`;
+
 const ROCKET_PLUME_VERTEX = `
   varying vec2 vUv;
   void main() {
@@ -476,8 +533,11 @@ function initThreeSpaceEngine() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.32;
+  renderer.toneMappingExposure = 1.12;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.info.autoReset = false;
 
   const scene = new THREE.Scene();
   // Niebla muy sutil para que los planetas, asteroides, grillas vectoriales y satélites se vean a gran distancia
@@ -485,27 +545,83 @@ function initThreeSpaceEngine() {
 
   const pmremGenerator = new THREE.PMREMGenerator(renderer);
   scene.environment = pmremGenerator.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.5;
 
   const camera = new THREE.PerspectiveCamera(56, window.innerWidth / window.innerHeight, 0.1, 650);
 
   // Iluminación cinemática de alto contraste (Sol + Rim Light + Fill)
-  scene.add(new THREE.AmbientLight(0xdbeafe, 1.55));
-  const sunLight = new THREE.DirectionalLight(0xfffbeb, 3.8);
+  // Sol como key light duro, fill casi nulo (espacio real), rim frio sutil
+  scene.add(new THREE.AmbientLight(0x1b2638, 0.5));
+  const sunLight = new THREE.DirectionalLight(0xfff4e0, 3.4);
   sunLight.position.set(42, 32, 36);
+  sunLight.castShadow = true;
+  sunLight.shadow.mapSize.set(2048, 2048);
+  sunLight.shadow.camera.near = 1;
+  sunLight.shadow.camera.far = 140;
+  sunLight.shadow.camera.left = -26;
+  sunLight.shadow.camera.right = 26;
+  sunLight.shadow.camera.top = 26;
+  sunLight.shadow.camera.bottom = -26;
+  sunLight.shadow.bias = -0.0008;
   scene.add(sunLight);
+  scene.add(sunLight.target);
 
-  const rimLight = new THREE.DirectionalLight(0x38bdf8, 2.0);
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.55);
   rimLight.position.set(-32, -18, -45);
   scene.add(rimLight);
 
-  const texLoader = new THREE.TextureLoader();
+  // Niebla exponencial muy sutil: separa las estaciones por profundidad sin ocultarlas
+  scene.fog = new THREE.FogExp2(0x02040a, 0.0038);
+
+  // Gestor central de carga: alimenta la pantalla de progreso y registra errores con ruta
+  const assetManager = new THREE.LoadingManager();
+  assetManager.onProgress = (url, loaded, total) => {
+    const el = document.getElementById("loader-bar");
+    const lbl = document.getElementById("loader-label");
+    if (el) el.style.width = `${Math.round((loaded / Math.max(1, total)) * 100)}%`;
+    if (lbl) lbl.textContent = `${loaded}/${total} · ${url.split("/").pop()?.slice(0, 44) ?? ""}`;
+  };
+  assetManager.onLoad = () => {
+    const ov = document.getElementById("loader-overlay");
+    if (ov) {
+      ov.style.opacity = "0";
+      setTimeout(() => ov.remove(), 650);
+    }
+  };
+  assetManager.onError = (url) => console.error(`[assets] Fallo la carga: ${url}`);
+
+  const texLoader = new THREE.TextureLoader(assetManager);
+  const maxAniso = 8; // se fija tras crear el renderer
+  function loadColorTex(url) {
+    const t = texLoader.load(url, undefined, undefined, () => console.error(`[assets] Textura no cargo: ${url}`));
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = maxAniso;
+    return t;
+  }
+
+  // Sprite circular suave para TODOS los sistemas de puntos (evita los cuadrados de PointsMaterial)
+  function makeSoftCircleTexture(size = 64, inner = 0.0) {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = size;
+    const g = cv.getContext("2d");
+    const grad = g.createRadialGradient(size / 2, size / 2, size * inner, size / 2, size / 2, size / 2);
+    grad.addColorStop(0, "rgba(255,255,255,1)");
+    grad.addColorStop(0.5, "rgba(255,255,255,0.55)");
+    grad.addColorStop(1, "rgba(255,255,255,0)");
+    g.fillStyle = grad;
+    g.fillRect(0, 0, size, size);
+    const tex = new THREE.CanvasTexture(cv);
+    tex.colorSpace = THREE.SRGBColorSpace;
+    return tex;
+  }
+  const circleSpriteTex = makeSoftCircleTexture();
   texLoader.setCrossOrigin("anonymous");
 
   // Como descomprimimos los 17 modelos .glb de la NASA en disco, GLTFLoader los carga directamente al instante
-  const gltfLoader = new GLTFLoader();
+  const gltfLoader = new GLTFLoader(assetManager);
 
-  const rockDiffuseTex = texLoader.load("/public/assets/textures/deimos_nasa.jpg");
-  const lunarDiffuseTex = texLoader.load("/public/assets/textures/moon_nasa.jpg");
+  const rockDiffuseTex = loadColorTex("/public/assets/textures/deimos_nasa.jpg");
+  const lunarDiffuseTex = loadColorTex("/public/assets/textures/moon_nasa.jpg");
 
   // Contenedor global de elementos vectoriales estilo Blender 4.5 Viewport
   const blenderVectorGroup = new THREE.Group();
@@ -559,6 +675,8 @@ function initThreeSpaceEngine() {
             if (!child.geometry.attributes.normal) {
               child.geometry.computeVertexNormals();
             }
+            child.castShadow = true;
+            child.receiveShadow = true;
           }
         });
         raw.updateMatrixWorld(true);
@@ -577,32 +695,30 @@ function initThreeSpaceEngine() {
           if (child.isMesh && child.material) {
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             for (const m of mats) {
-              m.envMapIntensity = 2.0;
+              m.envMapIntensity = 0.85;
               m.side = THREE.DoubleSide;
-              // Si el modelo .glb de NASA no trae textura embebida y su color es muy oscuro/gris plano,
-              // le damos acabado PBR aeroespacial (titanio, paneles solares azul profundo y Kapton dorado)
+              // Materiales sin textura: acabado aeroespacial NEUTRO. Solo pistas semanticas reales
+              // (foil Kapton, paneles solares); jamas recolorear por indice de malla.
               if (!m.map) {
                 const mName = (m.name || "").toLowerCase();
-                if (mName.includes("gold") || mName.includes("bronze") || mName.includes("foil")) {
-                  m.color = new THREE.Color(0xf59e0b);
-                  m.metalness = 0.78;
-                  m.roughness = 0.25;
-                } else if (mName.includes("solar") || mName.includes("panel") || mName.includes("wing") || meshIdx % 4 === 1) {
-                  m.color = new THREE.Color(0x60a5fa);
-                  m.metalness = 0.65;
-                  m.roughness = 0.28;
-                } else if (meshIdx % 3 === 2) {
-                  m.color = new THREE.Color(0xfbbf24);
-                  m.metalness = 0.72;
-                  m.roughness = 0.26;
+                if (mName.includes("gold") || mName.includes("foil") || mName.includes("kapton") || mName.includes("mli")) {
+                  m.color = new THREE.Color(0xb08d3f); // MLI dorado apagado
+                  m.metalness = 0.85;
+                  m.roughness = 0.38;
+                } else if (mName.includes("solar") || mName.includes("panel") || mName.includes("cell") || mName.includes("array")) {
+                  m.color = new THREE.Color(0x14233c); // celda solar azul muy profundo
+                  m.metalness = 0.6;
+                  m.roughness = 0.32;
                 } else {
-                  m.color = new THREE.Color(0xe2e8f0);
-                  m.metalness = 0.52;
-                  m.roughness = 0.34;
+                  // Aluminio / pintura termica blanca-gris, con variacion minima por malla
+                  const tone = 0.62 + (meshIdx % 3) * 0.07;
+                  m.color = new THREE.Color(tone, tone, tone * 1.02);
+                  m.metalness = 0.42;
+                  m.roughness = 0.5;
                 }
                 if (m.emissive) {
-                  m.emissive = new THREE.Color(0x0f172a);
-                  m.emissiveIntensity = 0.25;
+                  m.emissive = new THREE.Color(0x000000);
+                  m.emissiveIntensity = 0.0;
                 }
               }
               m.needsUpdate = true;
@@ -722,9 +838,9 @@ function initThreeSpaceEngine() {
     blenderVectorGroup.add(tubeMesh);
 
     // 4. Nodos de Control Bezier/Spline y Vectores Tangentes (Handles Naranjas estilo Curva en Edit Mode de Blender)
-    const handleNodeGeo = new THREE.OctahedronGeometry(0.22, 0);
-    const handleNodeMat = new THREE.MeshBasicMaterial({ color: 0xfc3d21 });
-    const handleTipMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+    const handleNodeGeo = new THREE.OctahedronGeometry(0.13, 0);
+    const handleNodeMat = new THREE.MeshBasicMaterial({ color: 0xfc3d21, transparent: true, opacity: 0.55 });
+    const handleTipMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.55 });
 
     controlPoints.forEach((pt, idx) => {
       const uApprox = idx / (controlPoints.length - 1);
@@ -743,7 +859,7 @@ function initThreeSpaceEngine() {
         new THREE.Line(hGeo, new THREE.LineBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.55 })),
       );
 
-      const tip1 = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.14, 0.14), handleTipMat);
+      const tip1 = new THREE.Mesh(new THREE.OctahedronGeometry(0.075, 0), handleTipMat);
       tip1.position.copy(h1);
       const tip2 = tip1.clone();
       tip2.position.copy(h2);
@@ -779,30 +895,43 @@ function initThreeSpaceEngine() {
   const starGeo = new THREE.BufferGeometry();
   const starPos = new Float32Array(starCount * 3);
   const starColors = new Float32Array(starCount * 3);
+  // Cascarón esférico lejano centrado en el recorrido + color por temperatura (índice B-V aproximado)
+  const STAR_TEMPS = [
+    [0.64, 0.74, 1.0],  // clase B azulada
+    [0.82, 0.88, 1.0],  // clase A blanca-azul
+    [1.0, 0.98, 0.93],  // clase F/G blanca-amarilla (tipo Sol)
+    [1.0, 0.85, 0.62],  // clase K naranja
+    [1.0, 0.68, 0.45],  // clase M rojiza
+  ];
   for (let i = 0; i < starCount; i++) {
-    const angle = Math.random() * Math.PI * 2;
-    const radius = 14.0 + Math.random() * 85;
-    starPos[i * 3] = Math.cos(angle) * radius;
-    starPos[i * 3 + 1] = Math.sin(angle) * radius * 0.78;
-    starPos[i * 3 + 2] = 24 - Math.random() * 330;
-
-    const c =
-      i % 5 === 0
-        ? [0.22, 0.74, 0.98]
-        : i % 7 === 0
-          ? [0.99, 0.75, 0.25]
-          : i % 11 === 0
-            ? [0.98, 0.35, 0.25]
-            : [0.92, 0.96, 1.0];
-    starColors[i * 3] = c[0];
-    starColors[i * 3 + 1] = c[1];
-    starColors[i * 3 + 2] = c[2];
+    const r = 150 + Math.random() * 160;
+    const th = Math.random() * Math.PI * 2;
+    const ph = Math.acos(2 * Math.random() - 1);
+    starPos[i * 3] = r * Math.sin(ph) * Math.cos(th);
+    starPos[i * 3 + 1] = r * Math.cos(ph) * 0.9;
+    starPos[i * 3 + 2] = -120 + r * Math.sin(ph) * Math.sin(th);
+    // Distribución realista: la mayoría frías/tenues, pocas azules brillantes
+    const t = Math.random();
+    const c = STAR_TEMPS[t < 0.06 ? 0 : t < 0.2 ? 1 : t < 0.62 ? 2 : t < 0.86 ? 3 : 4];
+    const lum = 0.55 + Math.random() * 0.45;
+    starColors[i * 3] = c[0] * lum;
+    starColors[i * 3 + 1] = c[1] * lum;
+    starColors[i * 3 + 2] = c[2] * lum;
   }
   starGeo.setAttribute("position", new THREE.BufferAttribute(starPos, 3));
   starGeo.setAttribute("color", new THREE.BufferAttribute(starColors, 3));
-  scene.add(
-    new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 0.22, vertexColors: true, transparent: true, opacity: 0.92 })),
-  );
+  const starfieldMat = new THREE.PointsMaterial({
+    size: 1.15,
+    map: circleSpriteTex,
+    vertexColors: true,
+    transparent: true,
+    opacity: 0.95,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    sizeAttenuation: true,
+  });
+  starfieldMat.fog = false;
+  scene.add(new THREE.Points(starGeo, starfieldMat));
 
   // ============================================================================
   // D. SECTOR 01 & 02: PLANETA TIERRA 3D EN EL CENTRO DEL ARCO ORBITAL
@@ -814,7 +943,7 @@ function initThreeSpaceEngine() {
   earthGroup.position.set(0, -0.5, -24.0);
   scene.add(earthGroup);
 
-  const earthTex = texLoader.load("/public/assets/textures/earth_nasa.jpg");
+  const earthTex = loadColorTex("/public/assets/textures/earth_nasa.jpg");
   const earthMat = new THREE.MeshStandardMaterial({
     map: earthTex,
     bumpMap: earthTex,
@@ -935,27 +1064,30 @@ function initThreeSpaceEngine() {
 
   // Sol Activo DONKI + Corona + Onda de Choque CME
   const sunGroup = new THREE.Group();
-  const sunTex = texLoader.load(
-    proxyImg("https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001435/GSFC_20171208_Archive_e001435~orig.jpg"),
-  );
-  const sunSphere = new THREE.Mesh(
-    new THREE.SphereGeometry(6.2, 48, 48),
-    new THREE.MeshBasicMaterial({ map: sunTex, color: 0xffedd5 }),
-  );
+  // Fotosfera procedural (granulación fbm + oscurecimiento de limbo): cero dependencia de red,
+  // nunca cae a una esfera blanca si falla una descarga.
+  const sunMaterial = new THREE.ShaderMaterial({
+    vertexShader: SUN_VERTEX,
+    fragmentShader: SUN_FRAGMENT,
+    uniforms: { uTime: { value: 0 } },
+  });
+  const sunSphere = new THREE.Mesh(new THREE.SphereGeometry(6.2, 48, 48), sunMaterial);
   sunGroup.add(sunSphere);
 
-  const coronaRing = new THREE.Mesh(
-    new THREE.RingGeometry(6.3, 9.5, 64),
-    new THREE.MeshBasicMaterial({
-      color: 0xf59e0b,
-      side: THREE.DoubleSide,
+  // Corona: resplandor radial aditivo (billboard), en lugar del anillo plano
+  const coronaSprite = new THREE.Sprite(
+    new THREE.SpriteMaterial({
+      map: makeSoftCircleTexture(256),
+      color: 0xffb347,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.6,
       depthWrite: false,
+      blending: THREE.AdditiveBlending,
     }),
   );
-  sunGroup.add(coronaRing);
-  sunGroup.position.set(14.5, 4.8, -98.0);
+  coronaSprite.scale.setScalar(26);
+  sunGroup.add(coronaSprite);
+  sunGroup.position.set(26.0, 8.5, -112.0);
   scene.add(sunGroup);
 
   // 9. Asteroide Oficial NASA Bennu (1999 RQ36 .glb con UVs esféricos y relieve de cráteres) junto a P08
@@ -997,34 +1129,72 @@ function initThreeSpaceEngine() {
   cmeGeo.setAttribute("position", new THREE.BufferAttribute(cmePos, 3));
   const cmeParticles = new THREE.Points(
     cmeGeo,
-    new THREE.PointsMaterial({ color: 0xf97316, size: 0.32, transparent: true, opacity: 0.68 }),
+    new THREE.PointsMaterial({
+      color: 0xf97316,
+      size: 0.4,
+      map: circleSpriteTex,
+      transparent: true,
+      opacity: 0.5,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    }),
   );
   scene.add(cmeParticles);
 
   // Cinturón de 95 Asteroides y Rocas Espaciales con texturas PBR y relieve distribuidos alrededor de la curva
   const asteroidGroup = new THREE.Group();
-  const rockGeo1 = new THREE.DodecahedronGeometry(0.75, 2);
-  const rockGeo2 = new THREE.IcosahedronGeometry(0.62, 1);
+  // Geometria irregular real: icosaedro subdividido con desplazamiento por vertice (nada de elipsoides lisos)
+  function makeRockGeometry(seedMul) {
+    const geo = new THREE.IcosahedronGeometry(0.7, 2);
+    const pos = geo.attributes.position;
+    const v = new THREE.Vector3();
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i);
+      const n =
+        Math.sin(v.x * 4.1 * seedMul + v.y * 2.3) * 0.16 +
+        Math.sin(v.y * 6.7 + v.z * 3.9 * seedMul) * 0.11 +
+        Math.sin(v.z * 9.3 + v.x * 5.1) * 0.07;
+      v.multiplyScalar(1.0 + n);
+      pos.setXYZ(i, v.x, v.y, v.z);
+    }
+    geo.computeVertexNormals();
+    return geo;
+  }
+  const rockGeo1 = makeRockGeometry(1.0);
+  const rockGeo2 = makeRockGeometry(1.7);
+  // Basalto condritico oscuro (albedo real de asteroides: 4-8%), nunca blanco
   const pbrRockMat = new THREE.MeshStandardMaterial({
     map: rockDiffuseTex,
+    color: 0x5a544c,
     bumpMap: rockDiffuseTex,
-    bumpScale: 0.18,
-    roughness: 0.86,
-    metalness: 0.14,
+    bumpScale: 0.09,
+    roughness: 0.97,
+    metalness: 0.02,
+    envMapIntensity: 0.2,
   });
 
-  for (let i = 0; i < 95; i++) {
-    const u = 0.08 + (i / 95) * 0.82;
+  // Dos InstancedMesh (2 draw calls en lugar de 95)
+  const ROCK_COUNT = 72;
+  const rockInst1 = new THREE.InstancedMesh(rockGeo1, pbrRockMat, Math.ceil(ROCK_COUNT / 2));
+  const rockInst2 = new THREE.InstancedMesh(rockGeo2, pbrRockMat, Math.floor(ROCK_COUNT / 2));
+  const dummy = new THREE.Object3D();
+  for (let i = 0; i < ROCK_COUNT; i++) {
+    const u = 0.08 + (i / ROCK_COUNT) * 0.82;
     const centerPt = flightCurve.getPointAt(u);
-    const m = new THREE.Mesh(i % 2 === 0 ? rockGeo1 : rockGeo2, pbrRockMat);
     const side = i % 2 === 0 ? 1 : -1;
-    const xOff = side * (4.2 + (i % 5) * 1.4);
-    const yOff = ((i % 7) - 3) * 1.25;
-    m.position.set(centerPt.x + xOff, centerPt.y + yOff, centerPt.z);
-    m.scale.set(0.45 + (i % 4) * 0.3, 0.35 + (i % 3) * 0.25, 0.4 + (i % 5) * 0.24);
-    m.rotation.set(i * 0.7, i * 1.1, i * 0.5);
-    asteroidGroup.add(m);
+    const xOff = side * (7.5 + (i % 5) * 2.2);
+    const yOff = ((i % 7) - 3) * 1.9;
+    dummy.position.set(centerPt.x + xOff, centerPt.y + yOff, centerPt.z + ((i % 3) - 1) * 2.2);
+    const sc = 0.5 + (i % 4) * 0.28;
+    dummy.scale.set(sc, sc * (0.8 + (i % 3) * 0.12), sc * (0.86 + (i % 5) * 0.08));
+    dummy.rotation.set(i * 0.7, i * 1.1, i * 0.5);
+    dummy.updateMatrix();
+    const inst = i % 2 === 0 ? rockInst1 : rockInst2;
+    inst.setMatrixAt(Math.floor(i / 2), dummy.matrix);
   }
+  rockInst1.instanceMatrix.needsUpdate = true;
+  rockInst2.instanceMatrix.needsUpdate = true;
+  asteroidGroup.add(rockInst1, rockInst2);
   scene.add(asteroidGroup);
 
   // ============================================================================
@@ -1076,7 +1246,7 @@ function initThreeSpaceEngine() {
   marsGroup.position.set(-5.8, -0.2, -212.0);
   scene.add(marsGroup);
 
-  const marsTex = texLoader.load("/public/assets/textures/mars_nasa.jpg");
+  const marsTex = loadColorTex("/public/assets/textures/mars_nasa.jpg");
   const marsMat = new THREE.MeshStandardMaterial({
     map: marsTex,
     bumpMap: marsTex,
@@ -1110,7 +1280,7 @@ function initThreeSpaceEngine() {
   marsGroup.add(marsAtmo);
 
   // Luna Phobos 3D con relieve real
-  const phobosTex = texLoader.load("/public/assets/textures/phobos_nasa.jpg");
+  const phobosTex = loadColorTex("/public/assets/textures/phobos_nasa.jpg");
   const phobosMesh = new THREE.Mesh(
     new THREE.DodecahedronGeometry(0.95, 3),
     new THREE.MeshStandardMaterial({ map: phobosTex, bumpMap: phobosTex, bumpScale: 0.18, roughness: 0.88 }),
@@ -1142,11 +1312,12 @@ function initThreeSpaceEngine() {
     roughness: 0.9,
   });
   const groundDisk = new THREE.Mesh(new THREE.CylinderGeometry(11.5, 13.0, 0.6, 64), groundMat);
+  groundDisk.receiveShadow = true;
   groundDisk.position.y = -0.35;
   outpostGroup.add(groundDisk);
 
   for (let i = 0; i < 18; i++) {
-    const b = new THREE.Mesh(rockGeo1, pbrRockMat);
+    const b = new THREE.Mesh(i % 2 === 0 ? rockGeo1 : rockGeo2, pbrRockMat);
     const a = (i / 18) * Math.PI * 2;
     const r = 5.6 + (i % 3) * 1.4;
     b.position.set(Math.cos(a) * r, 0.15, Math.sin(a) * r);
@@ -1337,8 +1508,19 @@ function initThreeSpaceEngine() {
   // ============================================================================
   const portalMeshes = [];
   const portalRings = [];
-  const portalDiskGeo = new THREE.CircleGeometry(3.2, 64);
-  const gyroRingGeo = new THREE.TorusGeometry(2.95, 0.022, 16, 100);
+  // Textura de arranque de portales: azul espacial profundo (nunca un disco blanco mientras llega la imagen)
+  const portalFallbackTex = (() => {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = 8;
+    const g = cv.getContext("2d");
+    g.fillStyle = "#06101f";
+    g.fillRect(0, 0, 8, 8);
+    const t = new THREE.CanvasTexture(cv);
+    t.colorSpace = THREE.SRGBColorSpace;
+    return t;
+  })();
+  const portalDiskGeo = new THREE.CircleGeometry(2.35, 64);
+  const gyroRingGeo = new THREE.TorusGeometry(2.18, 0.018, 16, 100);
 
   const envColors = {
     tierra: new THREE.Color(0x38bdf8),
@@ -1355,7 +1537,7 @@ function initThreeSpaceEngine() {
 
     // Desplazamos cada portal ligeramente hacia el exterior de la curva para dejar libre la vista del planeta
     const sideDir = new THREE.Vector3().crossVectors(tangent, new THREE.Vector3(0, 1, 0)).normalize();
-    const lateralOffset = (idx % 2 === 0 ? 1 : -1) * 1.85;
+    const lateralOffset = (idx % 2 === 0 ? 1 : -1) * 3.4;
     const portalPos = splinePos.clone().addScaledVector(sideDir, lateralOffset);
 
     const pColor =
@@ -1370,7 +1552,7 @@ function initThreeSpaceEngine() {
       depthWrite: false,
       side: THREE.DoubleSide,
       uniforms: {
-        uTexture: { value: new THREE.Texture() },
+        uTexture: { value: portalFallbackTex },
         uRevealProgress: { value: 0.6 },
         uPassFade: { value: 1.0 },
         uTime: { value: 0 },
@@ -1381,10 +1563,16 @@ function initThreeSpaceEngine() {
     });
 
     if (item.video.referenceImageUrl) {
-      texLoader.load(proxyImg(item.video.referenceImageUrl), (tex) => {
-        tex.minFilter = THREE.LinearFilter;
-        mat.uniforms.uTexture.value = tex;
-      });
+      texLoader.load(
+        proxyImg(item.video.referenceImageUrl),
+        (tex) => {
+          tex.minFilter = THREE.LinearFilter;
+          tex.colorSpace = THREE.SRGBColorSpace;
+          mat.uniforms.uTexture.value = tex;
+        },
+        undefined,
+        () => console.error(`[assets] No cargo la imagen del portal: ${item.video.referenceImageUrl}`),
+      );
     }
 
     const portalMesh = new THREE.Mesh(portalDiskGeo, mat);
@@ -1397,7 +1585,7 @@ function initThreeSpaceEngine() {
     const ringMat = new THREE.MeshBasicMaterial({
       color: pColor,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.28,
       depthWrite: false,
     });
     const ringMesh = new THREE.Mesh(gyroRingGeo, ringMat);
@@ -1443,12 +1631,30 @@ function initThreeSpaceEngine() {
     }
   });
 
+  canvas.addEventListener("dblclick", (e) => {
+    const r = canvas.getBoundingClientRect();
+    mouse.set(((e.clientX - r.left) / r.width) * 2 - 1, -(((e.clientY - r.top) / r.height) * 2 - 1));
+    raycaster.setFromCamera(mouse, camera);
+    const hit = raycaster.intersectObjects(portalMeshes)[0];
+    if (hit?.object?.userData?.curveU !== undefined) {
+      // Saltar el recorrido hasta ese portal (la camara ya sigue el spline)
+      const targetU = hit.object.userData.curveU;
+      const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+      window.scrollTo({ top: (targetU / 0.88) * maxScroll * 0.985, behavior: PREFERS_REDUCED_MOTION ? "instant" : "smooth" });
+    }
+  });
+
   toggleBlenderGridCallback = () => {
     blenderVectorGroup.visible = !blenderVectorGroup.visible;
     return blenderVectorGroup.visible;
   };
 
   setCameraPresetCallback = (axis) => {
+    if (axis === "focus") {
+      userOrbitYaw = 0.65;
+      userOrbitPitch = 0.28;
+      return;
+    }
     if (axis === "x") {
       userOrbitYaw = 1.15;
       userOrbitPitch = 0.15;
@@ -1461,10 +1667,23 @@ function initThreeSpaceEngine() {
     }
   };
 
+  // Pipeline de post-proceso: bloom fisico SOLO sobre pixeles muy brillantes (sol, pluma, emisivos)
+  const composer = new EffectComposer(renderer);
+  composer.addPass(new RenderPass(scene, camera));
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    0.55, // strength
+    0.4, // radius
+    0.88, // threshold alto: la UI 3D y los planetas no florecen
+  );
+  composer.addPass(bloomPass);
+  composer.addPass(new OutputPass());
+
   window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
   });
 
   let currentU = 0.0;
@@ -1475,6 +1694,10 @@ function initThreeSpaceEngine() {
     const t = clock.getElapsedTime();
 
     plumeMaterial.uniforms.uTime.value = t;
+    sunMaterial.uniforms.uTime.value = t;
+    // La camara de sombras acompana al protagonista a lo largo del spline
+    sunLight.target.position.copy(shipGroup.position);
+    sunLight.position.set(shipGroup.position.x + 34, shipGroup.position.y + 28, shipGroup.position.z + 30);
     nozzleGlow.scale.setScalar(0.95 + Math.sin(t * 45) * 0.12);
 
     if (autoFlightActive) {
@@ -1603,7 +1826,7 @@ function initThreeSpaceEngine() {
 
     jwstHolder.rotation.y = Math.sin(t * 0.3) * 0.35;
     sunSphere.rotation.y = t * 0.08;
-    coronaRing.scale.setScalar(1 + Math.sin(t * 2.5) * 0.06);
+    coronaSprite.material.opacity = 0.52 + Math.sin(t * 2.5) * 0.08;
     cmeParticles.position.z = (t * 14) % 40;
 
     bennuGroup.rotation.y = t * 0.32;
@@ -1649,7 +1872,9 @@ function initThreeSpaceEngine() {
       if (badge) badge.textContent = `PITCH 03:00 · SLIDE 0${activeStage + 1}/06`;
     }
 
-    renderer.render(scene, camera);
+    composer.render();
+    perfSnapshot = { calls: renderer.info.render.calls, triangles: renderer.info.render.triangles };
+    renderer.info.reset();
   }
 
   animate();
@@ -1675,7 +1900,8 @@ function updateBlenderVectorHud(pos, tan, uVal) {
             : uVal < 0.9
               ? "BORDEANDO MARTE 3D (PHOBOS · MGS MOLA)"
               : "CRÁTER JEZERO (HDU · PERSEVERANCE · INGENUITY)";
-    tanEl.textContent = `TAN (${tan.x.toFixed(2)}, ${tan.y.toFixed(2)}, ${tan.z.toFixed(2)}) · ${phaseLabel}`;
+    const perf = perfSnapshot ? ` · ${perfSnapshot.calls} CALLS · ${(perfSnapshot.triangles / 1000).toFixed(0)}K TRIS` : "";
+    tanEl.textContent = `TAN (${tan.x.toFixed(2)}, ${tan.y.toFixed(2)}, ${tan.z.toFixed(2)}) · ${phaseLabel}${perf}`;
   }
 }
 
@@ -2174,6 +2400,15 @@ function bindEvents() {
 
   window.addEventListener("keydown", (e) => {
     if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+    if (e.key === "f" || e.key === "F") {
+      // Enfocar el cohete: vista 3/4 cinematografica
+      setCameraPresetCallback?.("focus");
+      return;
+    }
+    if (e.key === "Escape") {
+      setCameraPresetCallback?.("z");
+      return;
+    }
     if (e.key === "ArrowRight") {
       const active = Number(document.querySelector(".room-pill.active")?.getAttribute("data-room") || 0);
       jumpToSlide(Math.min(5, active + 1));
