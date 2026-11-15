@@ -186,7 +186,7 @@ const STOPS = [
       title: "CODE OR DIE · Entrenador Espacial",
       intro: "En los últimos años ha caído el interés infantil por la lectura y la ciencia tradicional. Transformamos el desafío Junior Astronaut Mission Trainer en un videojuego interactivo en Roblox para niños de 7 a 12 años.",
       bullets: [
-        "Alcance real: Roblox conecta con más de 85 millones de usuarios diarios (40 % menores de 13 años).",
+        "Alcance real: Roblox es gratuito y conecta con más de 85 millones de usuarios diarios (40 % menores de 13 años).",
         "Equipo: Javier (Estudiante Ingeniería Informática), Gonzalo (Psicólogo) y Cristóbal (Estudiante).",
         "Propósito: Convertir ciencia real de la NASA en exploración viva y significativa.",
       ],
@@ -199,7 +199,7 @@ const STOPS = [
     title: "02 · EL PROBLEMA (Órbita Baja Terrestre · ISS)",
     color: 0x60a5fa,
     window: "00:15–00:30",
-    hud: () => "FUENTE REAL: NASA RADLAB & OSDR (ESTACIÓN ESPACIAL INTERNACIONAL)",
+    hud: () => "ÓRBITA BAJA TERRESTRE · ISS",
     board: () => ({
       eyebrow: "02 · EL PROBLEMA",
       place: "ÓRBITA BAJA TERRESTRE · ISS",
@@ -208,9 +208,8 @@ const STOPS = [
       bullets: [
         "Brecha de atención: Sin interacción ni consecuencias, los niños desconectan de la lectura científica.",
         "Ficción sin criterio: Simplificar el espacio impide comprender los riesgos reales de una misión.",
-        "Dato real NASA (RadLab ISS): A 400 km de altura, la radiación base sube a 4.20 µGy/h.",
+        "Barrera de acceso: Muchas herramientas educativas cuestan dinero; un juego gratuito llega a todos los niños.",
       ],
-      footer: "FUENTE REAL: NASA RADLAB & OSDR (ESTACIÓN ESPACIAL INTERNACIONAL)",
     }),
   },
   {
@@ -239,58 +238,57 @@ const STOPS = [
     title: "04 · NUESTRA SOLUCIÓN (Base Lunar · Mare Tranquillitatis)",
     color: 0xe2e8f0,
     window: "00:45–01:00",
-    hud: () => "FUENTE REAL: NASA ARTEMIS & LRO CRaTER (13.72 µGy/h)",
+    hud: () => "BASE LUNAR · MARE TRANQUILLITATIS",
     board: () => ({
       eyebrow: "04 · NUESTRA SOLUCIÓN",
       place: "BASE LUNAR · MARE TRANQUILLITATIS",
-      title: "Simulador de Misión en Roblox",
-      intro: "Creamos un puesto avanzado interactivo alimentado por mediciones oficiales de la NASA, donde cada decisión de ingeniería transforma la supervivencia del equipo.",
+      title: "Juego Misión Espacial en Roblox",
+      intro: "Nuestra propuesta es un juego gratuito y accesible en Roblox: cada niño dirige una base lunar y aprende ciencia espacial real tomando sus propias decisiones.",
       bullets: [
+        "Gratis y para todos: Se juega desde el celular, el computador o la consola, sin pagar nada.",
         "Equilibrio de 3 pilares: Gestiona Energía, Soporte Vital y Blindaje sin abrumar al jugador.",
-        "Entorno lunar auténtico: En la Luna la radiación sube a 13.72 µGy/h (3.3× la órbita terrestre).",
         "Experimentación segura: Equivocarse enseña física real y motiva a probar nuevas estrategias.",
       ],
-      footer: "FUENTE REAL: NASA ARTEMIS & LRO CRaTER (13.72 µGy/h)",
     }),
   },
   {
     id: "marsorbit",
-    short: "DESAFÍO MARTE",
-    title: "05 · DESAFÍO EN MARTE (Órbita de Marte · Fobos y Deimos)",
+    short: "TECNOLOGÍAS",
+    title: "05 · TECNOLOGÍAS (Órbita de Marte · Fobos y Deimos)",
     color: 0xfb923c,
     window: "01:00–01:15",
-    hud: () => "FUENTE REAL: MARS RECONNAISSANCE ORBITER & MGS MOLA",
+    hud: () => "ÓRBITA DE MARTE · FOBOS Y DEIMOS",
     board: () => ({
-      eyebrow: "05 · DESAFÍO EN MARTE",
+      eyebrow: "05 · TECNOLOGÍAS",
       place: "ÓRBITA DE MARTE · FOBOS Y DEIMOS",
-      title: "Aislamiento extremo a millones de km",
-      intro: "En el espacio profundo no existe rescate inmediato desde la Tierra: la anticipación y el criterio científico del jugador son el único soporte vital de la base.",
+      title: "Cómo construimos la solución",
+      intro: "Para cerrar la brecha entre los niños y la ciencia combinamos herramientas modernas y accesibles: cada una resolvió una parte del problema.",
       bullets: [
-        "Retraso real de señal: Las comunicaciones con la Tierra tardan entre 3 y 22 minutos.",
-        "Radiación triplicada: En Marte la exposición alcanza 15.23 µGy/h (3.63× la ISS).",
-        "Ciencia comprensible: Cada concepto técnico se vive en contexto, sin jerga innecesaria.",
+        "Motor Roblox: Un juego gratuito que se abre en cualquier dispositivo.",
+        "Modelamiento 3D con Blender: Naves, hábitats y astronautas creados para el juego.",
+        "Claude Fable 5.2: Inteligencia artificial que aceleró el diseño, el código y la redacción educativa.",
+        "Recursos NASA (3D, shaders, API y datos): Rigor científico real en cada misión.",
       ],
-      footer: "FUENTE REAL: MARS RECONNAISSANCE ORBITER & MGS MOLA",
     }),
   },
   {
     id: "jezero",
-    short: "EVIDENCIA",
-    title: "06 · EVIDENCIA Y AGRADECIMIENTOS (Cráter Jezero · Marte)",
+    short: "GRACIAS",
+    title: "06 · AGRADECIMIENTOS (Cráter Jezero · Marte)",
     color: 0xfc3d21,
     window: "01:15–01:30",
-    hud: () => "GRACIAS · NASA INSIGHT, PERSEVERANCE & INGENUITY",
+    hud: () => "CRÁTER JEZERO · MARTE",
     board: () => ({
-      eyebrow: "06 · EVIDENCIA Y AGRADECIMIENTOS",
+      farewell: true,
+      eyebrow: "06 · AGRADECIMIENTOS",
       place: "CRÁTER JEZERO · MARTE",
-      title: "30 soles de ciencia real · Gracias",
-      intro: "Nuestro prototipo demuestra cómo datos reales de Marte entrenan a futuros exploradores. ¡Muchas gracias al jurado y mentores de NASA Space Apps Challenge 2026!",
-      bullets: [
-        "Tormentas marcianas: Vientos reales de 27 m/s (InSight) cubren los paneles y reducen energía.",
-        "Agradecimientos: A NASA Space Apps, nuestras familias y comunidad educativa por impulsar la ciencia.",
-        "Equipo CODE OR DIE: Javier, Gonzalo y Cristóbal — listos para el demo en vivo.",
+      title: "¡Gracias!",
+      intro: "Queremos impulsar a nuevos científicos espaciales desde temprana edad: el niño que juega hoy puede explorar el cosmos mañana.",
+      thanks: [
+        "Al jurado y mentores de NASA Space Apps Challenge 2026",
+        "A nuestras familias y comunidad educativa",
       ],
-      footer: "GRACIAS · NASA INSIGHT, PERSEVERANCE & INGENUITY",
+      team: "Equipo CODE OR DIE · Javier, Gonzalo y Cristóbal",
     }),
   },
 ];
@@ -1010,6 +1008,7 @@ function initEngine() {
     return lines;
   }
   function drawHologramCanvas(ctx, data, accentHex) {
+    if (data.farewell) return drawFarewellCanvas(ctx, data, accentHex);
     const W = HOLO_W, H = HOLO_H, M = 76;
     ctx.clearRect(0, 0, W, H);
     ctx.textAlign = "start";
@@ -1038,18 +1037,21 @@ function initEngine() {
       ctx.textAlign = "start";
     }
 
-    // Pie con la fuente real NASA (≥30 px) en una franja propia.
-    ctx.font = "500 30px 'DM Mono', 'IBM Plex Mono', monospace";
-    const footerLines = wrapCanvasText(ctx, data.footer, W - M * 2 - 34).slice(0, 2);
-    const footH = footerLines.length * 38 + 30;
-    const footTop = H - 48 - footH;
-    ctx.fillStyle = "rgba(120, 190, 255, 0.12)";
-    roundRect(ctx, M, footTop, W - M * 2, footH, 14);
-    ctx.fill();
-    ctx.fillStyle = accent;
-    ctx.fillRect(M, footTop, 8, footH);
-    ctx.fillStyle = "#dbeafe";
-    footerLines.forEach((line, k) => ctx.fillText(line, M + 30, footTop + 16 + k * 38));
+    // Pie con la fuente (≥30 px) en una franja propia; las tarjetas sin fuente usan todo el alto.
+    let footTop = H - 48;
+    if (data.footer) {
+      ctx.font = "500 30px 'DM Mono', 'IBM Plex Mono', monospace";
+      const footerLines = wrapCanvasText(ctx, data.footer, W - M * 2 - 34).slice(0, 2);
+      const footH = footerLines.length * 38 + 30;
+      footTop = H - 48 - footH;
+      ctx.fillStyle = "rgba(120, 190, 255, 0.12)";
+      roundRect(ctx, M, footTop, W - M * 2, footH, 14);
+      ctx.fill();
+      ctx.fillStyle = accent;
+      ctx.fillRect(M, footTop, 8, footH);
+      ctx.fillStyle = "#dbeafe";
+      footerLines.forEach((line, k) => ctx.fillText(line, M + 30, footTop + 16 + k * 38));
+    }
 
     // Tipografía base (título 58, párrafo 36, viñetas 34); se amplía hasta 1.4× mientras todo quepa.
     const bodyBottom = footTop - 20;
@@ -1101,7 +1103,7 @@ function initEngine() {
       const colon = first.indexOf(":");
       block.forEach((line, k) => {
         let x = M + 44;
-        if (k === 0 && colon > 0 && colon < 34) {
+        if (k === 0 && colon > 0 && colon < 46) {
           const head = line.slice(0, colon + 1);
           ctx.fillStyle = accent;
           ctx.fillText(head, x, y);
@@ -1116,6 +1118,54 @@ function initEngine() {
       });
       y += layout.gap;
     }
+  }
+  /** Tarjeta de despedida: centrada, sin viñetas ni fuente, con un brillo cálido distinto al de las demás. */
+  function drawFarewellCanvas(ctx, data, accentHex) {
+    const W = HOLO_W, H = HOLO_H, cx = W / 2, maxW = W - 280;
+    ctx.clearRect(0, 0, W, H);
+    const accent = `#${accentHex.toString(16).padStart(6, "0")}`;
+    const bg = ctx.createLinearGradient(0, 0, 0, H);
+    bg.addColorStop(0, "rgba(34, 12, 12, 0.95)");
+    bg.addColorStop(1, "rgba(8, 10, 24, 0.96)");
+    ctx.fillStyle = bg;
+    roundRect(ctx, 18, 18, W - 36, H - 36, 80);
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "rgba(255, 190, 150, 0.7)";
+    roundRect(ctx, 18, 18, W - 36, H - 36, 80);
+    ctx.stroke();
+    ctx.textAlign = "center";
+    ctx.textBaseline = "top";
+    ctx.fillStyle = accent;
+    ctx.font = "400 30px 'Nasalization', 'Michroma', 'Inter', sans-serif";
+    ctx.fillText(String(data.eyebrow).toUpperCase(), cx, 84);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "800 128px 'Inter', 'Public Sans', sans-serif";
+    ctx.fillText(data.title, cx, 138);
+    const rule = ctx.createLinearGradient(cx - 300, 0, cx + 300, 0);
+    rule.addColorStop(0, "rgba(255, 190, 150, 0)");
+    rule.addColorStop(0.5, accent);
+    rule.addColorStop(1, "rgba(255, 190, 150, 0)");
+    ctx.fillStyle = rule;
+    ctx.fillRect(cx - 300, 296, 600, 5);
+    ctx.fillStyle = "#fff3ea";
+    ctx.font = "500 46px 'Inter', 'Public Sans', sans-serif";
+    let y = 336;
+    for (const line of wrapCanvasText(ctx, data.intro, maxW)) {
+      ctx.fillText(line, cx, y);
+      y += 62;
+    }
+    y += 22;
+    ctx.fillStyle = "#dbeafe";
+    ctx.font = "600 36px 'Inter', 'Public Sans', sans-serif";
+    for (const t of data.thanks ?? []) {
+      ctx.fillText(`✦ ${t}`, cx, y);
+      y += 52;
+    }
+    ctx.fillStyle = accent;
+    ctx.font = "400 38px 'Nasalization', 'Michroma', 'Inter', sans-serif";
+    ctx.fillText(data.team, cx, H - 128);
+    ctx.textAlign = "start";
   }
   function roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath();
@@ -2827,7 +2877,11 @@ function initEngine() {
   // ---- 6.1b Tarjeta final de agradecimientos (Parada 06) ----
   const thanksCard = document.getElementById("thanks-card");
   let thanksTimer = 0;
+  // Paneo final: la cámara se desplaza despacio alrededor del cráter mientras suena el cierre.
+  const finalPan = { active: false, t0: 0 };
   function setThanks(show) {
+    finalPan.active = show && !PREFERS_REDUCED_MOTION;
+    finalPan.t0 = performance.now() + 900;
     if (!thanksCard) return;
     clearTimeout(thanksTimer);
     if (!show) {
@@ -2839,7 +2893,7 @@ function initEngine() {
     thanksTimer = setTimeout(() => {
       thanksCard.classList.add("show");
       thanksCard.setAttribute("aria-hidden", "false");
-    }, PREFERS_REDUCED_MOTION ? 0 : 1800);
+    }, PREFERS_REDUCED_MOTION ? 0 : 3500);
   }
 
   // ---- 6.2 Tránsitos sobre la curva ----
@@ -3090,6 +3144,7 @@ function initEngine() {
     return raycaster.intersectObject(launchButton, false).length > 0;
   }
   canvas.addEventListener("pointerdown", (e) => {
+    finalPan.active = false;
     orbit.dragging = true;
     orbit.moved = 0;
     orbit.px = e.clientX;
@@ -3331,6 +3386,11 @@ function initEngine() {
     }
 
     // --- Cámara: plano fijo de parada ↔ persecución ---
+    if (finalPan.active && !flight.travelling && !orbit.dragging && now > finalPan.t0) {
+      const e = easeInOut(clamp01((now - finalPan.t0) / 16000));
+      orbit.targetYaw = lerp(0, 0.17, e);
+      orbit.targetPitch = lerp(0, 0.09, e);
+    }
     orbit.yaw = lerp(orbit.yaw, orbit.targetYaw, 0.09);
     orbit.pitch = lerp(orbit.pitch, orbit.targetPitch, 0.09);
     if (flight.travelling) {
