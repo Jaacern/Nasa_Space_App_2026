@@ -9,7 +9,7 @@ Repositorio unificado con **dos subproyectos independientes**:
 ## Continuar desde el último estado (traspaso)
 
 - **Leer primero al retomar trabajo:** [`docs/HANDOFF-CLAUDE.md`](docs/HANDOFF-CLAUDE.md) (estado Git, resumen completo de auditoría, inventario verificado y cola de tareas `P0`–`P2`) y [`docs/CONTINUAR-EN-OTRO-EQUIPO.md`](docs/CONTINUAR-EN-OTRO-EQUIPO.md).
-- **Rama actual:** `audit/actualizacion-completa` (lugar de Roblox guardado en la nube: «Núcleo de Ares», `placeId: 114817072312952`, versión `14`).
+- **Rama actual:** `audit/actualizacion-completa` (lugar de Roblox guardado en la nube: «Núcleo de Ares», `placeId: 114817072312952`, versión `29`).
 
 ## Guardrails transversales
 

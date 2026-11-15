@@ -98,7 +98,7 @@ local function brightenEnemyModel(kind: string, m: Model)
 			end
 		end
 	end
-	if not m:FindFirstChild("EnemyRim") then
+	if (string.sub(kind, 1, 5) == "elite" or string.sub(kind, 1, 4) == "boss" or kind == "final") and not m:FindFirstChild("EnemyRim") then
 		local hl = Instance.new("Highlight")
 		hl.Name = "EnemyRim"
 		hl.DepthMode = Enum.HighlightDepthMode.Occluded
@@ -656,6 +656,8 @@ end
 
 function Renderer.update(dt: number)
 	oddFrame = not oddFrame
+	local paused = hud ~= nil and hud[18] == 1
+	local sdt = if paused then 0 else dt
 	local farDistSq = if qualityTier == "low" then 4900 elseif qualityTier == "med" then 10000 else math.huge
 	local char = Players.LocalPlayer.Character
 	local hrp = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
@@ -739,7 +741,7 @@ function Renderer.update(dt: number)
 	end
 
 	for id, s in shots do
-		local step = s.speed * dt
+		local step = s.speed * sdt
 		s.x += s.dx * step
 		s.z += s.dz * step
 		s.left -= step
@@ -778,9 +780,9 @@ function Renderer.update(dt: number)
 		end
 	end
 	for id, s in eshots do
-		s.x += s.vx * dt
-		s.z += s.vz * dt
-		s.life -= dt
+		s.x += s.vx * sdt
+		s.z += s.vz * sdt
+		s.life -= sdt
 		if s.life <= 0 then
 			eshots[id] = nil
 			give("eshot", s.m)
@@ -790,7 +792,7 @@ function Renderer.update(dt: number)
 	end
 
 	for id, t in teles do
-		t.t += dt
+		t.t += sdt
 		local k = math.clamp(t.t / t.dur, 0, 1)
 		if t.shape == "c" or t.shape == "m" then
 			setCircle(t.fill, t.x, t.z, t.r * k, 0.22)

@@ -107,16 +107,16 @@ Content.Pieces = {
 }
 
 Content.Skills = {
-	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "CD 8 s · Esquiva direccional invulnerable que atraviesa y daña enemigos cercanos." },
-	{ name = "Pulso de escudo", short = "ESCUDO", key = "E", desc = "CD 20 s · Onda expansiva que empuja enemigos y activa +35 de escudo visible por 6 s." },
+	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "Esquiva invulnerable. Daña a quien atraviesas." },
+	{ name = "Pulso de escudo", short = "ESCUDO", key = "E", desc = "Empuja a los enemigos y te da un escudo temporal." },
 }
 
 Content.AutoWeapon = {
-	name = "Sistema Modular de Armas",
+	name = "Arma principal",
 	short = "LÁSER",
 	key = "AUTO",
-	tag = "AUTO · [F] CAMBIA MODO",
-	desc = "[F] Alterna Láser, Abanico (3+) o Mortero AOE. Suma Ondas, Misiles y Arcos.",
+	tag = "DISPARA SOLA",
+	desc = "Apunta y dispara sola. Cambia de modo según el enemigo.",
 }
 
 Content.WeaponModes = {
@@ -146,9 +146,9 @@ Content.WeaponModes = {
 Content.ChestTiers = { "COFRE COMÚN", "COFRE RARO", "COFRE ÉPICO", "COFRE LEGENDARIO" }
 
 Content.Briefing = {
-	"• [F / Y] Alterna arma principal (Láser, Abanico 3+ o Mortero AOE) y suma Ondas 360°, Misiles y Arco.",
-	"• 5 Zonas activas (Centro +vida, +XP, +Ciencia, +Velocidad, -CD). Usa Impulso [Q] y Escudo [E] (CD 20 s).",
-	"• Cofres Común a Legendario, meteoros (niv. 5+) y anomalías de agujero negro NASA en el horizonte.",
+	"• Muévete sin parar y sal de los círculos naranjas antes del golpe.",
+	"• Recoge muestras para subir de nivel y abre los cofres que marca la flecha.",
+	"• Vence a los 4 jefes: cada uno suelta una pieza de la nave.",
 }
 
 Content.Meta = {
@@ -173,9 +173,16 @@ Content.Tutorial = {
 	"Práctica libre. Pulsa SALIR cuando quieras.",
 }
 
-Content.Controls = "WASD / Flechas mover · Ratón cámara · Espacio saltar · Q impulso · E pulso · F modo arma · P pausa · 1-2-3 carta"
-Content.ControlsGamepad = "STICK IZQ : Mover · STICK DER : Cámara · A : Saltar · X/L1 : Impulso · B/R1 : Pulso · Y : Arma · ◀▲▶ : Carta · START : Pausa"
-Content.ControlsTouch = "JOYSTICK IZQ : Moverse · ARRASTRAR DER : Cámara · PELLIZCAR : Zoom · TOCA RANURA : Arma · BOTONES : Salto, Impulso y Pulso"
+Content.Controls = "WASD mover · Ratón cámara · Q esquivar · E escudo · F arma · P pausa"
+Content.ControlsGamepad = "Stick izq. mover · Stick der. cámara · X esquivar · B escudo · Y arma"
+Content.ControlsTouch = "Joystick mover · Arrastra para girar · Botones: esquivar, escudo y arma"
+
+-- Ayuda de controles del panel de Ajustes (una línea por plataforma).
+Content.ControlsHelp = {
+	"WASD o flechas mover · Ratón cámara · Ctrl suelta el ratón · Espacio saltar · Q esquivar · E escudo · F arma · 1-3 cartas · P pausa",
+	"Stick izq. mover · Stick der. cámara · A saltar · X esquivar · B escudo · Y arma · Cruceta cartas · Start pausa",
+	"Joystick mover · Arrastra para girar · Pellizca para acercar · Botones: saltar, esquivar, escudo y arma",
+}
 
 Content.Credits = {
 	"ARES FORGE. Proyecto del equipo para NASA International Space Apps Challenge 2026.",

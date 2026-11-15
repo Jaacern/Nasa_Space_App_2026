@@ -83,7 +83,6 @@ function Fx.init(folder: Instance)
 			s.Volume = 0
 			s.SoundGroup = mg
 			s.Parent = SoundService
-			s:Play()
 			music[name] = s
 			musicVol[name] = def.vol
 		end
@@ -284,7 +283,16 @@ function Fx.update(dt: number)
 		end
 	end
 	for name, s in music do
-		s.Volume += (musicTarget[name] - s.Volume) * math.min(1, dt * 1.5)
+		local target = musicTarget[name]
+		if target > 0.001 or s.Volume > 0.001 then
+			if not s.Playing then
+				s:Play()
+			end
+			s.Volume += (target - s.Volume) * math.min(1, dt * 1.5)
+		elseif s.Playing then
+			s.Volume = 0
+			s:Pause()
+		end
 	end
 end
 

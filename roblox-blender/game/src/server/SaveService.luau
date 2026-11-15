@@ -310,4 +310,9 @@ function SaveService.save(userId: number, acc: Account): boolean
 	return false
 end
 
+-- Libera la cache en memoria al salir el jugador.
+function SaveService.release(userId: number)
+	memoryFallback[userId] = nil
+end
+
 return SaveService

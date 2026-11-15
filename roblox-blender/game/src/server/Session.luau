@@ -96,17 +96,60 @@ function Session:humanoid(): Humanoid?
 	return char and char:FindFirstChildOfClass("Humanoid")
 end
 
+function Session:syncMovement(canMove: boolean)
+	local hum = self:humanoid()
+	if hum then
+		if canMove and self.R then
+			hum.WalkSpeed = self.R.stats.speed
+			hum.JumpPower = Balance.Hero.JumpPower
+		else
+			hum.WalkSpeed = 0
+			hum.JumpPower = 0
+		end
+	end
+	if not canMove then
+		local char = self.player.Character
+		local hrp = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+		if hrp then
+			hrp.AssemblyLinearVelocity = Vector3.new(0, math.min(0, hrp.AssemblyLinearVelocity.Y), 0)
+		end
+	end
+end
+
 function Session:save()
-	local acc = self.account
-	local userId = self.player.UserId
+	-- Coalescido: una sola escritura en curso; si llegan mas, repite una vez (min 7 s entre escrituras).
+	if self.closed then
+		return
+	end
+	if self.saving then
+		self.saveDirty = true
+		return
+	end
+	self.saving = true
 	task.spawn(function()
-		SaveService.save(userId, acc)
+		repeat
+			local gap = 7 - (os.clock() - (self.lastSaveAt or -math.huge))
+			if gap > 0 then
+				task.wait(gap)
+			end
+			self.saveDirty = false
+			self.lastSaveAt = os.clock()
+			SaveService.save(self.player.UserId, self.account)
+		until not self.saveDirty or self.closed
+		self.saving = false
 	end)
 end
 
 function Session:saveCheckpoint(silent: boolean?)
 	local R = self.R
 	if not R or R.tutorial then
+		return
+	end
+	-- La demo dura 2 minutos y cambia de oleada cada 6 s: no guarda (evita saturar el DataStore).
+	if R.mode.Checkpoints == false then
+		if not silent then
+			table.insert(R.events, { "toastMsg", "CHECKPOINT NO DISPONIBLE", "La demo rápida no guarda la partida." })
+		end
 		return
 	end
 	local upCopy: { [string]: number } = {}
@@ -157,15 +200,16 @@ function Session:startRun(modeName: string, tutorial: boolean, cp: any?)
 	local D = Balance.Director
 	local useMode = if cp then cp.modeName else modeName
 	local startT = if cp then cp.t else Balance.Debug.StartMinute * 60
+	local brief = not tutorial and cp == nil and Balance.Modes[useMode].Briefing ~= false
 	local R: Run = {
 		mode = Balance.Modes[useMode], modeName = useMode,
 		tutorial = if tutorial then { step = 1, init = false, moved = 0, timer = 0, spawnT = 0 } else nil,
 		directorOn = not tutorial,
 		t = startT, real = if cp then cp.real else 0, stepCount = 0,
-		paused = (not tutorial and cp == nil), pauseKind = if (not tutorial and cp == nil) then "briefing" else nil,
+		paused = brief, pauseKind = if brief then "briefing" else nil,
 		stats = {}, statsDirty = true,
-		upgrades = if cp then cp.upgrades else {}, items = if cp then cp.items else {},
-		pieces = if cp then cp.pieces else { false, false, false, false }, meta = self.meta,
+		upgrades = if cp then table.clone(cp.upgrades) else {}, items = if cp then table.clone(cp.items) else {},
+		pieces = if cp then table.clone(cp.pieces) else { false, false, false, false }, meta = self.meta,
 		hp = 0, shield = if cp then cp.shield else 0, shieldT = if cp then cp.shieldT else 0,
 		shieldMax = if cp then (cp.shieldMax or Balance.Skills.Pulse.Shield) else Balance.Skills.Pulse.Shield,
 		invuln = 1.5, lastHurt = -99, shelterCd = 0, reviveUsed = false, damageTaken = 0,
@@ -212,7 +256,7 @@ function Session:startRun(modeName: string, tutorial: boolean, cp: any?)
 			table.insert(R.events, { "chosen", id, lv })
 		end
 		table.insert(R.events, { "toastMsg", "CHECKPOINT CARGADO", string.format("Retomando Oleada %d · Nvl %d", R.wave, R.lvl) })
-	else
+	elseif brief then
 		table.insert(R.events, { "briefing", 1 })
 	end
 end
@@ -261,12 +305,14 @@ function Session:finish(win: boolean)
 			meta.pieces[i] = true
 		end
 	end
-	local science = math.floor(R.kills * M.SciencePerKill + R.t / 60 * M.SciencePerMinute + pieces * M.SciencePerPiece + (if win then M.ScienceWin else 0) + (R.scienceBonus or 0))
+	local science = math.floor(R.kills * M.SciencePerKill + R.t / 60 / R.mode.TimeScale * M.SciencePerMinute + pieces * M.SciencePerPiece + (if win then M.ScienceWin else 0) + (R.scienceBonus or 0))
 	meta.science += science
 	meta.runs += 1
 	if win then
 		meta.wins += 1
-		SaveService.activeProfile(self.account).checkpoint = nil
+		if R.mode.Checkpoints ~= false then
+			SaveService.activeProfile(self.account).checkpoint = nil
+		end
 	end
 	meta.best.time = math.max(meta.best.time, math.floor(R.t))
 	meta.best.level = math.max(meta.best.level, R.lvl)
@@ -279,6 +325,7 @@ function Session:finish(win: boolean)
 	self:flush(R, false)
 	self.R = nil
 	self.phase = if win then "victory" else "defeat"
+	self:syncMovement(false)
 	self:sendPhase(summary)
 	self:save()
 end
@@ -291,6 +338,7 @@ function Session:endTutorial()
 	end
 	self.R = nil
 	self.phase = "menu"
+	self:syncMovement(false)
 	self:sendPhase()
 end
 
@@ -318,7 +366,7 @@ end
 
 function Session:onDeath(R: Run)
 	local rv = Balance.Meta.revive
-	if (R.meta.unlocks.revive or 0) > 0 and not R.reviveUsed then
+	if ((R.meta.unlocks.revive or 0) > 0 or R.mode.FreeRevive == true) and not R.reviveUsed then
 		R.reviveUsed = true
 		R.hp = R.stats.maxHp * rv.per
 		R.invuln = 2.5
@@ -446,15 +494,14 @@ function Session:step(dt: number)
 			if R.bhT <= 0 then
 				R.bhT = Balance.BlackHole.Interval
 				R.bhIdx += 1
-				local bh = NasaData.blackHoleForEvent(R.bhIdx)
+				-- El cliente rotula el evento con NasaData.blackHoleForEvent (no es clima espacial DONKI).
 				table.insert(R.events, { "blackhole", R.bhIdx, Balance.BlackHole.Duration })
-				table.insert(R.events, { "nasa", bh.title, bh.sub })
 			end
 		end
 		Combat.update(R, dt)
 		Enemies.update(R, dt)
 		Loot.update(R, dt)
-		if not R.tutorial and R.wave > (R.waveSaved or 1) then
+		if not R.tutorial and R.wave > (R.waveSaved or 1) and R.pendingLevels == 0 and not R.choice then
 			R.waveSaved = R.wave
 			self:saveCheckpoint(true)
 		end
@@ -471,12 +518,10 @@ function Session:step(dt: number)
 	if R.bossKilled and not R.paused then
 		self:onBossKilled(R)
 	end
-	if R.statsDirty then
+	if R.statsDirty or R.paused ~= R.lastPaused then
 		R.statsDirty = false
-		local hum = self:humanoid()
-		if hum then
-			hum.WalkSpeed = R.stats.speed
-		end
+		R.lastPaused = R.paused
+		self:syncMovement(not R.paused)
 	end
 	self:flush(R, R.stepCount % Balance.Sim.SnapshotEvery == 0)
 end
@@ -605,19 +650,25 @@ function Session:onCmd(name: any, a: any, b: any, c: any)
 			if R.tutorial then
 				self:endTutorial()
 			elseif a == "direct" then
-				if R.hp > 0 and not R.won and R.pauseKind ~= "briefing" and (R.wave > 1 or R.lvl > 1 or R.kills > 0) then
+				if R.won then
+					self:finish(true)
+					return
+				end
+				if R.hp > 0 and R.pauseKind ~= "briefing" and R.pendingLevels == 0 and not R.choice and (R.wave > 1 or R.lvl > 1 or R.kills > 0) then
 					self:saveCheckpoint(true)
 				end
 				Enemies.clear(R)
 				self:flush(R, false)
 				self.R = nil
 				self.phase = "menu"
+				self:syncMovement(false)
 				self:sendPhase()
 			else
-				self:finish(false)
+				self:finish(R.won == true)
 			end
 		else
 			self.phase = "menu"
+			self:syncMovement(false)
 			self:sendPhase()
 		end
 	elseif name == "debug" then

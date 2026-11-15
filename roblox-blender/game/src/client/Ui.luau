@@ -364,6 +364,10 @@ function Ui.navGlyph(kind: string, px: number, color: Color3?): Frame
 	elseif kind == "profiles" then
 		bar(0.5, 0.32, 0.34, 0.34, 0, 12)
 		bar(0.5, 0.74, 0.68, 0.28, 0, 6)
+	elseif kind == "cursor" then
+		bar(0.5, 0.5, 0.76, 0.14, 0, 2)
+		bar(0.5, 0.5, 0.14, 0.76, 0, 2)
+		bar(0.5, 0.5, 0.34, 0.34, 0, 10)
 	else -- help / info
 		bar(0.5, 0.24, 0.18, 0.18, 0, 8)
 		bar(0.5, 0.60, 0.18, 0.44, 0, 2)

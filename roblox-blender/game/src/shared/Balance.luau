@@ -22,8 +22,10 @@ Balance.Sim = {
 }
 
 Balance.Modes = {
-	full = { TimeScale = 1, XpMult = 1, Label = "Mision completa" },
-	demo = { TimeScale = 5, XpMult = 3.2, Label = "Demo rapida" },
+	full = { TimeScale = 1, XpMult = 1, EnemyHp = 1, EnemyDmg = 1, BossHp = 1, SpawnMult = 1, FreeRevive = false, Briefing = true, Checkpoints = true, Label = "Mision completa" },
+	-- Demo de pitch (2 minutos): el jefe final aparece a los 85 s reales (1020 / 12), los jefes tienen
+	-- menos vida, hay accion desde el primer segundo y un "Protocolo de emergencia" gratis evita perder en vivo.
+	demo = { TimeScale = 12, XpMult = 2.6, EnemyHp = 0.45, EnemyDmg = 0.25, BossHp = 0.22, SpawnMult = 1.5, FreeRevive = true, Briefing = false, Checkpoints = false, Label = "Demo rapida" },
 }
 
 Balance.Hero = {
@@ -99,14 +101,15 @@ Balance.Skills = {
 Balance.World = {
 	ShipRadius = 8.4,
 	ArenaSafeMargin = 3.0,
+	Gravity = 74.5, -- gravedad de Marte: 0,38 veces la terrestre (196,2 studs/s2 en Roblox)
 }
 
 Balance.Zones = {
-	{ id = "central", name = "Cráter del Módulo", bonus = "+1.5 vida/s en base segura", regen = 1.5 },
-	{ id = "north", name = "Cresta Basáltica", bonus = "+15 % XP de muestras", xp = 0.15 },
-	{ id = "east", name = "Falla Perseverance", bonus = "+20 % Datos científicos", science = 0.20 },
-	{ id = "south", name = "Llanura Roja", bonus = "+10 % Velocidad de movimiento", speed = 0.10 },
-	{ id = "west", name = "Cuenca Criogénica", bonus = "-15 % Espera de habilidades", cd = 0.15 },
+	{ id = "central", name = "Cráter del Módulo", bonus = "+1.5 vida/s en base segura", tag = "+1,5 VIDA/S", regen = 1.5 },
+	{ id = "north", name = "Cresta Basáltica", bonus = "+15 % XP de muestras", tag = "+15 % XP", xp = 0.15 },
+	{ id = "east", name = "Falla Perseverance", bonus = "+20 % Datos científicos", tag = "+20 % CIENCIA", science = 0.20 },
+	{ id = "south", name = "Llanura Roja", bonus = "+10 % Velocidad de movimiento", tag = "+10 % VELOCIDAD", speed = 0.10 },
+	{ id = "west", name = "Cuenca Criogénica", bonus = "-15 % Espera de habilidades", tag = "-15 % ESPERA", cd = 0.15 },
 }
 
 Balance.Meteors = {
@@ -286,9 +289,6 @@ Balance.Pieces = {
 
 -- Camara en tercera persona con giro libre.
 Balance.Camera = { Distance = 27, MinDistance = 14, MaxDistance = 42, Pitch = 24, MinPitch = 6, MaxPitch = 72, Fov = 80, FocusHeight = 3.5, Sensitivity = 0.0036, ShakeMax = 0.35 }
-
--- Gravedad de Marte: 0,38 veces la terrestre (196,2 studs/s2 en Roblox).
-Balance.World = { Gravity = 74.5 }
 
 Balance.Juice = {
 	HitstopKill = 0.04,

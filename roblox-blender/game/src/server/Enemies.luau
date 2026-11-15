@@ -43,10 +43,10 @@ function Enemies.spawn(R: Run, ai: string, x: number, z: number): any
 	local def = Balance.Enemies[ai]
 	local minutes = R.t / 60
 	R.nextId += 1
-	local hp = def.hp * Balance.hpMult(minutes)
+	local hp = def.hp * Balance.hpMult(minutes) * (R.mode.EnemyHp or 1)
 	local e = {
 		id = R.nextId, kind = ai, ai = ai, def = def, x = x, z = z, hp = hp, hpMax = hp,
-		r = def.radius, speed = def.speed, dmg = def.dmg * Balance.dmgMult(minutes), xp = def.xp,
+		r = def.radius, speed = def.speed, dmg = def.dmg * Balance.dmgMult(minutes) * (R.mode.EnemyDmg or 1), xp = def.xp,
 		cd = rng:NextNumber(0.2, 1.2), state = "move", wind = 0, vx = 0, vz = 0, kx = 0, kz = 0,
 		side = if rng:NextNumber() < 0.5 then 1 else -1, contact = (ai == "chaser"),
 		dead = false, elite = false, boss = false,
@@ -74,8 +74,9 @@ function Enemies.spawnBoss(R: Run, idx: number)
 	local def = Balance.Bosses[idx]
 	local x, z = ringPoint(R)
 	R.nextId += 1
+	local bossHp = def.hp * (R.mode.BossHp or 1)
 	local e = {
-		id = R.nextId, kind = def.id, ai = "boss", def = def, x = x, z = z, hp = def.hp, hpMax = def.hp,
+		id = R.nextId, kind = def.id, ai = "boss", def = def, x = x, z = z, hp = bossHp, hpMax = bossHp,
 		r = def.radius, speed = def.speed, dmg = def.dmg, xp = def.xp,
 		cd = 2.5, state = "move", wind = 0, vx = 0, vz = 0, kx = 0, kz = 0, side = 1, contact = true,
 		dead = false, elite = false, boss = true, bossIdx = idx, patterns = def.patterns, patIdx = 0, cycle = def.cycle,
@@ -148,7 +149,7 @@ local function decide(R: Run, e: any, d: number, nx: number, nz: number)
 	elseif ai == "ranged" then
 		if d < def.atkRange and e.cd <= 0 then
 			local len = def.atkRange + 6
-			addTele(R, { shape = "l", x = e.x, z = e.z, x2 = e.x + nx * len, z2 = e.z + nz * len, w = 1.6, t = def.wind, dmg = 0, owner = e, act = "shoot", dx = nx, dz = nz })
+			addTele(R, { shape = "l", x = e.x, z = e.z, x2 = e.x + nx * len, z2 = e.z + nz * len, w = 2 * (def.shotRadius + Balance.Hero.Radius), t = def.wind, dmg = 0, owner = e, act = "shoot", dx = nx, dz = nz })
 			e.state, e.wind, e.cd = "wind", def.wind, def.atkCd
 		elseif d > def.keepMax then
 			e.vx, e.vz = nx * e.speed, nz * e.speed
@@ -232,7 +233,12 @@ local function resolveTeles(R: Run, dt: number)
 				table.insert(R.events, { "eshot", R.nextShot, r1(owner.x), r1(owner.z), r1(t.dx * def.shotSpeed), r1(t.dz * def.shotSpeed), def.shotLife })
 			elseif t.act == "explode" then
 				table.insert(R.events, { "boom", math.round(t.x), math.round(t.z), t.r })
-				Combat.kill(R, owner)
+				-- autodestruccion: muere sin sumar baja ni soltar gema
+				if not owner.dead then
+					owner.dead = true
+					R.anyDead = true
+					table.insert(R.events, { "die", owner.id })
+				end
 			elseif t.act == "moveTo" then
 				owner.x, owner.z = t.x2, t.z2
 				owner.tp = true
@@ -338,7 +344,7 @@ end
 
 local function director(R: Run, dt: number)
 	local D, Run = Balance.Director, Balance.Run
-	local rate = (D.RateBase + D.RatePerMinute * R.t / 60) * (R.boss and D.BossRateMult or 1)
+	local rate = (D.RateBase + D.RatePerMinute * R.t / 60) * (R.boss and D.BossRateMult or 1) * (R.mode.SpawnMult or 1)
 	R.spawnAcc += rate * dt
 	while R.spawnAcc >= 1 do
 		R.spawnAcc -= 1
@@ -428,7 +434,7 @@ local function director(R: Run, dt: number)
 				addTele(R, { shape = "m", x = mx, z = mz, r = M.Radius, t = M.Delay + (i - 1) * 0.28, dmg = dmg })
 			end
 			local mf = NasaData.meteorForAlert(R.meteorN)
-			table.insert(R.events, { "nasa", mf.title, mf.sub })
+			table.insert(R.events, { "notice", mf.title, mf.sub })
 		end
 	end
 end

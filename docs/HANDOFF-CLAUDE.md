@@ -17,7 +17,7 @@ Este documento resume el estado real auditado, todos los cambios ya aplicados y 
   - **`e6828bd` .. `3d59475` .. `554a91e`** — Sincronización de documentación, traspaso `CLAUDE.md`/`HANDOFF-CLAUDE.md`, `Rover` + `Insignia` (`30` mallas), fichas NTRS verificadas, lugar en la nube «Núcleo de Ares» (`placeId: 114817072312952`), retroceso de cámara y revisión inicial de menú.
   - **`2fea3be`** — Documentación del agente opcional DeepSeek en `AGENTS.md`.
   - **`5388d5c`** — Menú principal «Forma humana» en `Hud.luau` y sección `10` de `NOTAS.md`.
-  - **Actualización `15-11-2026` (commit actual):** restauración del repo `.git` en esta máquina sobre `audit/actualizacion-completa`, limpieza de duplicados residuales en raíz, octava tanda en `Content.luau`/`Ui.luau`/`Hud.luau`/`Main.client.luau` (tipografía `Bangers`/`Michroma`, paleta por sección/bioma, movimiento con flechas `↑ ↓ ← →`, `TextIssuesCount = 0`, versión `14` guardada en Studio) y unificación de documentación para colaboradores.
+  - **Actualización `15-11-2026` (commit actual):** restauración del repo `.git` en esta máquina sobre `audit/actualizacion-completa`, limpieza de duplicados residuales en raíz, octava tanda en `Content.luau`/`Ui.luau`/`Hud.luau`/`Main.client.luau` (tipografía `Bangers`/`Michroma`, paleta por sección/bioma, movimiento con flechas `↑ ↓ ← →`, `TextIssuesCount = 0`, versión `29` guardada en Studio) y unificación de documentación para colaboradores.
 - **Pendiente de Git:** mantener el desarrollo de `ARES FORGE` e interfaz Roblox sobre `audit/actualizacion-completa` y coordinar en equipo cuándo integrar `audit/actualizacion-completa` y `main`.
 - **Nota de seguridad:** `.env` NO existe ni debe subirse al repo. La identidad local del repo quedó configurada para `audit/actualizacion-completa`; cualquier marcador `<RUTA_...>` de MCP se rellena solo en local sin commitear.
 
@@ -53,7 +53,8 @@ Este documento resume el estado real auditado, todos los cambios ya aplicados y 
   - `tools/studio/` (`push.py` y `README.md`) -> sincronización directa hacia el lugar guardado en la nube (`placeId: 114817072312952`) sin servidor HTTP local.
   - `tools/blender_mcp/` (`server.py`, `bridge_addon.py`, `selftest.py`, `config.json`) -> puente MCP local con marcadores `<RUTA_...>`.
   - `tools/sync/sync_studio.luau` == `game/src/sync_studio.lua` (reservado a lugares locales sin nube).
-- **Estado en Roblox Studio (`15-11-2026`):** lugar guardado en nube como «Núcleo de Ares» (`placeId: 114817072312952`, `universeId: 10776867729`, versión `14` sin publicar), con *Allow Mesh / Image APIs* y *Enable Studio Access to API Services* activos. Verificado en `Play`: `30` mallas cargan, `AresArrowKeys` enlazado, `0` recortes `TextFits` y consola limpia. `inspect_instance` sobre `game.Lighting` mostró `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`) con migración Unified Lighting, quedando `P-01` (`Future`) para revisión manual.
+- **Estado en Roblox Studio (`15-11-2026`):** lugar guardado en nube como «Núcleo de Ares» (`placeId: 114817072312952`, `universeId: 10776867729`, versión `29` sin publicar), con *Allow Mesh / Image APIs* y *Enable Studio Access to API Services* activos. Verificado en `Play`: `30` mallas cargan, `AresArrowKeys` enlazado, `0` recortes `TextFits` y consola limpia. `inspect_instance` sobre `game.Lighting` mostró `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`) con migración Unified Lighting, quedando `P-01` (`Future`) para revisión manual.
+- Actualización 15-11-2026 (tarde): pulido de interfaz (textos cortos, tamaño mínimo de letra 12, HUD oculto con paneles abiertos, bono de zona en el panel del traje), demo de pitch de 2 minutos, y arreglos de pausa en cliente, checkpoints, guardado coalescido y avisos. Verificado en Play con bot: victoria en 95 s de juego, consola limpia. Lugar guardado en versión 29.
 - **Observación del entorno MCP:** `roblox-blender/.mcp.json` y `tools/blender_mcp/config.json` contienen marcadores `<RUTA_...>`. El archivo `.claude/settings.json` mencionado en `BLENDER_PIPELINE.md` y `SEGURIDAD_MCP.md` no está en Git; si se crea en local, seguir `docs/SEGURIDAD_MCP.md` sección 6a.
 
 ---
@@ -68,12 +69,13 @@ Comprobado sobre el último estado de código:
 
 **Verificado en Roblox Studio (`15-11-2026`, `placeId: 114817072312952`):**
 - Sincronización exacta (misma longitud LF y `Adler-32`) entre `roblox-blender/game/src/` y Studio para `Content`, `Ui`, `Hud` y `Main`.
-- Arranque y demo lanzada en `Play`: `30/30` mallas, acción `AresArrowKeys` activa, `0` recortes `TextFits`, consola limpia y lugar guardado con `save_place` (versión `14`, sin publicar).
+- Arranque y demo lanzada en `Play`: `30/30` mallas, acción `AresArrowKeys` activa, `0` recortes `TextFits`, consola limpia y lugar guardado con `save_place` (versión `29`, sin publicar).
 
 **No probado / pendiente:**
 - `npm run check:live` / `npm run ingest` (sin `.env` ni `NASA_API_KEY` rotada).
 - Móvil real y prueba a 60 FPS en primer plano sin capado en segundo plano.
 - Escucha humana del audio definitivo (`P-12`) y revisión manual de `Lighting.Technology = Future` (`P-01`).
+- Móvil y mando reales tras el pulido (solo probado en ventana de Studio 812×473).
 
 ---
 
@@ -93,7 +95,7 @@ Comprobado sobre el último estado de código:
 
 ### Prioridad `P2` — Cerrar `ARES FORGE` (`roblox-blender/`)
 Lista completa con dueños en [`roblox-blender/docs/DECISIONES.md`](../roblox-blender/docs/DECISIONES.md):
-1. **Studio y publicación:** `P-01` revisar y fijar manualmente `Lighting.Technology = Future` (en inspección MCP figura `ShadowMap = 3` con Unified Lighting); `P-02` publicar el lugar cuando el equipo lo pida (ya guardado en nube `placeId: 114817072312952` v14); `P-03` comprobar `DataStore` (`AresForgeMeta_v1`) en servidor publicado.
+1. **Studio y publicación:** `P-01` revisar y fijar manualmente `Lighting.Technology = Future` (en inspección MCP figura `ShadowMap = 3` con Unified Lighting); `P-02` publicar el lugar cuando el equipo lo pida (ya guardado en nube `placeId: 114817072312952` v29); `P-03` comprobar `DataStore` (`AresForgeMeta_v1`) en servidor publicado.
 2. **Rendimiento y UX:** `P-05` medir FPS reales en primer plano (sin capado de 15 FPS en segundo plano); `P-11` probar en móvil real (`30 FPS`, botones >= `44 px`); `P-10` medir sacudida de cámara vs límite `4 px`.
 3. **Balance y contenido:** `F5` correr y registrar `5` partidas de prueba (`0/5` en `BALANCE_V0.md`); `P-08` definir alcance `Q10`; `P-07` decidir proxy en vivo vs snapshot; `P-15` alinear nombres de biomas en prompts; agregar consejo de "kitear" a `Content.Tutorial`. (`P-06` de 4 fichas NTRS y unificación de `Bangers` en `Fx.luau` + HUD/menús ya completos.)
 4. **Audio, demo y concurso:** `P-12` validar por escucha humana las `3` pistas con licencia (`Balance.Audio.Music`) y los `12` SFX con EQ en `AresSfx`; `P-14` confirmar reglas y fecha oficiales del concurso; `P-13` lograr `3` ensayos seguidos sin fallos (`DEMO_GUION.md`) y grabar video respaldo + tráiler (`TRAILER_BRIEF_FABLE.md`).

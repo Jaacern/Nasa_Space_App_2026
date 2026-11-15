@@ -4,3 +4,8 @@ scripts/_*
 *.log
 __pycache__/
 *.pyc
+logs/
+.claude/settings*.json
+*.token
+cap*.png
+push.json

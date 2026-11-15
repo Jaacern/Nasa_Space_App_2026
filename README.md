@@ -3,7 +3,7 @@
 Repositorio del equipo con dos módulos complementarios bajo un mismo techo:
 
 1. **Raíz (`Outpost Run`)**: capa de datos, ingesta, saneado, servidor local (`127.0.0.1:8787`) y contenidos del prototipo educativo (7 a 12 años) basado en datos reales de NASA y recursos de la CSA. Falta implementar el bucle de juego (`src/sim/`) y la interfaz web (`src/ui/`).
-2. **[`roblox-blender/`](roblox-blender/README.md) (`ARES FORGE`)**: juego roguelite de supervivencia 3D jugable en Roblox Studio (Luau `--!strict`, controles `WASD / Flechas ↑ ↓ ← →`), con `30` mallas exportadas desde Blender, lugar guardado en la nube («Núcleo de Ares», `placeId: 114817072312952`, versión `14`) y puente MCP local propio.
+2. **[`roblox-blender/`](roblox-blender/README.md) (`ARES FORGE`)**: juego roguelite de supervivencia 3D jugable en Roblox Studio (Luau `--!strict`, controles `WASD / Flechas ↑ ↓ ← →`), con `30` mallas exportadas desde Blender, lugar guardado en la nube («Núcleo de Ares», `placeId: 114817072312952`, versión `29`) y puente MCP local propio.
 
 > Este proyecto usa datos públicos de NASA y recursos educativos de la CSA. NASA y CSA no patrocinan ni respaldan este producto.
 
@@ -57,7 +57,7 @@ Para arrancar el juego de Roblox (**ARES FORGE**), sigue [`roblox-blender/README
 - **APOD:** la última ingesta devolvió `HTTP 500` sin clave válida; `data/curated/apod.json` queda en estado provisional (`reusable: false`) hasta ejecutar `npm run ingest -- --only=apod` con `NASA_API_KEY`.
 - **OSDR:** `26` estudios pendientes de resumen infantil con `reviewedByHuman: true` (el juego los oculta mientras no se revisen).
 - **Pendiente principal (`Outpost Run`):** implementar el bucle jugable (`src/sim/`) y la interfaz web (`src/ui/`) en reemplazo del stub `public/index.html` (en la rama `main` existen avances separados del pitch web 3D).
-- **`ARES FORGE` (`roblox-blender/`):** `30/30` mallas cargan vía `EditableMesh`, menú «Forma humana», tipografía `Bangers`/`Michroma`, paleta por sección/etapa, flechas `↑ ↓ ← →` y `4` fichas NTRS verificadas (`placeId: 114817072312952`, v14). Pendientes manuales `P-01` a `P-15` en [`roblox-blender/docs/DECISIONES.md`](roblox-blender/docs/DECISIONES.md) y el resumen en [`docs/PENDIENTES-MANUALES.md`](docs/PENDIENTES-MANUALES.md).
+- **`ARES FORGE` (`roblox-blender/`):** `30/30` mallas cargan vía `EditableMesh`, menú «Forma humana», tipografía `Bangers`/`Michroma`, paleta por sección/etapa, flechas `↑ ↓ ← →` y `4` fichas NTRS verificadas (`placeId: 114817072312952`, v29). Pendientes manuales `P-01` a `P-15` en [`roblox-blender/docs/DECISIONES.md`](roblox-blender/docs/DECISIONES.md) y el resumen en [`docs/PENDIENTES-MANUALES.md`](docs/PENDIENTES-MANUALES.md).
 
 ## Colaboración y ramas de Git
 

@@ -81,7 +81,7 @@ Habla una persona mientras otra juega. Frases cortas, una por acción. Guía: `d
 | Pregunta | Respuesta |
 |---|---|
 | ¿Los datos de clima espacial son en vivo? | No. Son una copia local del 14-11-2026 con la etiqueta "snapshot". La llamada en vivo exige un proxy del equipo y está pendiente |
-| ¿Qué es real y qué es inventado? | Real: los eventos de DONKI y las dos fichas NTRS. Diseño: el daño, la dificultad y los nombres de los enemigos |
+| ¿Qué es real y qué es inventado? | Real: los eventos de DONKI y las cuatro fichas NTRS. Diseño: el daño, la dificultad y los nombres de los enemigos |
 | ¿Se copia de otro juego? | Tomamos mecánicas de género (oleadas, cartas de mejora, jefes). No copiamos nombres, arte ni sonidos. Las referencias están en `docs/REFERENCIAS.md` |
 | ¿Funciona en móvil? | Está diseñado para PC y móvil. La prueba en móvil real está pendiente |
 | ¿Cómo hicieron los modelos? | Con scripts de Blender y un puente propio auditado. En esta versión el arte es provisional |

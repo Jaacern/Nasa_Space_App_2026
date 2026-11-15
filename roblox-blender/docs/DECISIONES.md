@@ -67,7 +67,7 @@ Cada decisión tiene un identificador `D-nn`, un motivo y una consecuencia.
 
 ### D-06. Modo "Demo rápida"
 
-- **Decisión.** Modo `demo` con `TimeScale = 5` y `XpMult = 3.2` (`Balance.Modes`). La misión completa dura unos 3,6 minutos de reloj real (1080 s ÷ 5 = 216 s). El jefe final aparece a los 204 s.
+- **Decisión.** Modo `demo` con `TimeScale = 12` y `XpMult = 2.6` (`Balance.Modes`), jefes con 22 % de vida, sin briefing ni checkpoints y un «Protocolo de emergencia» gratis. La demo dura unos 2 minutos de juego (victoria en 95 s medidos con bot el 15-11-2026). El jefe final aparece a los 85 s.
 - **Motivo.** El pitch dura 3 minutos. Una partida de 18 minutos no cabe.
 - **Consecuencia.** La demo rápida otorga la misma ciencia que la misión completa (la fórmula usa tiempo de misión, no reloj real). Ver riesgo R-07 en `docs/BRIEF_PRODUCCION.md`.
 
@@ -135,7 +135,7 @@ Los dueños son roles. Las fechas objetivo son una propuesta revisada al 15-11-2
 | Id | Pendiente | Dueño (rol) | Fecha objetivo |
 |---|---|---|---|
 | P-01 | Poner `Lighting.Technology = Future` a mano en Studio (un script no puede; al 15-11-2026 `game.Lighting` figura con `RBX_OriginalTechnologyOnFileLoad = 3` = `ShadowMap` y migración Unified Lighting) | Programación Roblox | 15-11-2026 |
-| P-02 | Publicar el lugar en Roblox cuando el equipo lo pida (lugar ya guardado en nube «Núcleo de Ares», `placeId: 114817072312952`, versión `20`) | Programación Roblox | 15-11-2026 |
+| P-02 | Publicar el lugar en Roblox cuando el equipo lo pida (lugar ya guardado en nube «Núcleo de Ares», `placeId: 114817072312952`, versión `29`) | Programación Roblox | 15-11-2026 |
 | P-03 | Verificar DataStore en el lugar publicado (en Studio ya responde con *Enable Studio Access to API Services*; falta validar en servidor publicado) | Programación Roblox | 16-11-2026 |
 | P-04 | Rotar la clave de NASA expuesta en una sesión anterior y crear una clave propia en el entorno del servidor | Arquitectura web | 15-11-2026 |
 | P-05 | Medir rendimiento con 100 enemigos en PC y móvil; guardar en `docs/perf/` | Programación Roblox | En progreso (`docs/perf/RENDIMIENTO.md` creado en Studio PC con 92–98 enemigos; falta medición sin capado 15 FPS y móvil real) |

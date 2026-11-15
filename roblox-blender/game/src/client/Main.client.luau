@@ -28,6 +28,10 @@ local CAM = Balance.Camera
 local phase = "menu"
 local dash: { dir: Vector3, left: number }? = nil
 local cinematicStart = 0
+local cursorFree = false
+local controls: any = nil
+local controlsEnabled = true
+local lastServerWalkSpeed = Balance.Hero.WalkSpeed
 
 -- Estado de la cámara orbital.
 local yaw, pitch, dist = 0, math.rad(CAM.Pitch), CAM.Distance
@@ -36,6 +40,28 @@ local menuYaw = 0.6
 
 local function send(...: any)
 	cmd:FireServer(...)
+end
+
+local function setCursorFree(on: boolean)
+	if cursorFree ~= on then
+		cursorFree = on
+		Hud.setCursorFree(on)
+	end
+end
+
+local function getControls(): any
+	if controls then
+		return controls
+	end
+	local ok, mod = pcall(function()
+		local ps = player:FindFirstChild("PlayerScripts")
+		local pm = ps and ps:FindFirstChild("PlayerModule")
+		return pm and (require :: any)(pm):GetControls()
+	end)
+	if ok and mod then
+		controls = mod
+	end
+	return controls
 end
 
 local function rootPart(): BasePart?
@@ -102,6 +128,10 @@ local function applySettings()
 	if bloom and bloom:IsA("BloomEffect") then
 		bloom.Enabled = (tier ~= "low")
 		bloom.Intensity = if tier == "high" then 0.55 else 0.32
+	end
+	local rays = Lighting:FindFirstChildOfClass("SunRaysEffect")
+	if rays then
+		rays.Enabled = tier == "high"
 	end
 	pcall(function()
 		Lighting.GlobalShadows = (tier ~= "low")
@@ -181,6 +211,7 @@ local function onPhase(newPhase: string, meta: any, extra: any)
 	local old = phase
 	phase = newPhase
 	dash = nil
+	setCursorFree(false)
 	Renderer.clearAll()
 	Scenery.clearBlackHole()
 	Scenery.setMenu(newPhase == "menu")
@@ -287,7 +318,7 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 	end,
 	shieldHit = function()
 		Renderer.shieldHit()
-		Fx.play("block")
+		Fx.play("hit", 0.8)
 	end,
 	shieldBreak = function()
 		Renderer.shieldBreak()
@@ -338,6 +369,9 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 	nasa = function(ev)
 		Hud.alert("ALERTA DE CLIMA ESPACIAL", "warn", string.format("Evento real del %s: %s (NASA DONKI)", ev[3], ev[2]))
 	end,
+	notice = function(ev)
+		Hud.alert(ev[2], "warn", ev[3])
+	end,
 	wave = function(ev)
 		Hud.wave(ev[2], ev[3])
 	end,
@@ -366,7 +400,11 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 -- ------------------------------------------------------------ Arranque
 Renderer.init()
 Scenery.init()
-Hud.init(send, useSkill, applySettings)
+Hud.init(send, useSkill, applySettings, function()
+	if inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" then
+		setCursorFree(not cursorFree)
+	end
+end)
 applySettings()
 pcall(function()
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
@@ -424,6 +462,9 @@ end
 UserInputService.LastInputTypeChanged:Connect(function(t)
 	local m = modeFromInputType(t)
 	if m then
+		if m ~= "kb" then
+			setCursorFree(false)
+		end
 		Hud.setInputMode(m)
 	end
 end)
@@ -436,6 +477,13 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 	if k == Enum.KeyCode.ButtonB and not UserInputService:GetFocusedTextBox() and Hud.wantsCursor() then
 		if Hud.back() then
+			return
+		end
+	end
+	if (k == Enum.KeyCode.LeftControl or k == Enum.KeyCode.RightControl) and not UserInputService:GetFocusedTextBox() then
+		if inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" then
+			setCursorFree(not cursorFree)
+			Fx.play("ui", if cursorFree then 1.15 else 0.88)
 			return
 		end
 	end
@@ -537,12 +585,55 @@ local camera = Workspace.CurrentCamera :: Camera
 local camFocus = Vector3.new(0, CAM.FocusHeight, 34)
 local minRad = (Balance.World and Balance.World.ShipRadius or 8.4) + 0.4
 local limit = Balance.Sim.ArenaRadius - 3.5
-local rayParams = RaycastParams.new()
-rayParams.FilterType = Enum.RaycastFilterType.Include
 local wasArrowMoving = false
 
 RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, function(dt: number)
-	local hrp = rootPart()
+	local char = player.Character
+	local hrp = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	local canMove = inRun() and not Hud.wantsCursor()
+	if not canMove then
+		dash = nil
+		setCursorFree(false)
+	end
+	if hum then
+		if canMove then
+			if hum.WalkSpeed > 0 then
+				lastServerWalkSpeed = hum.WalkSpeed
+			elseif lastServerWalkSpeed > 0 then
+				hum.WalkSpeed = lastServerWalkSpeed
+			end
+			if hum.JumpPower <= 0 then
+				hum.JumpPower = Balance.Hero.JumpPower
+			end
+			hum.AutoRotate = true
+			if not controlsEnabled then
+				local ctrl = getControls()
+				if ctrl then
+					ctrl:Enable()
+					controlsEnabled = true
+				end
+			end
+		else
+			if hum.WalkSpeed > 0 then
+				lastServerWalkSpeed = hum.WalkSpeed
+			end
+			hum.WalkSpeed = 0
+			hum.JumpPower = 0
+			hum.AutoRotate = false
+			hum:Move(Vector3.zero, true)
+			if hrp then
+				hrp.AssemblyLinearVelocity = Vector3.new(0, math.min(0, hrp.AssemblyLinearVelocity.Y), 0)
+			end
+			if controlsEnabled then
+				local ctrl = getControls()
+				if ctrl then
+					ctrl:Disable()
+					controlsEnabled = false
+				end
+			end
+		end
+	end
 
 	-- Impulso RCS: el cliente mueve su personaje; el servidor ya validó el uso y el daño.
 	if dash and hrp then
@@ -584,7 +675,7 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 	local nc, ncTier = Renderer.nearestChest()
 	Hud.update(dt, if inRun() then nc else nil, if inRun() then ncTier else nil)
 
-	local locked = inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" and UserInputService.MouseEnabled
+	local locked = canMove and not cursorFree and Hud.getInputMode() == "kb" and UserInputService.MouseEnabled
 	UserInputService.MouseBehavior = if locked then Enum.MouseBehavior.LockCenter else Enum.MouseBehavior.Default
 	UserInputService.MouseIconEnabled = not locked
 
@@ -624,13 +715,14 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 		local cp = math.cos(pitch)
 		local offset = Vector3.new(math.sin(yaw) * cp, math.sin(pitch), math.cos(yaw) * cp)
 		local d = dist
-		local arena = Workspace:FindFirstChild("Arena")
-		if arena then
-			rayParams.FilterDescendantsInstances = { arena }
-			local hit = Workspace:Raycast(camFocus, offset * dist, rayParams)
-			if hit then
-				d = math.max(4, hit.Distance - 1)
-			end
+		-- el ojo no sale del radio horizontal de la arena + 6 (sin raycast)
+		local eyeLim = Balance.Sim.ArenaRadius + 6
+		local qa = offset.X * offset.X + offset.Z * offset.Z
+		local qc = camFocus.X * camFocus.X + camFocus.Z * camFocus.Z - eyeLim * eyeLim
+		if qa > 1e-6 and qc < 0 then
+			local qb = 2 * (camFocus.X * offset.X + camFocus.Z * offset.Z)
+			local root = (-qb + math.sqrt(qb * qb - 4 * qa * qc)) / (2 * qa)
+			d = math.max(4, math.min(d, root))
 		end
 		camera.CFrame = CFrame.lookAt(camFocus + offset * d, camFocus) * CFrame.new(Fx.shakeOffset())
 	end

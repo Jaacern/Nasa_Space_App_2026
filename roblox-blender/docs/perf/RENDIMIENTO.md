@@ -28,7 +28,7 @@ Entorno medido: Roblox Studio en PC (viewport en segundo plano durante ejecució
 ## 3. Optimización crítica descubierta (`EditableMesh` + `FixedSize`)
 
 - Durante la primera prueba en Play, construir los 28 assets (81 submallas por material) con `AssetService:CreateEditableMesh()` dinámico agotó el presupuesto de memoria de `EditableMesh` a partir de la novena submalla (`ranged parte 3`: *"Failed to create empty EditableMesh that was requested due to reaching memory budget limits"*).
-- Solución aplicada en `game/src/client/MeshFactory.luau`: tras rellenar cada `EditableMesh` temporal `em`, se convierte a inmutable mediante `AssetService:CreateEditableMeshAsync(Content.fromObject(em), { FixedSize = true })` y se llama de inmediato a `em:Destroy()` antes de `AssetService:CreateMeshPartAsync(...)`. Resultado verificado: **28/28 modelos construidos en cliente sin errores**, **0 fallos** y memoria total estable en ~`547–553 MB`.
+- Solución aplicada en `game/src/client/MeshFactory.luau`: tras rellenar cada `EditableMesh` temporal `em`, se convierte a inmutable mediante `AssetService:CreateEditableMeshAsync(Content.fromObject(em), { FixedSize = true })` y se llama de inmediato a `em:Destroy()` antes de `AssetService:CreateMeshPartAsync(...)`. Resultado verificado: **28/28 modelos construidos en cliente sin errores**, **0 fallos** y memoria total estable en ~`547–553 MB` (medido antes de añadir Rover e Insignia; hoy son 30).
 
 ## 4. Limitaciones y pendiente
 

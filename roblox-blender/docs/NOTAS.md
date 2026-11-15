@@ -41,8 +41,8 @@ Cómo trabaja el sincronizador:
 
 1. Sincroniza (sección 2).
 2. Pulsa Play. Revisa la Salida: no debe haber errores rojos.
-3. En el menú elige "Demo rápida". Dura unos 3,6 minutos de reloj real.
-4. Comprueba, en orden: oleadas numeradas, cambio de bioma a los 72 s y a los 144 s (reloj real de la demo), minijefes a los 48, 108 y 168 s, jefe final a los 204 s, pieza recuperada tras cada jefe, despegue e informe de misión.
+3. En el menú elige "Demo rápida". Dura unos 2 minutos de juego (victoria en 95 s medidos con bot el 15-11-2026).
+4. Comprueba, en orden: oleadas numeradas, cambio de bioma a los 30 s y a los 60 s (tiempo de juego de la demo), minijefes a los 20, 45 y 70 s, jefe final a los 85 s, pieza recuperada tras cada jefe, despegue e informe de misión.
 5. Para la misión completa elige "Iniciar misión" (18 minutos).
 6. Para el tutorial elige "Tutorial y práctica".
 

@@ -50,6 +50,8 @@ Hud.settings = { fov = Balance.Camera.Fov, sens = 1, qualityMode = "auto", effec
 local send: (...any) -> () = function() end
 local useSkill: (number) -> () = function() end
 local onSettings: () -> () = function() end
+local onCursorToggle: () -> () = function() end
+local cursorFree = false
 local gui: ScreenGui
 local uiScale: UIScale
 local r: { [string]: any } = {}
@@ -59,6 +61,7 @@ local lastMode = "full"
 local returnTarget = "menu"
 local briefingReturn = "none"
 local alertT, toastT, vignette, hintT = 0, 0, 0, 0
+local zoneShowT = 0
 local tickerT, tickerI = 0, 0
 local tickerLines = NasaData.tickerLines()
 local choiceOpen = false
@@ -206,13 +209,14 @@ local function buildHud()
 		shStroke.Color = T.cyan
 	end
 	r.shieldFill = shFill
-	r.shieldText = label("ESCUDO LISTO [E]", 14, { FontFace = F.monoBold, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.hudTop + 1, TextStrokeTransparency = 0.25 })
+	r.shieldText = label("ESCUDO LISTO [E]", 15, { FontFace = F.monoBold, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.hudTop + 1, TextStrokeTransparency = 0.25 })
 	r.shieldText.Parent = shBack
 
 	r.kills = label("BAJAS 0", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(12, 94), Size = UDim2.fromOffset(156, 24), TextColor3 = T.text, ZIndex = Z.hudTop })
 	r.kills.Parent = suit
-	r.shieldBadge = label("PULSO CD 20s", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(168, 94), Size = UDim2.fromOffset(166, 24), TextXAlignment = RIGHT, TextColor3 = T.cyanHi, ZIndex = Z.hudTop })
-	r.shieldBadge.Parent = suit
+	-- Bono de la zona actual (el nombre de la zona va en el rótulo central).
+	r.zoneBonus = label("", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(168, 94), Size = UDim2.fromOffset(166, 24), TextXAlignment = RIGHT, TextColor3 = ZONE_COLORS[1], TextWrapped = false, ZIndex = Z.hudTop })
+	r.zoneBonus.Parent = suit
 
 	r.wave = label("OLEADA 01/18", 34, { Name = "Wave", FontFace = F.hero, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(420, 40), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeColor3 = Color3.new(0, 0, 0), TextStrokeTransparency = 0.12, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
 	new("UITextSizeConstraint", { MinTextSize = 20, MaxTextSize = 34 }).Parent = r.wave
@@ -222,8 +226,8 @@ local function buildHud()
 	r.biome = label("ETAPA 1 · " .. Content.Biomes[1].name, 18, { Name = "Biome", FontFace = F.display, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 82), Size = UDim2.fromOffset(480, 24), TextXAlignment = CENTER, TextColor3 = BIOME_COLORS[1], TextStrokeTransparency = 0.18, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
 	new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 18 }).Parent = r.biome
 	r.biome.Parent = h
-	r.zoneBadge = label("ZONA: CRÁTER DEL MÓDULO", 15, { Name = "ZoneBadge", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 108), Size = UDim2.fromOffset(480, 22), TextXAlignment = CENTER, TextColor3 = ZONE_COLORS[1], TextStrokeTransparency = 0.15, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
-	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 15 }).Parent = r.zoneBadge
+	r.zoneBadge = label("CRÁTER DEL MÓDULO", 15, { Name = "ZoneBadge", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 108), Size = UDim2.fromOffset(480, 22), TextXAlignment = CENTER, TextColor3 = ZONE_COLORS[1], TextStrokeTransparency = 0.15, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
+	new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 15 }).Parent = r.zoneBadge
 	r.zoneBadge.Parent = h
 
 	local bossWrap = new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 134), Size = UDim2.new(0.38, 0, 0, 52), BackgroundTransparency = 1, Visible = false })
@@ -270,6 +274,17 @@ local function buildHud()
 	mGlyph.ZIndex = Z.hudTop + 1
 	mGlyph.Parent = r.hudMenuBtn
 
+	r.cursorBtn = button("    CTRL · RATÓN", click(function()
+		onCursorToggle()
+	end), { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -264, 0, 118), Size = UDim2.fromOffset(142, 44), ZIndex = Z.hudTop, FontFace = F.display, TextSize = 14, TextWrapped = false, TextScaled = true, Visible = (inputMode == "kb") }, "ghost")
+	new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 14 }).Parent = r.cursorBtn
+	r.cursorBtn.Parent = h
+	local cGlyph = Ui.navGlyph("cursor", 16, T.cyanHi)
+	cGlyph.Position = UDim2.fromOffset(10, 14)
+	cGlyph.ZIndex = Z.hudTop + 1
+	cGlyph.Parent = r.cursorBtn
+	r.cursorGlyph = cGlyph
+
 	r.exitBtn = button("SALIR", click(function()
 		send("menu")
 	end), { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 118), Size = UDim2.fromOffset(130, 44), ZIndex = Z.hudTop, Visible = false }, "danger")
@@ -302,11 +317,10 @@ local function buildHud()
 		vp.Visible = idx == 1
 		vp.Parent = autoCard
 	end
-	local autoTitle = label("LÁSER", 13, { FontFace = F.display, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 70), Size = UDim2.new(1, -8, 0, 18), TextColor3 = T.cyanHi, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
-	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = autoTitle
+	local autoTitle = label("LÁSER", 15, { FontFace = F.display, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 70), Size = UDim2.new(1, -8, 0, 19), TextColor3 = T.cyanHi, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
+	new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 15 }).Parent = autoTitle
 	autoTitle.Parent = autoCard
-	local autoSub = label("[F] MODO", 12, { FontFace = F.monoBold, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 89), Size = UDim2.new(1, -8, 0, 17), TextColor3 = T.dim, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
-	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 12 }).Parent = autoSub
+	local autoSub = label("[F]", 14, { FontFace = F.monoBold, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 90), Size = UDim2.new(1, -8, 0, 18), TextColor3 = T.text, TextWrapped = false, ZIndex = Z.hudTop })
 	autoSub.Parent = autoCard
 	autoCard.Activated:Connect(click(function()
 		send("weaponMode")
@@ -470,8 +484,8 @@ local function buildMainMenu()
 
 	new("Frame", { Position = UDim2.fromOffset(0, 74), Size = UDim2.fromOffset(38, 3), BackgroundColor3 = T.gold, BorderSizePixel = 0, ZIndex = Z.content }).Parent = col
 	label("SUPERVIVENCIA EN MARTE", 16, { FontFace = F.display, Position = UDim2.fromOffset(48, 64), Size = UDim2.fromOffset(328, 22), TextColor3 = T.gold, TextStrokeTransparency = 0.3, TextWrapped = false, ZIndex = Z.content }).Parent = col
-	local hook = label("Recupera las 4 piezas de tu módulo y despega.", 15, { FontFace = F.semi, Position = UDim2.fromOffset(0, 85), Size = UDim2.fromOffset(376, 24), TextColor3 = Color3.fromHex("#E8F0FC"), TextStrokeTransparency = 0.35, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
-	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 15 }).Parent = hook
+	local hook = label("Recupera las 4 piezas y vuelve a casa.", 15, { FontFace = F.semi, Position = UDim2.fromOffset(0, 85), Size = UDim2.fromOffset(376, 24), TextColor3 = Color3.fromHex("#E8F0FC"), TextStrokeTransparency = 0.35, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 15 }).Parent = hook
 	hook.Parent = col
 
 	local function bindHover(btn: TextButton, baseBg: Color3, baseT: number, hoverBg: Color3, hoverT: number, stroke: UIStroke, sBase: number, sHover: number, sBaseCol: Color3?, sHoverCol: Color3?)
@@ -590,8 +604,8 @@ local function buildMainMenu()
 	local heroLip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 4), BackgroundColor3 = Color3.fromHex("#B84318"), BorderSizePixel = 0, ZIndex = Z.content })
 	heroLip.Parent = hero
 	label("INICIAR MISIÓN", 22, { FontFace = F.hero, Position = UDim2.fromOffset(18, 7), Size = UDim2.fromOffset(292, 26), TextColor3 = Color3.new(1, 1, 1), TextStrokeTransparency = 0.55, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = hero
-	local heroSub = label("Nueva partida · 18 oleadas en 3 etapas", 14, { FontFace = F.semi, Position = UDim2.fromOffset(18, 33), Size = UDim2.fromOffset(292, 22), TextColor3 = Color3.fromHex("#FFE4D6"), TextStrokeTransparency = 1, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
-	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 14 }).Parent = heroSub
+	local heroSub = label("18 oleadas · 3 etapas · 4 jefes", 14, { FontFace = F.semi, Position = UDim2.fromOffset(18, 33), Size = UDim2.fromOffset(292, 22), TextColor3 = Color3.fromHex("#FFE4D6"), TextStrokeTransparency = 1, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+	new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 14 }).Parent = heroSub
 	heroSub.Parent = hero
 	local playPill = new("Frame", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0), Size = UDim2.fromOffset(34, 34), BackgroundColor3 = T.bg, BackgroundTransparency = 0.65, BorderSizePixel = 0, ZIndex = Z.content + 1 })
 	Ui.corner(8).Parent = playPill
@@ -638,7 +652,7 @@ local function buildMainMenu()
 		return b
 	end
 
-	darkCard("BtnDemo", 0, 72, 182, 52, "DEMO RÁPIDA", "Partida de 4 min", T.cyanHi, function()
+	darkCard("BtnDemo", 0, 72, 182, 52, "DEMO RÁPIDA", "Partida de 2 min", T.cyanHi, function()
 		lastMode = "demo"
 		send("start", "demo")
 	end)
@@ -875,17 +889,16 @@ local function buildMenu()
 	r.platformBadge.Parent = ctrlBox
 	new("Frame", { Position = UDim2.fromOffset(14, 33), Size = UDim2.new(1, -28, 0, 1), BackgroundColor3 = T.line, BackgroundTransparency = 0.4, BorderSizePixel = 0, ZIndex = Z.content }).Parent = ctrlBox
 	local ctrlLines = {
-		{ k = "PC / WEB", d = "WASD o Flechas mover · Ratón cámara · Espacio saltar · Q/E habs · F/R arma · 1-3 cartas · P pausa", c = T.cyanHi },
-		{ k = "CONSOLA / MANDO", d = "Stick Izq mover · Stick Der cámara · A saltar · X/L1 y B/R1 habs · Y arma · ◀▲▶ carta · Start pausa", c = T.gold },
-		{ k = "MÓVIL / TÁCTIL", d = "Joystick izq mover · Arrastrar cámara · Pellizcar zoom · Botones saltar, RCS, Pulso y ranura Arma", c = T.green },
+		{ k = "PC / WEB", d = Content.ControlsHelp[1], c = T.cyanHi },
+		{ k = "MANDO", d = Content.ControlsHelp[2], c = T.gold },
+		{ k = "TÁCTIL", d = Content.ControlsHelp[3], c = T.green },
 	}
 	for idx, cl in ctrlLines do
 		local ly = 38 + (idx - 1) * 47
-		local kl = label(cl.k, 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, ly), Size = UDim2.fromOffset(150, 44), TextColor3 = cl.c, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
-		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = kl
+		local kl = label(cl.k, 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, ly), Size = UDim2.fromOffset(96, 44), TextColor3 = cl.c, TextWrapped = false, ZIndex = Z.content })
 		kl.Parent = ctrlBox
-		local dl = label(cl.d, 15, { FontFace = F.semi, Position = UDim2.fromOffset(170, ly), Size = UDim2.new(1, -184, 0, 44), TextColor3 = T.text, TextScaled = true, ZIndex = Z.content })
-		new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 15 }).Parent = dl
+		local dl = label(cl.d, 15, { FontFace = F.semi, Position = UDim2.fromOffset(116, ly), Size = UDim2.new(1, -130, 0, 44), TextColor3 = T.text, TextScaled = true, ZIndex = Z.content })
+		new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 15 }).Parent = dl
 		dl.Parent = ctrlBox
 	end
 	local stBack = button("VOLVER", click(function()
@@ -902,7 +915,9 @@ local function buildMenu()
 	r.credits = c
 	local cp = centerPanel(c, 800, 620, "CRÉDITOS Y FUENTES", T.cyanHi)
 	label("ARCHIVO DE FUENTES Y CRÉDITOS", 28, { FontFace = F.hero, Position = UDim2.fromOffset(24, 34), Size = UDim2.new(1, -48, 0, 32), TextColor3 = T.cyanHi, TextStrokeTransparency = 0.15, ZIndex = Z.content }).Parent = cp
-	label(table.concat(Content.Credits, "\n"), 18, { Position = UDim2.fromOffset(24, 72), Size = UDim2.new(1, -48, 1, -150), TextYAlignment = TOP, TextColor3 = T.text, LineHeight = 1.15, ZIndex = Z.content }).Parent = cp
+	local crText = label(table.concat(Content.Credits, "\n"), 18, { Position = UDim2.fromOffset(24, 72), Size = UDim2.new(1, -48, 1, -150), TextYAlignment = TOP, TextColor3 = T.text, LineHeight = 1.15, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 18 }).Parent = crText
+	crText.Parent = cp
 	local crBack = button("VOLVER AL MENÚ", click(function()
 		show(r.credits, false)
 	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(260, 50), ZIndex = Z.content })
@@ -912,7 +927,7 @@ end
 
 -- ---------------------------------------------------------------- Cartas, Briefing, Pieza, Pausa, Resumen
 local function buildOverlays()
-	local lv = overlay("LevelUp", 0.24)
+	local lv = overlay("LevelUp", 0.16)
 	r.level = lv
 	r.levelTag = label("SUBIDA DE NIVEL", 18, { FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.1), Size = UDim2.new(0.9, 0, 0, 24), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	r.levelTag.Parent = lv
@@ -971,11 +986,11 @@ local function buildOverlays()
 	local br = overlay("Briefing", 0.12)
 	r.briefing = br
 	local bp = centerPanel(br, 860, 560, "INFORME DE DESPLIEGUE · CRÁTER JEZERO", T.cyanHi)
-	label("SISTEMAS DE COMBATE Y SUPERFICIE", 28, { FontFace = F.hero, Position = UDim2.fromOffset(24, 34), Size = UDim2.new(1, -48, 0, 34), TextColor3 = T.gold, TextStrokeTransparency = 0.15, ZIndex = Z.content }).Parent = bp
+	label("TU EQUIPO", 28, { FontFace = F.hero, Position = UDim2.fromOffset(24, 34), Size = UDim2.new(1, -48, 0, 34), TextColor3 = T.gold, TextStrokeTransparency = 0.15, ZIndex = Z.content }).Parent = bp
 	local skEntries = {
 		{ kind = "laser", title = Content.AutoWeapon.name, tag = Content.AutoWeapon.tag, desc = Content.AutoWeapon.desc, col = T.gold },
-		{ kind = "dash", title = Content.Skills[1].name, tag = "[Q / X] · CD " .. Balance.Skills.Dash.Cooldown .. "s", desc = Content.Skills[1].desc, col = T.cyanHi },
-		{ kind = "shield", title = Content.Skills[2].name, tag = "[E / B] · CD " .. Balance.Skills.Pulse.Cooldown .. "s", desc = Content.Skills[2].desc, col = T.cyanHi },
+		{ kind = "dash", title = Content.Skills[1].name, tag = "[Q] · CADA " .. Balance.Skills.Dash.Cooldown .. " s", desc = Content.Skills[1].desc, col = T.cyanHi },
+		{ kind = "shield", title = Content.Skills[2].name, tag = "[E] · CADA " .. Balance.Skills.Pulse.Cooldown .. " s", desc = Content.Skills[2].desc, col = T.cyanHi },
 	}
 	for idx, entry in skEntries do
 		local cx = 24 + (idx - 1) * 276
@@ -988,21 +1003,21 @@ local function buildOverlays()
 		vp.Position = UDim2.new(0.5, 0, 0, 8)
 		vp.ZIndex = Z.content + 1
 		vp.Parent = box
-		local tl = label(entry.title, 18, { FontFace = F.display, Position = UDim2.fromOffset(10, 88), Size = UDim2.fromOffset(242, 24), TextXAlignment = CENTER, TextColor3 = entry.col, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
-		new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 18 }).Parent = tl
+		local tl = label(entry.title, 20, { FontFace = F.display, Position = UDim2.fromOffset(10, 88), Size = UDim2.fromOffset(242, 26), TextXAlignment = CENTER, TextColor3 = entry.col, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 20 }).Parent = tl
 		tl.Parent = box
-		label(entry.tag, 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(10, 114), Size = UDim2.fromOffset(242, 18), TextXAlignment = CENTER, TextColor3 = T.gold, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = box
-		local dl = label(entry.desc, 14, { FontFace = F.body, Position = UDim2.fromOffset(12, 136), Size = UDim2.fromOffset(238, 80), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, ZIndex = Z.content + 1 })
-		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = dl
+		label(entry.tag, 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(10, 116), Size = UDim2.fromOffset(242, 20), TextXAlignment = CENTER, TextColor3 = T.gold, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = box
+		local dl = label(entry.desc, 17, { FontFace = F.body, Position = UDim2.fromOffset(14, 144), Size = UDim2.fromOffset(234, 70), TextColor3 = T.text, TextXAlignment = CENTER, TextYAlignment = TOP, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 17 }).Parent = dl
 		dl.Parent = box
 	end
 	local modeBar = new("Frame", { Position = UDim2.fromOffset(24, 304), Size = UDim2.new(1, -48, 0, 52), BackgroundColor3 = T.bg, BackgroundTransparency = 0.1, BorderSizePixel = 0, ZIndex = Z.panel })
 	Ui.corner(6).Parent = modeBar
 	Ui.stroke(T.cyan, 1.2, 0.35).Parent = modeBar
 	modeBar.Parent = bp
-	label("ARMA INICIAL:", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(12, 0), Size = UDim2.fromOffset(122, 52), TextColor3 = T.cyanHi, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = modeBar
+	label("MODO [F]", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(12, 0), Size = UDim2.fromOffset(122, 52), TextColor3 = T.cyanHi, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = modeBar
 	local modeBtnCols = { T.cyanHi, T.gold, T.orange }
-	local modeBtnLabels = { "1 · HAZ LÁSER (+8% CRÍT)", "2 · ABANICO (3+ HACES)", "3 · MORTERO (ÁREA)" }
+	local modeBtnLabels = { "LÁSER · PRECISO", "ABANICO · GRUPOS", "MORTERO · ÁREA" }
 	r.briefModeBtns = {}
 	r.briefModeStrokes = {}
 	for i = 1, 3 do
@@ -1013,7 +1028,7 @@ local function buildOverlays()
 			BackgroundColor3 = if i == 1 then T.bg else T.panel,
 			BackgroundTransparency = if i == 1 then 0.02 else 0.25,
 			FontFace = F.display,
-			TextSize = 13,
+			TextSize = 16,
 			TextWrapped = false,
 			TextScaled = true,
 			TextColor3 = if i == 1 then modeBtnCols[i] else T.dim,
@@ -1022,7 +1037,7 @@ local function buildOverlays()
 			BorderSizePixel = 0,
 			ZIndex = Z.content + 2,
 		})
-		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = mb
+		new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 16 }).Parent = mb
 		Ui.corner(5).Parent = mb
 		local ms = Ui.stroke(if i == 1 then modeBtnCols[i] else T.line, 1.4, if i == 1 then 0 else 0.5)
 		ms.Parent = mb
@@ -1037,9 +1052,9 @@ local function buildOverlays()
 	Ui.corner(6).Parent = envBox
 	Ui.stroke(T.orange, 1.2, 0.35).Parent = envBox
 	envBox.Parent = bp
-	label("ZONAS DE MARTE, COFRES Y ANOMALÍAS", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 6), Size = UDim2.new(1, -28, 0, 20), TextColor3 = T.orange, ZIndex = Z.content + 1 }).Parent = envBox
-	local envTxt = label(table.concat(Content.Briefing, "\n"), 15, { FontFace = F.semi, Position = UDim2.fromOffset(14, 28), Size = UDim2.new(1, -28, 0, 92), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, LineHeight = 1.12, ZIndex = Z.content + 1 })
-	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = envTxt
+	label("CÓMO SOBREVIVIR", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 6), Size = UDim2.new(1, -28, 0, 20), TextColor3 = T.orange, ZIndex = Z.content + 1 }).Parent = envBox
+	local envTxt = label(table.concat(Content.Briefing, "\n"), 18, { FontFace = F.semi, Position = UDim2.fromOffset(14, 30), Size = UDim2.new(1, -28, 0, 90), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, LineHeight = 1.2, ZIndex = Z.content + 1 })
+	new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 18 }).Parent = envTxt
 	envTxt.Parent = envBox
 	local deployBtn = button("DESPLEGAR AHORA [ESPACIO]", click(function()
 		Hud.closeBriefing()
@@ -1049,7 +1064,7 @@ local function buildOverlays()
 
 	local pc = overlay("Piece", 0.14)
 	r.piece = pc
-	local pp = centerPanel(pc, 760, 500, "PIEZA RECUPERADA", T.gold)
+	local pp = centerPanel(pc, 760, 440, "PIEZA RECUPERADA", T.gold)
 	r.pieceHead = label("", 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(24, 38), Size = UDim2.new(1, -48, 0, 26), TextColor3 = T.gold, ZIndex = Z.content })
 	r.pieceHead.Parent = pp
 	r.pieceName = label("", 36, { FontFace = F.hero, Position = UDim2.fromOffset(24, 66), Size = UDim2.new(1, -48, 0, 46), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content, TextScaled = true })
@@ -1058,9 +1073,9 @@ local function buildOverlays()
 	r.pieceBonus = label("", 20, { FontFace = F.display, Position = UDim2.fromOffset(24, 118), Size = UDim2.new(1, -48, 0, 48), TextColor3 = T.gold, ZIndex = Z.content, TextYAlignment = TOP })
 	r.pieceBonus.Parent = pp
 	label("EN LA REALIDAD", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(24, 170), Size = UDim2.new(1, -48, 0, 22), TextColor3 = T.dim, ZIndex = Z.content }).Parent = pp
-	r.pieceReal = label("", 20, { Position = UDim2.fromOffset(24, 194), Size = UDim2.new(1, -48, 0, 110), ZIndex = Z.content, TextYAlignment = TOP })
+	r.pieceReal = label("", 21, { Position = UDim2.fromOffset(24, 196), Size = UDim2.new(1, -48, 0, 108), ZIndex = Z.content, TextYAlignment = TOP, LineHeight = 1.12 })
 	r.pieceReal.Parent = pp
-	r.pieceRef = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(24, 310), Size = UDim2.new(1, -48, 0, 96), TextColor3 = T.cyanHi, ZIndex = Z.content, TextYAlignment = TOP })
+	r.pieceRef = label("", 17, { FontFace = F.mono, Position = UDim2.fromOffset(24, 314), Size = UDim2.new(1, -48, 0, 24), TextColor3 = T.cyanHi, ZIndex = Z.content, TextYAlignment = TOP })
 	r.pieceRef.Parent = pp
 	local pcCont = button("CONTINUAR", click(function()
 		show(r.piece, false)
@@ -1175,9 +1190,9 @@ local function applyInputLabels()
 	end
 	if r.autoSub then
 		r.autoSub.Text = if inputMode == "touch"
-			then "TOCAR MODO"
-			elseif inputMode == "gamepad" then "[Y] MODO"
-			else "[F] MODO"
+			then "TOCAR"
+			elseif inputMode == "gamepad" then "[Y]"
+			else "[F]"
 	end
 	if r.cards then
 		for i = 1, 3 do
@@ -1198,12 +1213,37 @@ local function applyInputLabels()
 	end
 	if r.platformBadge then
 		r.platformBadge.Text = if inputMode == "gamepad"
-			then "MODO ACTIVO: MANDO / CONSOLA"
-			elseif inputMode == "touch" then "MODO ACTIVO: MÓVIL / TÁCTIL"
-			else "MODO ACTIVO: PC / WEB"
+			then "EN USO: MANDO"
+			elseif inputMode == "touch" then "EN USO: TÁCTIL"
+			else "EN USO: PC / WEB"
+	end
+	if r.cursorBtn then
+		r.cursorBtn.Visible = (inputMode == "kb") and (phase == "run" or phase == "tutorial")
 	end
 	updateFocus()
 	refitFn()
+end
+
+function Hud.setCursorFree(free: boolean)
+	cursorFree = free
+	if r.cursorBtn then
+		r.cursorBtn.Text = if free then "    CTRL · FIJAR" else "    CTRL · RATÓN"
+		r.cursorBtn.TextColor3 = if free then T.bg else T.text
+		Ui.setButtonColor(r.cursorBtn, if free then T.gold else T.panel)
+		local st = r.cursorBtn:FindFirstChildOfClass("UIStroke")
+		if st then
+			st.Color = if free then T.gold else T.line
+			st.Transparency = if free then 0 else 0.25
+		end
+	end
+	if r.cursorGlyph then
+		local gCol = if free then T.bg else T.cyanHi
+		for _, child in r.cursorGlyph:GetChildren() do
+			if child:IsA("Frame") then
+				child.BackgroundColor3 = gCol
+			end
+		end
+	end
 end
 
 function Hud.setInputMode(mode: string)
@@ -1281,10 +1321,11 @@ function Hud.back(): boolean
 	return false
 end
 
-function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: () -> ())
+function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: () -> (), cursorToggleFn: (() -> ())?)
 	send = sendFn
 	useSkill = skillFn
 	onSettings = settingsFn
+	onCursorToggle = cursorToggleFn or function() end
 	gui = new("ScreenGui", { Name = "AresHud", ResetOnSpawn = false, IgnoreGuiInset = true, ZIndexBehavior = Enum.ZIndexBehavior.Sibling, DisplayOrder = 5 })
 	uiScale = new("UIScale", {})
 	uiScale.Parent = gui
@@ -1375,6 +1416,10 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 			if r.hudMenuBtn then
 				r.hudMenuBtn.Position = UDim2.new(1, -142, 0, rightNextY)
 			end
+			if r.cursorBtn then
+				r.cursorBtn.Position = UDim2.new(1, if phase == "tutorial" then -154 else -264, 0, rightNextY)
+				r.cursorBtn.Visible = inputMode == "kb" and (phase == "run" or phase == "tutorial")
+			end
 			r.exitBtn.Position = UDim2.new(1, -16, 0, rightNextY)
 			r.toast:SetAttribute("Fit", cornerScale)
 			Ui.pop(r.toast, true)
@@ -1400,6 +1445,8 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 			local tw = if narrow then math.max(260, math.floor(v.X - 32)) else math.clamp(math.floor(v.X * 0.39), 320, 470)
 			r.tickerPanel.Size = UDim2.fromOffset(tw, 68)
 			r.ticker.Size = UDim2.fromOffset(tw - 24, 26)
+			-- En táctil y pantallas estrechas la telemetría compite con los mandos: se oculta.
+			r.tickerPanel.Visible = not (inputMode == "touch" or narrow)
 			if inputMode == "touch" then
 				r.tickerPanel.AnchorPoint = Vector2.new(0, 0)
 				local tickerY = if narrow then (centerY + 126) else (topSafe + math.ceil(176 * cornerScale))
@@ -1564,6 +1611,7 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 	show(r.menu, phase == "menu")
 	show(r.summary, phase == "victory" or phase == "defeat")
 	choiceOpen = false
+	Hud.setCursorFree(false)
 	if inRun then
 		r.tut.Visible = phase == "tutorial"
 		r.exitBtn.Visible = phase == "tutorial"
@@ -1571,14 +1619,22 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 		if r.hudMenuBtn then
 			r.hudMenuBtn.Visible = phase == "run"
 		end
+		if r.cursorBtn then
+			r.cursorBtn.Position = UDim2.new(1, if phase == "tutorial" then -154 else -264, 0, r.cursorBtn.Position.Y.Offset)
+			r.cursorBtn.Visible = inputMode == "kb"
+		end
 		r.bossWrap.Visible = false
 		r.toast.Visible = false
 		r.biome.Text = if phase == "tutorial" then "ARENA DE PRÁCTICA" else ("ETAPA 1 · " .. Content.Biomes[1].name)
 		r.biome.TextColor3 = if phase == "tutorial" then T.cyanHi else BIOME_COLORS[1]
 		if r.zoneBadge then
 			local z1 = (Balance.Zones :: any)[1]
-			r.zoneBadge.Text = if z1 then string.format("ZONA: %s · %s", upperEs(z1.name), z1.bonus or "") else "ZONA: CRÁTER DEL MÓDULO"
+			r.zoneBadge.Text = if z1 then upperEs(z1.name) else "CRÁTER DEL MÓDULO"
 			r.zoneBadge.TextColor3 = ZONE_COLORS[1]
+			if r.zoneBonus then
+				r.zoneBonus.Text = if z1 then (z1.tag or "") else ""
+				r.zoneBonus.TextColor3 = ZONE_COLORS[1]
+			end
 		end
 		r.wave.Text = if phase == "tutorial" then "PRÁCTICA" else "OLEADA 01/" .. Balance.Run.TotalWaves
 		for i = 1, 4 do
@@ -1670,26 +1726,14 @@ function Hud.setHud(h: { number })
 	r.shieldFill.Size = UDim2.fromScale(math.clamp(sCur / sMax, 0, 1), 1)
 	if r.shieldText then
 		if sCur > 0 then
-			r.shieldText.Text = if sTime > 0 then string.format("ESCUDO %d / %d · %.1fs", math.ceil(sCur), sMax, sTime) else string.format("ESCUDO %d / %d", math.ceil(sCur), sMax)
+			r.shieldText.Text = if sTime > 0 then string.format("ESCUDO %d · %ds", math.ceil(sCur), math.ceil(sTime)) else string.format("ESCUDO %d", math.ceil(sCur))
 			r.shieldText.TextColor3 = T.text
-			if r.shieldBadge then
-				r.shieldBadge.Text = "ESCUDO ACTIVO"
-				r.shieldBadge.TextColor3 = T.cyanHi
-			end
 		elseif sCd > 0 then
-			r.shieldText.Text = string.format("RECARGANDO ESCUDO · %ds", math.ceil(sCd))
+			r.shieldText.Text = string.format("ESCUDO EN %ds", math.ceil(sCd))
 			r.shieldText.TextColor3 = T.dim
-			if r.shieldBadge then
-				r.shieldBadge.Text = string.format("CD ESCUDO %ds", math.ceil(sCd))
-				r.shieldBadge.TextColor3 = T.dim
-			end
 		else
-			r.shieldText.Text = string.format("ESCUDO LISTO (+%d) [E]", Balance.Skills.Pulse.Shield)
+			r.shieldText.Text = if inputMode == "kb" then "ESCUDO LISTO [E]" else "ESCUDO LISTO"
 			r.shieldText.TextColor3 = T.cyanHi
-			if r.shieldBadge then
-				r.shieldBadge.Text = "PULSO LISTO (20s CD)"
-				r.shieldBadge.TextColor3 = T.gold
-			end
 		end
 	end
 
@@ -1727,7 +1771,8 @@ end
 function Hud.wave(n: number, total: number)
 	r.wave.Text = string.format("OLEADA %02d/%d", n, total)
 	Ui.pop(r.wave)
-	if n > 1 then
+	-- En la demo las oleadas pasan cada pocos segundos: el rótulo central taparía la acción.
+	if n > 1 and lastMode ~= "demo" then
 		Hud.alert(string.format("OLEADA %d", n), "info")
 	end
 end
@@ -1794,7 +1839,7 @@ function Hud.piece(idx: number)
 	r.pieceName.Text = upperEs(p.name)
 	r.pieceBonus.Text = "EN EL JUEGO: " .. p.bonus
 	r.pieceReal.Text = p.real
-	r.pieceRef.Text = if p.ntrs ~= "" then string.format("FUENTE · NASA Technical Reports Server (NTRS) %s\n%s", p.ntrs, p.ref) else p.ref
+	r.pieceRef.Text = if p.ntrs ~= "" then string.format("FUENTE · NASA NTRS, ficha %s", p.ntrs) else p.ref
 	r.level.Visible = false -- las cartas pendientes vuelven al pulsar CONTINUAR
 	show(r.piece, true)
 	Fx.play("level", 0.8)
@@ -1861,9 +1906,14 @@ function Hud.zone(zIdx: number)
 	local z = (Balance.Zones :: any)[zIdx]
 	local col = ZONE_COLORS[zIdx] or T.cyanHi
 	if z then
-		r.zoneBadge.Text = string.format("ZONA: %s · %s", upperEs(z.name), z.bonus or "")
-		r.zoneBadge.TextColor3 = col
+		r.zoneBadge.Text = upperEs(z.name)
+		r.zoneBadge.TextColor3 = T.text
+		zoneShowT = 3.5
 		Ui.pop(r.zoneBadge)
+		if r.zoneBonus then
+			r.zoneBonus.Text = z.tag or ""
+			r.zoneBonus.TextColor3 = col
+		end
 	end
 end
 
@@ -1998,13 +2048,30 @@ end
 
 function Hud.update(dt: number, chestPos: Vector3?, chestTier: number?)
 	-- Las etiquetas centrales se solapan con el titulo de las cartas, briefing y de la tarjeta de pieza.
-	local covered = r.level.Visible or r.piece.Visible or (r.briefing and r.briefing.Visible) or r.pause.Visible
+	local covered = r.level.Visible or r.piece.Visible or (r.briefing and r.briefing.Visible) or r.pause.Visible or r.settings.Visible
+	-- Con un panel modal abierto el HUD se oculta entero: una sola cosa que leer en pantalla.
+	local wantHud = (phase == "run" or phase == "tutorial") and not covered
+	if r.hud.Visible ~= wantHud then
+		r.hud.Visible = wantHud
+	end
+	if stim and covered then
+		stim.big.TextTransparency = 1
+		stim.big.TextStrokeTransparency = 1
+		stim.buff.Visible = false
+	end
 	if r.wave.Visible == covered then
 		r.wave.Visible = not covered
 		r.timer.Visible = not covered
 		r.biome.Visible = not covered
-		if r.zoneBadge then
-			r.zoneBadge.Visible = not covered
+	end
+	-- El nombre de la zona solo aparece unos segundos al cambiar; su bono queda fijo en el panel del traje.
+	if zoneShowT > 0 then
+		zoneShowT -= dt
+	end
+	if r.zoneBadge then
+		local showZone = not covered and zoneShowT > 0
+		if r.zoneBadge.Visible ~= showZone then
+			r.zoneBadge.Visible = showZone
 		end
 	end
 	if alertT > 0 then

@@ -8,7 +8,7 @@ Fecha: 15-11-2026. Estado base: rama `audit/actualizacion-completa` (tras `5388d
 |---|---|---|
 | Código Luau, 30 mallas, datos NASA, docs | GitHub `Jaacern/Nasa_Space_App_2026`, rama `audit/actualizacion-completa` | `git clone` y `git checkout audit/actualizacion-completa` |
 | Avances del pitch web 3D (`public/`, `ui-ux/`) | GitHub `Jaacern/Nasa_Space_App_2026`, rama `main` | `git checkout main` (trabajo paralelo de `@jaacern`; no forzar ni sobrescribir) |
-| Lugar de Roblox | Nube de Roblox: «Núcleo de Ares», placeId `114817072312952` (versión `14`) | Abrir Studio con cuenta autorizada en Team Create |
+| Lugar de Roblox | Nube de Roblox: «Núcleo de Ares», placeId `114817072312952` (versión `29`) | Abrir Studio con cuenta autorizada en Team Create |
 | Permisos de la experiencia (mallas, API) | En la experiencia, en la nube | Ya activos; no hay que repetirlos |
 | Rutas locales de MCP, `.env`, ajustes de IA | Solo en el equipo original | Se rehacen en el equipo nuevo (ver paso 4) |
 | Modelo NASA original `25042_Perseverance.glb` (11 MB) | Solo en el equipo original | Opcional. Enlace y huella en `roblox-blender/docs/assets/NASA_ROVER.md` |
@@ -27,7 +27,7 @@ git clone https://github.com/Jaacern/Nasa_Space_App_2026.git
 git checkout audit/actualizacion-completa
 ```
 
-3. Abrir Roblox Studio con cuenta con acceso a la experiencia. En **Archivo > Abrir desde Roblox** elegir «Núcleo de Ares» (`placeId: 114817072312952`). El lugar en la nube ya trae la versión `14` (menú «Forma humana», tipografía `Bangers`/`Michroma`, paleta por sección y movimiento con `WASD / Flechas ↑ ↓ ← →`).
+3. Abrir Roblox Studio con cuenta con acceso a la experiencia. En **Archivo > Abrir desde Roblox** elegir «Núcleo de Ares» (`placeId: 114817072312952`). El lugar en la nube ya trae la versión `29` (menú «Forma humana», tipografía `Bangers`/`Michroma`, paleta por sección y movimiento con `WASD / Flechas ↑ ↓ ← →`).
 4. Solo si se va a usar una IA o terminal CLI con Studio para editar UI/código desde `roblox-blender/game/src/`:
    - En Studio, activar *Enable Studio as MCP server* (ajustes del Asistente).
    - Seguir `roblox-blender/tools/studio/README.md` (`tools/studio/push.py` + `tools/studio/studio_call.py` para empujar cambios al lugar en nube sin HTTP local).

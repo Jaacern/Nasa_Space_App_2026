@@ -44,8 +44,12 @@ local function setupCharacter(player: Player, character: Model)
 	end
 	WorldBuilder.dress(character)
 	local s = sessions[player]
-	if s and s.R then
+	if s and s.R and not s.R.paused then
 		hum.WalkSpeed = s.R.stats.speed
+		hum.JumpPower = Balance.Hero.JumpPower
+	else
+		hum.WalkSpeed = 0
+		hum.JumpPower = 0
 	end
 end
 
@@ -68,8 +72,10 @@ Players.PlayerRemoving:Connect(function(player)
 	local s = sessions[player]
 	sessions[player] = nil
 	if s then
+		s.closed = true
 		SaveService.save(player.UserId, s.account)
 	end
+	SaveService.release(player.UserId)
 end)
 
 cmd.OnServerEvent:Connect(function(player, name, a, b, c)
