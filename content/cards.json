@@ -1,5 +1,5 @@
 {
-  "_readme": "Cartas del juego. TODOS los números son VALORES DE JUEGO iniciales (no son datos NASA). Se ajustan jugando. Regla: cada carta debe tener beneficio, costo inmediato y costo diferido (scripts/validate-content.mjs lo comprueba).",
+  "_readme": "Cartas del juego. TODOS los números son VALORES DE JUEGO iniciales (no son datos NASA). Se ajustan jugando. Regla: cada carta debe tener beneficio, costo inmediato y costo diferido (scripts/check.mjs lo comprueba).",
   "cards": [
     {
       "id": "solar-panel",

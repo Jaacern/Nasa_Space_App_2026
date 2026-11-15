@@ -2,7 +2,7 @@
 
 Guía para el equipo. Cubre qué datos hay ya listos, cómo consumirlos, cómo se convierten en mecánicas de juego (con la inspiración de *Risk of Rain 2* y *Megabonk*), cómo usar IA para organizar el trabajo y qué entregar al jurado.
 
-> Estado verificado el 14 de noviembre de 2026: `npm run ingest` descarga y normaliza DONKI, RadLab, OSDR y Mars Trek. `npm run demo` imprime un escenario real jugable. Los archivos ya están en `data/curated/`.
+> Estado verificado el 14 de noviembre de 2026: `npm run ingest` descarga y normaliza DONKI, RadLab, OSDR, Mars Trek, Rover Photos, InSight y CSA (APOD requiere `NASA_API_KEY`). `npm run check` valida contenido y snapshots y `npm run api` sirve `data/curated/` en local.
 
 ---
 
@@ -46,7 +46,10 @@ Todo vive en `data/curated/`. El juego **solo lee estos archivos**.
 | `radiation.json` | Dosis absorbida (μGy/h) por sitio: ISS, órbita lunar (LRO), Orion en Artemis I, órbita de Marte (Liulin-MO) | RadLab | Línea base de radiación del sitio |
 | `osdr_facts.json` | Estudios reales por tema: hueso, músculo, inmunidad, radiación, plantas, sueño | OSDR | Datos curiosos al final y en eventos |
 | `mars_layers.json` | Plantilla de teselas WMTS y metadatos de la capa MOLA de Marte | Mars Trek | Selector de sitio en el mapa |
-| `apod.json` | Imagen astronómica del día (opcional) | NASA APOD | Pantalla de inicio |
+| `mars_weather.json` | Sols de temperatura, presión y viento de InSight (archivo congelado 2020) | NASA InSight | Referencia histórica ambiental del sitio |
+| `rover_photos.json` | Fotos crudas de cámaras de paisaje de Perseverance y Curiosity | Mars Raw Images | Ambientación del sitio marciano |
+| `csa_resources.json` | Títulos y enlaces educativos de nutrición y STEM | CSA | Créditos y carta "Invernadero" |
+| `apod.json` | Imagen astronómica del día (opcional; provisional `reusable: false`) | NASA APOD | Pantalla de inicio (si `reusable` es `true`) |
 | `manifest.json` | Estado de cada fuente en la última ingesta | Pipeline | Diagnóstico |
 
 Cada archivo incluye `meta.retrievedAt` y `meta.mode: "snapshot"`. **No se debe presentar como "en vivo"**; el desafío pide ser honestos con esto.
@@ -83,15 +86,15 @@ Lectura correcta: en el espacio profundo la dosis medida es varias veces la de l
 
 ### 3.1 Requisitos
 
-- Node 22.9 o superior (ya instalado en esta máquina: 22.22).
+- Node 22.9 o superior (`engines` en `package.json`).
 - No hay dependencias que instalar.
 
 ### 3.2 Actualizar datos
 
 ```bash
-npm run ingest                      # todo, últimos 30 días de DONKI
-npm run ingest:donki                # solo DONKI y escenarios
-node scripts/ingest.mjs --end=2026-11-01   # fijar fecha para que todo el equipo tenga lo mismo
+npm run ingest                                  # todo, últimos 30 días de DONKI
+node scripts/ingest.mjs --only=donki            # solo DONKI y escenarios
+node scripts/ingest.mjs --end=2026-11-01        # fijar fecha para que todo el equipo tenga lo mismo
 node scripts/ingest.mjs --only=radlab,osdr
 ```
 
@@ -107,11 +110,12 @@ cp .env.example .env     # pegar la clave nueva en NASA_API_KEY
 
 La clave que se compartió en el chat debe considerarse expuesta; generen una nueva.
 
-### 3.3 Probar sin abrir el juego
+### 3.3 Validar datos y levantar el servidor local
 
 ```bash
-npm run demo                                  # escenario gannon-2024-05 en Marte
-node scripts/demo.mjs oct-2024-x9 moon        # otro escenario y sitio
+npm test                                      # 23 pruebas sin red
+npm run check                                 # valida cartas, balance, glosario y snapshots
+npm run api                                   # sirve http://127.0.0.1:8787 con /public/index.html
 ```
 
 ### 3.4 Usarlo desde el juego (navegador)
@@ -306,7 +310,7 @@ Calendario en horas desde el inicio del hackatón (ajustar según las horas real
 
 | Tramo | Entregable |
 |---|---|
-| 0 a 4 h | Acordar la historia de usuario, nombre y reglas básicas. Todos ejecutan `npm run demo` |
+| 0 a 4 h | Acordar la historia de usuario, nombre y reglas básicas. Todos ejecutan `npm test` y `npm run check` |
 | 4 a 14 h | Bucle jugable mínimo: 30 sols, 3 recursos, 6 cartas, 1 escenario en Marte |
 | 14 a 24 h | Eventos reales conectados, informe final con dato OSDR, atribución en pantalla |
 | 24 a 36 h | Segundo sitio (Luna), tres escenarios, glosario, prueba con al menos un niño del entorno |
@@ -347,9 +351,9 @@ Sobre la CSA: usen el kit de producción de alimentos como inspiración de la ca
 
 ## 9. Próximos pasos inmediatos
 
-1. Cada integrante ejecuta `npm run demo` y lee `data/curated/manifest.json`.
-2. Decidir nombre del juego y sitio principal (se recomienda Marte para aprovechar el retraso de comunicación; la Luna sirve como tutorial).
-3. Crear `content/cards.json` con las seis cartas de la sección 4.3.
-4. Implementar el bucle mínimo de 30 sols usando `scheduleEvents`.
-5. Pedir un resumen infantil por estudio con `docs/ia/PROMPTS.md` y revisar cada uno.
-6. Crear una clave NASA nueva y retirar la que se compartió en el chat.
+1. Cada integrante ejecuta `npm test`, `npm run check` y revisa `data/curated/manifest.json`.
+2. Decidir nombre definitivo del juego y sitio principal (se recomienda Marte para aprovechar el retraso de comunicación; la Luna sirve como tutorial).
+3. Revisar y ajustar `content/cards.json` (ya creado con las seis cartas iniciales) y `content/balance.json`.
+4. Implementar el bucle mínimo de 30 sols (`src/sim/`) y la interfaz web (`src/ui/`) usando `scheduleEvents`.
+5. Pedir un resumen infantil por estudio con `docs/ia/PROMPTS.md`, aprobar cada uno (`reviewedByHuman: true`) y anotarlo en `docs/ia/REGISTRO.md`.
+6. Crear una clave NASA nueva en `.env`, retirar la compartida en el chat y regenerar `apod.json`.

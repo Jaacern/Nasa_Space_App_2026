@@ -1,57 +1,60 @@
-# Lo que requiere trabajo manual
+# Pendientes manuales y procesos abiertos del proyecto
 
-Todo lo que se podía automatizar ya está automatizado y probado. Esto es lo que **solo una persona puede hacer**, por qué, y cómo.
+Estado auditado el `14-11-2026` para **ambos subproyectos** (`Outpost Run` en raíz y `ARES FORGE` en `roblox-blender/`).
 
-Estado del 14 de noviembre de 2026. Marca cada casilla cuando se haga.
+---
 
-## Qué ya NO necesita trabajo manual
+## Qué ya está automatizado y verificado (`Outpost Run`)
 
-Probado hoy con `npm run check:apis` (6 de 6 fuentes respondieron y pasaron el saneado):
+Comprobado con `npm test` (`23/23` OK) y `npm run check` (`8` fuentes en `CATALOG`, `9` snapshots presentes en `data/curated/`):
 
-| Fuente | Acceso | Estado |
+| Fuente | Acceso | Estado en `manifest.json` |
 |---|---|---|
-| DONKI (clima espacial) | Sin clave | Automático, en vivo y en snapshot |
-| RadLab (radiación) | Sin clave | Automático (siempre con rango de fechas) |
-| OSDR (estudios) | Sin clave | Automático |
-| Mars Trek (capas WMTS) | Sin clave | Automático |
-| NeoWs (asteroides) | Clave NASA | Automático con clave |
-| InSight (clima de Marte) | Clave NASA | Automático con clave; ya hay snapshot |
+| DONKI (clima espacial) | Sin clave (`ccmc.gsfc.nasa.gov`) | OK (`104` eventos + `4` escenarios) |
+| RadLab (radiación orbital) | Sin clave (`visualization.osdr.nasa.gov`) | OK (`4` sitios) |
+| OSDR (biología y salud espacial) | Sin clave (`osdr.nasa.gov`) | OK (`26` estudios) |
+| Mars Trek (capas WMTS) | Sin clave (`trek.nasa.gov`) | OK (`1` capa base MOLA) |
+| Rover Photos (Perseverance y Curiosity) | Sin clave (`mars.nasa.gov`) | OK (`6` fotos) |
+| InSight (clima de Marte 2020) | Clave NASA (`api.nasa.gov`) | OK (`7` sols, archivo congelado) |
+| CSA (STEM y producción de alimentos) | Sin clave (`asc-csa.gc.ca`) | OK (`64` enlaces) |
+| APOD (imagen astronómica del día) | Clave NASA (`api.nasa.gov`) | Error `HTTP 500` en última ingesta; snapshot `apod.json` en estado provisional (`reusable: false`) |
 
-## 1. Imprescindible antes de programar
+---
 
-- [ ] **Crear una clave NASA nueva.** La que se pegó en el chat está expuesta.
-  - Cómo: pide una en <https://api.nasa.gov/>, cópiala a `.env` (`cp .env.example .env`) como `NASA_API_KEY=...`.
-  - Por qué es manual: la clave es personal y no debe pasar por ningún chat.
-  - Después ejecuta: `npm run check:apis` y `npm run ingest -- --only=neo,insight,apod`.
-  - Motivo concreto: hoy la prueba con `DEMO_KEY` se agotó (HTTP 429) y por eso `asteroids.json` y `apod.json` no se regeneraron. `mars_weather.json` sí existe, creado a partir de una respuesta real guardada del mismo día.
-- [ ] **Decidir el nombre del juego y la tecnología del frontend.** Recomendación: HTML + JavaScript con módulos ES, sin compilador, porque la capa de datos ya es ES modules.
-- [ ] **Hacer el primer commit y subir el repositorio.** Nada está commiteado todavía. Revisa antes que `git status` no muestre `.env`.
+## Parte A — Pendientes de `Outpost Run` (raíz Node/Web)
 
-## 2. Verificaciones que no pude hacer yo
+### 1. Credenciales, licencia y repo
 
-- [ ] **Revisar la pestaña Resources del desafío.** El enunciado dice que pueden añadirse recursos antes del hackatón. No tengo acceso a esa página.
-- [ ] **Leer las reglas del evento sobre uso de IA y atribución.** No las verifiqué. Si exigen declarar el uso de IA, usen el registro `docs/ia/REGISTRO.md` (se describe en `docs/ia/PROMPTS.md`).
-- [ ] **Leer "Notices and copyright" de la CSA.** La página enlazada desde `https://www.asc-csa.gc.ca/eng/about/` no pude abrirla. Hasta que alguien la lea, solo se enlaza a la CSA, no se copian textos ni imágenes.
-- [ ] **Probar en un navegador real.** Verifiqué CORS leyendo cabeceras con Node, no desde una página web. Cuando exista la primera pantalla, abrir la consola del navegador y comprobar que `/api/...` y las teselas de Mars Trek cargan.
-- [ ] **Verificar las afirmaciones físicas de `content/balance.json`.** Ejemplo: el ciclo largo de noche lunar y la frecuencia de tormentas de polvo en Marte son valores de juego. Antes de decirlos en pantalla como hechos, confírmenlos con una fuente de NASA.
+- [ ] **Rotar `NASA_API_KEY` expuesta (P-04)** y configurar `.env` local.
+  - Cómo: solicitar clave nueva en <https://api.nasa.gov/>, copiar `.env.example` a `.env` y pegar `NASA_API_KEY=...`.
+  - Después ejecutar `npm run check:live` y `npm run ingest -- --only=apod` para reemplazar el snapshot provisional de APOD.
+- [ ] **Definir archivo `LICENSE`** en la raíz del repositorio (decisión abierta del equipo; ver `roblox-blender/README.md`).
 
-## 3. Decisiones de contenido
+### 2. Desarrollo de juego y UI faltantes
 
-- [ ] **Elegir a mano los estudios OSDR que se usarán** (2 o 3 por tema). El buscador devuelve coincidencias de texto: por ejemplo, para "radiación" salió OSD-72 (microbiota de ratón), que encaja flojo.
-- [ ] **Revisar los resúmenes infantiles.** La IA los redacta con `docs/ia/PROMPTS.md`, pero una persona debe leerlos y poner `reviewedByHuman: true`. Hoy hay 26 estudios pendientes y el juego los oculta.
-- [ ] **Elegir el sitio marciano y las capas.** Mars Trek es una aplicación web interactiva que no pude leer. Explórenla en <https://trek.nasa.gov/mars/>, elijan una región y anoten la capa y las coordenadas. Después se añade la capa a `scripts/ingest.mjs` (lista `MARS_LAYERS`).
-- [ ] **Escribir y revisar los textos del juego** (cartas, glosario, informe final). `content/glossary.json` es un borrador.
+- [ ] **Implementar bucle de juego (`src/sim/`) e interfaz jugable (`src/ui/`)** reemplazando la pantalla mínima de prueba [`public/index.html`](../public/index.html).
+- [ ] **Crear la pantalla "De dónde vienen los datos"** usando `attributionLines()` (`src/data/worldState.mjs`), fechas de snapshot y aviso de no patrocinio de NASA/CSA.
+- [ ] **Probar el frontend en navegador real** contra `npm run api` (`/api/...` y teselas WMTS de Mars Trek).
 
-## 4. Antes de la demo
+### 3. Curación de contenido y verificaciones externas
 
-- [ ] **Última ingesta y commit de `data/curated/`.** Así el juego funciona aunque falle la red del evento: `npm run ingest`, luego `npm run validate`, luego commit.
-- [ ] **Probar con niños de 7 a 12 años** (aunque sea uno o dos). Es la única forma de saber si el texto y las reglas se entienden.
-- [ ] **Escribir la página "De dónde vienen los datos"** con las fuentes, las fechas de cada copia y el aviso de que NASA y la CSA no respaldan el proyecto. `attributionLines()` ya genera las líneas.
-- [ ] **Grabar el video y preparar el pitch.**
+- [ ] **Elegir manualmente los estudios OSDR** por tema y redactar/aprobar resúmenes infantiles con [`docs/ia/PROMPTS.md`](ia/PROMPTS.md), dejando `reviewedByHuman: true` (hoy hay **26** estudios pendientes que `pickFact()` oculta).
+- [ ] **Registrar el uso de IA** en [`docs/ia/REGISTRO.md`](ia/REGISTRO.md) si las reglas del evento lo exigen.
+- [ ] **Revisar reglas del desafío (Resources + IA)** y **"Notices and copyright" de la CSA** (<https://www.asc-csa.gc.ca/eng/terms.asp> / `eng/about/`). Mientras no se confirme licencia por recurso, solo enlazar y no copiar textos o imágenes.
+- [ ] **Elegir región y capas finales de Mars Trek** en <https://trek.nasa.gov/mars/> y actualizar `MARS_LAYERS` en `scripts/ingest.mjs`.
+- [ ] **Validar valores físicos de [`content/balance.json`](../content/balance.json)** frente a fuentes NASA y completar [`content/glossary.json`](../content/glossary.json) (actualmente borrador de 6 términos).
+- [ ] **Probar el prototipo con público de 7 a 12 años** para validar comprensión de cartas, textos y reglas.
+- [ ] **Ejecutar ingesta final pre-demo** (`npm run ingest`, luego `npm run check`) y commitear `data/curated/` antes de presentar.
 
-## Orden sugerido
+---
 
-1. Clave nueva y primer commit (15 minutos).
-2. Una persona abre la pestaña Resources y las reglas de IA (15 minutos).
-3. Alguien explora Mars Trek y propone el sitio (30 minutos).
-4. Mientras tanto, el resto empieza el bucle de juego con `npm run api` y los datos actuales.
+## Parte B — Pendientes de `ARES FORGE` (`roblox-blender/`)
+
+Detalle completo y dueños en [`roblox-blender/docs/DECISIONES.md`](../roblox-blender/docs/DECISIONES.md#L131-L153). Resumen de lo abierto:
+
+- [ ] **Publicación y Studio (`P-01`, `P-02`, `P-03`):** fijar `Lighting.Technology = Future` manualmente en Studio, guardar y publicar el lugar, y comprobar guardado/carga real de `DataStore` (`AresForgeMeta_v1`).
+- [ ] **Rendimiento y móvil (`P-05`, `P-10`, `P-11`):** medir FPS en primer plano sin el capado de 15 FPS de Studio en segundo plano (meta: 60 FPS PC / 30 FPS móvil; `roblox-blender/docs/perf/RENDIMIENTO.md`), probar controles táctiles >= 44 px y medir sacudida de cámara frente a 4 px.
+- [ ] **Balance y alcance (`F5`, `P-08`):** completar 5 partidas de prueba registradas (`0/5` hechas en `BALANCE_V0.md`) y decidir alcance definitivo de Q10 (héroes/objetos desbloqueables vs 8 mejoras actuales).
+- [ ] **Contenido NASA y diseño (`P-06`, `P-07`, `P-15`, `REFERENCIAS.md`):** verificar fichas NTRS para antena de alta ganancia y generador de oxígeno, decidir llamada en vivo (proxy + `HttpService`) vs mantener snapshot DONKI, alinear nombres de biomas del prompt maestro con `Content.Biomes`, agregar consejo de "kitear" en `Content.Tutorial` y decidir si `Fx.luau` reemplaza `GothamBlack`.
+- [ ] **Audio, demo y concurso (`P-12`, `P-13`, `P-14`):** incorporar 3 pistas musicales en `Balance.Audio.Music` y SFX propios (`AUDIO.md`), confirmar fecha/reglas/formato de entrega del concurso, completar 3 ensayos seguidos sin fallos (`DEMO_GUION.md`) y grabar video respaldo + tráiler (`TRAILER.md`).
+- [ ] **Entorno MCP local (`BLENDER_PIPELINE.md`):** reemplazar marcadores `<RUTA_...>` en `roblox-blender/.mcp.json` y `tools/blender_mcp/config.json`, activar *Enable Studio as MCP server* y validar `roblox-export` en Studio.

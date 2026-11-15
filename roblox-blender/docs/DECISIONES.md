@@ -21,9 +21,9 @@ La columna "Estado en el código" compara cada decisión con el juego real del 1
 | Q9 | Escenarios en la v1 | 3 biomas | Cumple. 3 biomas que cambian en 6:00 y 12:00 |
 | Q10 | Meta-progresión | Héroes y objetos que se desbloquean entre partidas | **Desviación (ver P-08):** hay 1 héroe y 8 mejoras permanentes; no hay desbloqueo de héroes ni de objetos |
 | Q11 | Tema | Espacio NASA, con referencias NTRS verificadas (sección 12) | Cumple. Dos fichas NTRS verificadas en uso. Ver `docs/NASA_APIS.md` |
-| Q12 | Estilo visual | 3D estilizado tipo Risk of Rain 2 | Arte provisional con piezas de Roblox. Las mallas de Blender están pendientes |
+| Q12 | Estilo visual | 3D estilizado tipo Risk of Rain 2 | 28 mallas Blender integradas en Studio mediante `EditableMesh` (`FixedSize = true`, ver D-11 y D-13) |
 | Q13 | Paleta | Oscura con acentos saturados por función | Cumple. Jugador cian, enemigos rojo o magenta, recompensas doradas, peligro naranja (`game/src/shared/Visuals.luau`) |
-| Q14 | Reparto Blender / Roblox | Blender: personajes, jefes y props. Roblox: escenario, luz, interfaz y efectos | Roblox cumple su parte. Blender: ver `docs/ASSETS.md` |
+| Q14 | Reparto Blender / Roblox | Blender: personajes, jefes y props. Roblox: escenario, luz, interfaz y efectos | Cumple. 28 modelos Blender exportados e integrados en cliente (`docs/ASSETS.md`, D-11) |
 | Q15 | Rendimiento | 60 FPS en PC, 30 FPS en móvil | **Sin medir.** Ver `[PENDIENTE]` P-05 |
 | Q16 | Audio | Música por intensidad con 3 capas | Hay 3 ranuras (calma, combate, jefe). No hay pistas |
 | Q17 | Interfaz | Estilo telemetría NASA, con iconos grandes | Cumple. Sistema "Dark Telemetry" (D-09) |
@@ -124,9 +124,9 @@ El prompt maestro es la intención. El código es la realidad. Estas son las dif
 | Q10 | Q10: héroes y objetos que se desbloquean | Un héroe; 8 mejoras de estadísticas | Decidir: ampliar o reducir Q10 (P-08) |
 | D-02 | Sección 7.1: `ServerStorage/Templates` | `ReplicatedStorage/Templates` | Ya registrada |
 | Q18 | Sección 9: sacudida de 4 px | `ShakeMax = 0.35` studs | Medir en pantalla y ajustar (P-10) |
-| Q19 | 60 segundos guiados | 7 pasos sin temporizador | Medir la duración real |
+| Q19 | 60 segundos guiados | 7 pasos guiados + práctica libre (`Hud.luau` actualizado a `"7 pasos · recomendado"`) | Coherente; medir duración real en ensayo |
 | Q5 | 3 rarezas de objeto | Objetos con 3 rarezas; cartas con 4 | Ya coherente: las 4 rarezas son de las cartas |
-| `docs/NASA_APIS.md` | Cita "sección 14" del prompt | Las reglas NASA están en la sección 13.5 | Corregir la cita |
+| `docs/NASA_APIS.md` | Citaba "sección 14" y al repo como ajeno | Actualizado a "sección 13.5" y alineado con el repo raíz | Corregido |
 
 ## 4. Pendientes
 

@@ -1,10 +1,10 @@
 # Catálogo de APIs y recursos oficiales de NASA
 
-Verificado el 14-11-2026. Alcance: las APIs que usa el repositorio `Jaacern/Nasa_Space_App_2026` y los recursos oficiales de NASA que puede usar el juego (mega prompt v3, sección 14).
+Verificado el 14-11-2026. Alcance: las APIs que usa la raíz de este repositorio (`Outpost Run`) y los recursos oficiales de NASA que puede usar `ARES FORGE` (mega prompt v3, sección 13.5).
 
 ## 1. Cómo se verificó
 
-- **Repositorio** `Jaacern/Nasa_Space_App_2026` (rama `main`). Se leyó; no se ejecutó (es código de terceros y no tiene archivo de licencia).
+- **Raíz del repositorio (`Outpost Run`):** código Node en la carpeta superior del mismo repo (`Jaacern/Nasa_Space_App_2026`), sin archivo `LICENSE` definido todavía en la raíz.
 - **Llamadas de solo lectura** (GET y HEAD) con `DEMO_KEY` o sin clave, desde PowerShell, con User-Agent genérico. No se usó ninguna clave del equipo ni de ninguna persona.
 - **Documentación oficial** leída por búsqueda y lectura de páginas. Cuando una página no se pudo leer completa, se indica.
 
@@ -52,20 +52,18 @@ Estados: **Verificado** = respondió con datos en esta comprobación. **Doc** = 
 - **APOD:** si el campo `copyright` no es nulo, no usar la imagen.
 - **CSA** (recursos del repo): uso educativo no comercial citando a la CSA y sin sugerir respaldo. No usar su logotipo.
 
-## 5. Repositorio Jaacern/Nasa_Space_App_2026
+## 5. Raíz del repositorio `Jaacern/Nasa_Space_App_2026` (`Outpost Run`)
 
 **Lo que aporta:**
 - Patrón sólido: servidor local `127.0.0.1:8787`, respuestas saneadas con contrato de esquema, snapshots en `data/curated/`. Si una fuente falla, no sobrescribe el snapshot anterior.
-- Fuentes que usa: DONKI (ruta CCMC nueva), RadLab, OSDR (búsqueda y v2), Mars Trek (WMTS), fotos de rovers (mars.nasa.gov), InSight (archivo), APOD (error 500 hoy), CSA (enlaces).
+- Fuentes que usa: DONKI (ruta CCMC nueva), RadLab, OSDR (búsqueda y v2), Mars Trek (WMTS), fotos de rovers (`mars.nasa.gov`), InSight (archivo), APOD (`HTTP 500` en la última ingesta; snapshot provisional `reusable: false`), CSA (enlaces).
 - Último `manifest.json`: DONKI 104 eventos; RadLab 4 sitios; OSDR 26 estudios; Mars Trek 1 capa; rover 6 fotos; InSight 7 soles (congelado); APOD error; CSA 64 enlaces.
 
-**Inconsistencias encontradas (no corregidas: es código de otro equipo):**
-1. La documentación cita `npm run demo`, `npm run validate`, `npm run check:apis`, `npm run ingest:donki` y `scripts/demo.mjs`. El `package.json` solo define `api`, `ingest`, `check`, `check:live` y `test`. La documentación parece más nueva que la copia pública.
-2. `docs/API-LOCAL.md` documenta `/api/asteroids`, `getAsteroids`, `ASTEROIDS_SCHEMA` y `test/fixtures/neows_feed.hostile.json`. Ninguno existe en esta copia.
-3. El repo afirma que `api.nasa.gov/mars-photos` responde 404. Nuestra prueba sin clave dio 403. Es coherente con el cambio a `mars.nasa.gov`, pero no está confirmado.
-4. `check:apis` se describe con seis fuentes en un sitio y siete en otro.
-5. Dos documentos del repo mencionan que se compartió una clave NASA en un mensaje. **No se reproduce aquí. Recomendación: rotarla** y no volver a pegarla en chats ni en repositorios.
-6. No hay archivo de licencia. Sin licencia explícita no se reutiliza su código; solo se toma como referencia de arquitectura.
+**Estado tras auditoría del 14-11-2026:**
+1. Se actualizaron `README.md`, `docs/API-LOCAL.md`, `docs/PENDIENTES-MANUALES.md`, `docs/PLAN-JUEGO-Y-DATOS.md`, `content/cards.json` y `scripts/ingest.mjs` para eliminar referencias obsoletas (`demo`, `validate`, `check:apis`, `ingest:donki`, `/api/asteroids`, `getAsteroids`, `ASTEROIDS_SCHEMA`).
+2. Nuestra prueba de `api.nasa.gov/mars-photos` sin clave devolvió `403`, mientras el código raíz registra `404 "No such app"` y resuelve fotos directamente desde `mars.nasa.gov` sin clave.
+3. Dos documentos del repo (`docs/investigacion-recursos-nasa-csa.md` y `docs/PENDIENTES-MANUALES.md`) mencionan una clave NASA expuesta en chat. **Pendiente rotarla (P-04)** y no pegarla en chats ni repositorios.
+4. Sigue sin archivo `LICENSE` en la raíz del repositorio (decisión pendiente del equipo).
 
 Búsqueda de patrones de claves en el código del repo: sin coincidencias. `.env.example` no tiene valor.
 

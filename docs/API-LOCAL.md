@@ -1,40 +1,44 @@
 # API local y saneado de datos
 
-Una capa entre las APIs de NASA y el juego. El juego pide datos a **tu propio servidor**; el servidor llama a NASA, limpia la respuesta y la entrega con un formato fijo. Así:
+Capa intermedia entre las APIs de NASA/CSA y `Outpost Run`. El juego pide datos a **su propio servidor local** (`127.0.0.1:8787`); el servidor consulta, sanea, valida el contrato y entrega JSON con formato fijo:
 
-- la clave de NASA nunca llega al navegador;
-- el juego no sufre las diferencias de CORS entre fuentes;
-- una respuesta mal formada no rompe la pantalla (se usa el snapshot);
-- cada respuesta dice si es **en vivo** o **copia guardada**.
+- `NASA_API_KEY` nunca llega al navegador;
+- el frontend evita las diferencias de CORS entre fuentes;
+- si una llamada externa falla o rompe el esquema, el servidor responde con el snapshot guardado;
+- cada respuesta declara `meta.mode` (`"live"` o `"snapshot"`) y la cabecera `X-Data-Mode`.
 
-## Arrancar
+## Arrancar y comprobar
 
 ```bash
-npm run api            # http://127.0.0.1:8787  (abre / para ver la lista)
-npm test               # 15 pruebas sin red
-npm run check:apis     # prueba las 6 fuentes en vivo
+npm run api            # http://127.0.0.1:8787 (abre / para ver el catálogo)
+npm test               # 23 pruebas sin red (unitarias + integración API)
+npm run check          # valida contenido, catálogo y snapshots en disco
+npm run check:live     # además prueba fuentes reales y busca fugas de claves
 ```
 
-Variables opcionales (archivo `.env`, que Git ignora): `NASA_API_KEY`, `PORT`, `HOST`.
+Variables opcionales (`.env`, ignorado por Git): `NASA_API_KEY`, `PORT`, `HOST`.
 
 ## Endpoints
 
-Todos son `GET`. Sin parámetros devuelven el snapshot de `data/curated/` y funcionan sin red.
+Todos usan `GET` (o `HEAD`). Sin parámetros devuelven los snapshots de `data/curated/` y funcionan sin red.
 
 | Endpoint | Parámetros | Devuelve |
 |---|---|---|
-| `/api/health` | | Estado, si hay clave configurada (nunca su valor) y estado de cada fuente |
-| `/api/space-weather` | `live=1`, `days=1..30` | Eventos de clima espacial normalizados |
-| `/api/scenarios` | | Lista de escenarios rejugables con dificultad |
-| `/api/scenarios/:id` | | Un escenario con todos sus eventos |
+| `/api/catalog` | | Catálogo de las 8 fuentes y su uso en el juego |
+| `/api/health` | | Estado del servidor, si hay `NASA_API_KEY` configurada (nunca su valor) y estado de `manifest.json` |
+| `/api/space-weather` | `live=1`, `days=1..30` | Eventos de clima espacial normalizados (DONKI) |
+| `/api/scenarios` | | Lista de 4 escenarios rejugables con dificultad |
+| `/api/scenarios/:id` | | Un escenario específico con todos sus eventos |
 | `/api/radiation` | | Dosis medidas por sitio (ISS, órbita lunar, Orion, órbita de Marte) |
-| `/api/osdr` | `topic=bone\|muscle\|immune\|radiation\|plants\|sleep` | Temas, o los estudios de un tema |
-| `/api/mars-weather` | `live=1` | Temperatura, presión y viento de InSight |
+| `/api/osdr` | `topic=bone\|muscle\|immune\|radiation\|plants\|sleep` | Lista de temas o los estudios de un tema |
 | `/api/mars-layers` | | Plantilla de teselas WMTS de Mars Trek |
-| `/api/asteroids` | `date=YYYY-MM-DD`, `live=1` | Ejemplo de estructura con NeoWs |
+| `/api/mars-weather` | `live=1` | Temperatura, presión y viento en Marte (InSight, archivo congelado de 2020) |
+| `/api/rover-photos` | `live=1` | Fotos crudas reales de Perseverance y Curiosity (`mars.nasa.gov`) |
+| `/api/apod` | `live=1` | Imagen astronómica del día (APOD; verificar `apod.reusable`) |
+| `/api/csa` | `live=1` | Títulos y enlaces educativos de la CSA |
 | `/api/manifest` | | Resultado de la última ingesta por fuente |
 
-`live=1` intenta la fuente real durante una caché de 10 a 60 minutos. Si falla, responde con el snapshot y añade `meta.fallbackReason`.
+`live=1` intenta la fuente real con caché en memoria de `10` minutos (`/api/space-weather`) o `60` minutos (`/api/mars-weather`, `/api/rover-photos`, `/api/apod`, `/api/csa`). Si falla, responde el snapshot con `meta.fallbackReason`.
 
 ### Forma de la respuesta
 
@@ -43,7 +47,7 @@ Todos son `GET`. Sin parámetros devuelven el snapshot de `data/curated/` y func
   "meta": {
     "source": "NASA CCMC DONKI",
     "mode": "snapshot",
-    "retrievedAt": "2026-11-14T14:34:34.798Z",
+    "retrievedAt": "2026-11-14T14:40:15.422Z",
     "sourceUrl": "https://ccmc.gsfc.nasa.gov/DONKI/api/",
     "fallbackReason": "solo aparece si live=1 falló"
   },
@@ -52,37 +56,44 @@ Todos son `GET`. Sin parámetros devuelven el snapshot de `data/curated/` y func
 }
 ```
 
-Errores: `{ "error": { "code": "unknown_topic", "message": "..." } }` con estado 400, 404, 405, 429 o 503. Los mensajes nunca incluyen URLs con claves.
+Errores: `{ "error": { "code": "unknown_topic", "message": "..." } }` con estado `400`, `404`, `405`, `429` o `503`. Los mensajes pasan por `redact()` y nunca exponen URLs con claves.
 
-### Ejemplo: asteroides (la estructura de referencia)
+### Ejemplo real: fotos de rovers (`/api/rover-photos`)
 
 ```bash
-curl "http://127.0.0.1:8787/api/asteroids?live=1&date=2026-11-14"
+curl "http://127.0.0.1:8787/api/rover-photos?live=1"
 ```
 
 ```json
 {
-  "meta": { "source": "NASA NeoWs", "mode": "live", "retrievedAt": "..." },
-  "date": "2026-11-14",
-  "count": 5,
-  "hazardousCount": 0,
-  "objects": [
+  "meta": {
+    "source": "NASA Mars Raw Images (Perseverance, Curiosity)",
+    "mode": "snapshot",
+    "retrievedAt": "2026-11-14T15:29:21.742Z",
+    "sourceUrl": "https://mars.nasa.gov/rss/api/",
+    "warnings": []
+  },
+  "count": 6,
+  "photos": [
     {
-      "id": "…", "name": "(2020 AB)", "hazardous": false,
-      "diameterM": { "min": 10.1, "max": 22.5 },
-      "missDistanceKm": 15974992, "missDistanceLunar": 41.54,
-      "velocityKmS": 7.27, "approachTime": "2026-Nov-14 03:38",
-      "jplUrl": "https://ssd.jpl.nasa.gov/…"
+      "id": "...",
+      "rover": "Perseverance",
+      "sol": 2024,
+      "earthDate": "2026-10-30",
+      "camera": "MCZ_LEFT",
+      "title": "Mars Perseverance Sol 2024: Left Mastcam-Z Camera",
+      "imageUrl": "https://mars.nasa.gov/...jpg",
+      "pageUrl": "https://mars.nasa.gov/..."
     }
   ]
 }
 ```
 
-La respuesta cruda de NeoWs trae `links.next` con la clave dentro (`api_key=...`). El adaptador **no copia** esos campos: arma el objeto de salida desde cero.
+El adaptador `getRoverPhotos` no copia el JSON crudo: filtra solo cámaras de paisaje (`SCENERY_CAMERA`), convierte `http` a `https`, exige dominio `nasa.gov`, elimina posibles parámetros de clave en `safeUrl()` y valida `ROVER_PHOTOS_SCHEMA`.
 
 ## Consumir desde el juego
 
-Si abres el juego desde este mismo servidor (la página de prueba `public/index.html` se ve en `http://127.0.0.1:8787/public/index.html`), no hay CORS que configurar:
+Si abres el juego desde este servidor (`http://127.0.0.1:8787/public/index.html`), no requiere configuración adicional de CORS:
 
 ```js
 const res = await fetch("/api/scenarios/gannon-2024-05");
@@ -90,37 +101,36 @@ const { scenario, meta } = await res.json();
 // meta.mode === "snapshot": muéstralo como "copia guardada", nunca como "en vivo"
 ```
 
-Si prefieres no usar el servidor, `src/data/worldState.mjs` lee directamente `data/curated/*.json` (ver `docs/PLAN-JUEGO-Y-DATOS.md`, sección 3.4).
-
-El servidor sirve estas carpetas como archivos estáticos: `/src/`, `/data/curated/`, `/content/` y `/public/`. Cualquier otra ruta (`.env`, `scripts/`, `package.json`) devuelve 404; hay una prueba que lo comprueba.
+También se sirve de forma estática `/src/`, `/data/curated/`, `/content/` y `/public/` para cargar `src/data/worldState.mjs` directamente (ver [`docs/PLAN-JUEGO-Y-DATOS.md`](PLAN-JUEGO-Y-DATOS.md), sección 3.4). Cualquier otra ruta (`.env`, `scripts/`, `package.json`) devuelve `404` y se verifica en `test/server.test.mjs`.
 
 ## Qué se sanea y dónde
 
-Todo lo externo pasa por `src/api/sanitize.mjs` antes de existir en el proyecto.
+Todo lo externo pasa por [`src/api/sanitize.mjs`](../src/api/sanitize.mjs) antes de persistirse o servirse:
 
 | Riesgo | Defensa |
 |---|---|
-| Clave en una URL o en un error | `redact()` oculta `api_key` y el valor real de `NASA_API_KEY` |
-| Clave dentro de un enlace de la respuesta | `safeUrl()` quita parámetros secretos, incluso dentro del fragmento `#/?...` |
-| HTML o texto largo en un nombre | `cleanText()` quita etiquetas y limita la longitud |
-| Número inválido (`"NaN"`, `-5`, `99999`) | `num()` devuelve `null` si no es finito o está fuera de rango |
-| Enlace a un dominio ajeno | `safeUrl()` solo acepta `nasa.gov` y lo fuerza a `https` |
-| Cambio de formato de la API | `assertValid()` comprueba el contrato; si falla, se sirve el snapshot |
-| Evento sin id, hora o tipo | `sanitizeEvent()` lo descarta |
+| Clave en una URL o en un error | `redact()` oculta `api_key`, `apikey`, `access_token` y el valor real de `NASA_API_KEY` |
+| Clave dentro de un enlace o fragmento | `safeUrl()` elimina parámetros secretos incluso dentro de `#/?...` |
+| HTML o texto largo | `cleanText()` quita etiquetas y recorta longitud |
+| Número inválido (`"NaN"`, fuera de rango) | `num()` devuelve `null` si no es finito o sale de límites |
+| Enlace fuera de dominios confiables | `safeUrl()` valida la lista blanca de hosts y fuerza `https` |
+| Cambio inesperado en una API | `assertValid()` valida el contrato; si falla, el servidor cae al snapshot |
+| Evento DONKI sin id, tipo o fecha | `sanitizeEvent()` lo descarta |
 
-Las pruebas de `test/api.test.mjs` incluyen una respuesta "hostil" (`test/fixtures/neows_feed.hostile.json`) y una prueba real de InSight. Una de ellas encontró un fallo real el primer día (la clave seguía en el fragmento de una URL) y ya está corregido.
+Las pruebas de `test/api.test.mjs` cubren saneado, respuestas "hostiles" inline (p. ej. URLs con `api_key` inyectada en `getRoverPhotos`), contratos de `APOD`, `InSight`, `DONKI` y parser HTML de `CSA` usando fixtures en `test/fixtures/`.
 
 ## Añadir una fuente nueva
 
-1. Copia el patrón de `getAsteroids` en `src/api/sources.mjs`.
-2. Define su esquema de contrato (`ASTEROIDS_SCHEMA` es el modelo).
-3. Añade un ejemplo en `test/fixtures/` y una prueba en `test/api.test.mjs`.
-4. Añade el endpoint en `server/api.mjs` con `liveOrSnapshot`.
-5. Si debe tener copia guardada, añade un trabajo en `scripts/ingest.mjs` (`ingestNeo` es el modelo).
+1. Registra la fuente y su `gameUse` en `CATALOG` (`src/api/catalog.mjs`).
+2. Copia el patrón de `getRoverPhotos` en `src/api/sources.mjs` y define su esquema de contrato (como `ROVER_PHOTOS_SCHEMA` o `APOD_SCHEMA`).
+3. Añade un fixture en `test/fixtures/` y pruebas unitarias en `test/api.test.mjs`.
+4. Expón el endpoint en `server/api.mjs` mediante `liveOrSnapshot`.
+5. Si requiere snapshot offline, añade su trabajo en `JOBS` (`scripts/ingest.mjs`, siguiendo `ingestRover`) y su validación en `scripts/check.mjs`.
 
 ## Límites conocidos
 
-- **`DEMO_KEY`:** observamos un límite de 10 solicitudes por hora y se agotó en las pruebas. Usa tu clave.
-- **RadLab:** solo se consulta por lotes en `npm run ingest`, siempre con rango de fechas. No hay modo `live` porque sin rango da 504.
-- **InSight:** es un archivo congelado de 2020; la respuesta marca `frozenArchive: true` y no debe presentarse como clima actual.
-- **Una instancia, sin base de datos:** la caché es de memoria. Suficiente para el hackatón; para producción hace falta otro diseño.
+- **`api.nasa.gov/mars-photos`:** la API heredada devolvió 404 `"No such app"` (verificado el `14-11-2026`); se reemplazó por los feeds oficiales de `mars.nasa.gov` sin clave.
+- **`DEMO_KEY`:** límite bajo observado (10/hora en pruebas, propensa a `HTTP 429`). APOD requiere clave propia en `.env`.
+- **RadLab:** solo se consulta por lotes en `npm run ingest` con intervalo de fechas; sin ventana temporal devuelve `HTTP 504`.
+- **InSight:** archivo congelado de 2020 (`frozenArchive: true`, último sol `2020-10-25`); nunca presentarlo como clima actual.
+- **Estado en memoria:** tanto la caché de respuestas como el limitador de `120` peticiones/minuto por IP viven en memoria de proceso.
