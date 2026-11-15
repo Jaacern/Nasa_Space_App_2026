@@ -40,9 +40,8 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 ## Siguiente trabajo (15-11-2026)
 
-0. **Bloqueante:** activar *Allow Mesh / Image APIs* en Experience Settings > Security del lugar «Núcleo de Ares»; sin eso no cargan las mallas.
-1. Una persona mira el menú en Studio (insignia girando, lunas) y escucha la mezcla de audio.
-2. Guardar el lugar a mano una vez en Studio.
-3. Pulido pendiente: revisar contra fuente los datos de las cartas (`docs/NASA_APIS.md` sección 10), destello de boca del arma, retroceso del héroe al disparar. (Retroceso de enemigos y fuente de impacto ya hechos.)
+1. Una persona escucha la mezcla de audio (el menú ya se verificó por captura).
+2. El lugar está en Roblox como «Núcleo de Ares»; guardar con `save_place` tras cada avance. No publicar sin pedirlo.
+3. Pulido pendiente: revisar contra fuente los datos de las cartas (`docs/NASA_APIS.md` sección 10), retroceso del héroe al disparar. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
 4. Pendientes `P-01` a `P-15` que dependen del equipo.
 5. Tráiler, al final.

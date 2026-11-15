@@ -100,6 +100,12 @@ local function flat(shape: Enum.PartType, color: Color3, transparency: number): 
 end
 
 local UPR = CFrame.Angles(0, 0, math.rad(90))
+
+-- Destello de boca: una esfera de luz que dura un instante en el origen del disparo.
+local MUZZLE_TIME = 0.06
+local MUZZLE_COLOR = Color3.fromRGB(150, 240, 255)
+local muzzle: Part? = nil
+local muzzleT = 0
 local function setCircle(p: Part, x: number, z: number, r: number, y: number)
 	p.Size = Vector3.new(0.12, math.max(0.1, r * 2), math.max(0.1, r * 2))
 	p.CFrame = CFrame.new(x, y, z) * UPR
@@ -242,6 +248,16 @@ end
 function Renderer.shot(id: number, x: number, z: number, dx: number, dz: number, speed: number, range: number, boom: boolean)
 	local m = take("shot")
 	shots[id] = { m = m, x = x, z = z, dx = dx, dz = dz, speed = speed, left = range }
+	local mz = muzzle
+	if not mz then
+		mz = flat(Enum.PartType.Ball, MUZZLE_COLOR, 0.2)
+		muzzle = mz
+	end
+	mz.CFrame = CFrame.new(x + dx * 2, playerPos.Y + 0.3, z + dz * 2)
+	muzzleT = MUZZLE_TIME
+	if boom then
+		Fx.shake(0.12)
+	end
 	Fx.play("shoot", if boom then 0.6 else 1)
 end
 
@@ -391,6 +407,17 @@ function Renderer.update(dt: number)
 		playerPos = hrp.Position
 	end
 	local px, pz = playerPos.X, playerPos.Z
+	if muzzleT > 0 and muzzle then
+		muzzleT -= dt
+		if muzzleT <= 0 then
+			muzzle.CFrame = FAR
+		else
+			local k = muzzleT / MUZZLE_TIME
+			local d = 1 + 1.8 * (1 - k)
+			muzzle.Size = Vector3.new(d, d, d)
+			muzzle.Transparency = 0.2 + 0.75 * (1 - k)
+		end
+	end
 	local feet = playerPos.Y - 2.9
 
 	-- Los avisos y el heroe no se congelan con el hitstop; los enemigos si.

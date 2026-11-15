@@ -144,3 +144,4 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
   - La sincronización por HTTP local queda bloqueada. Usar `tools/studio/push.py` (sin HTTP).
   - **Bloqueante:** las 30 mallas fallan con `EditableMesh is not accessible`. Hay que activar *Allow Mesh / Image APIs* en Experience Settings > Security. Mientras tanto el juego usa modelos básicos de respaldo.
   - DataStore pide activar *Enable Studio Access to API Services* en la misma pantalla (P de guardado).
+- Cuarta tanda (15-11-2026): el usuario activó *Allow Mesh / Image APIs* y el acceso de Studio a API. Verificado: consola limpia, las 30 mallas cargan, el guardado de progreso responde y el menú muestra la insignia girando sobre la nave con cielo ocre (captura correcta). Añadido destello de boca del arma (`Renderer.shot`, `MUZZLE_TIME`) y sacudida en disparos explosivos. El bloqueante de mallas queda resuelto.

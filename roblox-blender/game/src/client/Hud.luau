@@ -405,7 +405,7 @@ local function buildOverlays()
 		desc.Parent = card
 		label("DATO REAL", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 182), Size = UDim2.fromOffset(268, 16), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = card
 		local fact = label("", 17, { Position = UDim2.fromOffset(18, 199), Size = UDim2.fromOffset(268, 64), TextColor3 = T.text, TextTransparency = 0.18, ZIndex = Z.content, TextYAlignment = TOP, TextScaled = true })
-		new("UITextSizeConstraint", { MaxTextSize = 17, MinTextSize = 12 }).Parent = fact
+		new("UITextSizeConstraint", { MaxTextSize = 21, MinTextSize = 14 }).Parent = fact
 		fact.Parent = card
 		local lvlText = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(18, 268), Size = UDim2.fromOffset(268, 24), TextColor3 = T.dim, ZIndex = Z.content })
 		lvlText.Parent = card
