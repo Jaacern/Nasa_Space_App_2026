@@ -104,8 +104,28 @@ Content.Pieces = {
 }
 
 Content.Skills = {
-	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "Esquiva rápida que daña lo que cruza." },
-	{ name = "Pulso de escudo", short = "PULSO", key = "E", desc = "Empuja y daña alrededor. Da escudo." },
+	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "CD 8 s · Esquiva direccional invulnerable que atraviesa y daña enemigos cercanos." },
+	{ name = "Pulso de escudo", short = "ESCUDO", key = "E", desc = "CD 20 s · Onda expansiva que empuja enemigos y activa +35 de escudo visible por 6 s." },
+}
+
+Content.AutoWeapon = {
+	name = "Láser Táctico Automático",
+	short = "LÁSER",
+	key = "AUTO",
+	desc = "Disparo continuo al enemigo más cercano. Mejora su daño, cadencia, perforación y haz dividido.",
+}
+
+Content.ChestTiers = { "COFRE COMÚN", "COFRE RARO", "COFRE ÉPICO", "COFRE LEGENDARIO" }
+
+Content.Briefing = {
+	title = "INFORME TÁCTICO DE TRAJE Y ZONAS",
+	sub = "Revisa tus sistemas antes de entrar en combate (la simulación espera tu confirmación):",
+	sections = {
+		{ title = "LÁSER AUTOMÁTICO (PASIVA)", color = "cyan", text = "Apunta y dispara solo al hostil más cercano. Recoge cristales dorados para subir de nivel y escalar cartas hasta Legendaria en niveles altos." },
+		{ title = "IMPULSO RCS (ACTIVA · Q / X / BOTÓN RCS)", color = "gold", text = "CD 8 s · Propulsión instantánea con 0.45 s de invulnerabilidad. Úsalo para salir de zonas naranja de meteoros o rodear jefes." },
+		{ title = "PULSO DE ESCUDO (ACTIVA · E / B / BOTÓN ESCUDO)", color = "cyan", text = "CD 20 s · Detona un pulso protector de radio 18: empujón + daño en área y +35 de escudo visible en la barra cian por 6 s." },
+		{ title = "ZONAS DEL CRÁTER Y EVENTOS CÓSMICOS", color = "orange", text = "Explora las 5 zonas del mapa (Centro seguro, Norte +XP, Este +Ciencia, Sur +Velocidad, Oeste -CD). Evita lluvias de meteoros (niv. 5+) y contempla anomalías de agujero negro." },
+	},
 }
 
 Content.Meta = {
@@ -146,7 +166,8 @@ Content.Credits = {
 	"",
 	"HERRAMIENTAS",
 	"Roblox Studio (Luau) y Blender 4.5 LTS. Flujo de assets con skills de arjun988/blender-skills (licencia MIT).",
-	"Tipografías: Michroma, Bangers, Titillium Web y Roboto Mono (incluidas en Roblox).",
+	"Tipografías: Michroma, Sarpanch, Jura, Builder Sans, Bangers y Roboto Mono (incluidas en Roblox).",
+	"Eventos astrofísicos: NASA Chandra / NuSTAR / Event Horizon Telescope (Sgr A*, M87*, Cygnus X-1) y NASA InSight / JPL CNEOS.",
 	"",
 	"El juego no usa el logotipo de NASA ni assets de otros juegos.",
 }

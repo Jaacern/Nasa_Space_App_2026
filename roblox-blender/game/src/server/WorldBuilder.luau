@@ -55,16 +55,20 @@ function WorldBuilder.build()
 	local walls = Instance.new("Folder")
 	walls.Name = "Walls"
 	walls.Parent = arena
-	local segs = 48
-	local segLen = 2 * math.pi * (R + 2) / segs + 2
+	local segs = 64
+	local wallThick = 8
+	local wallCenter = R + wallThick * 0.5
+	local segLen = 2 * math.pi * wallCenter / segs + 8
 	for i = 1, segs do
 		local a = i / segs * math.pi * 2
 		local w = Instance.new("Part")
 		w.Anchored = true
 		w.Transparency = 1
+		w.CanCollide = true
 		w.CanQuery = false
-		w.Size = Vector3.new(segLen, 60, 4)
-		w.CFrame = CFrame.new(math.cos(a) * (R + 2), 26, math.sin(a) * (R + 2)) * CFrame.Angles(0, -a + math.pi / 2, 0)
+		w.CanTouch = false
+		w.Size = Vector3.new(segLen, 120, wallThick)
+		w.CFrame = CFrame.new(math.cos(a) * wallCenter, 48, math.sin(a) * wallCenter) * CFrame.Angles(0, -a + math.pi / 2, 0)
 		w.Parent = walls
 	end
 
@@ -108,7 +112,7 @@ function WorldBuilder.build()
 		rock.CFrame = CFrame.new(math.cos(a) * d, s * 0.2, math.sin(a) * d) * CFrame.Angles(rng:NextNumber(-0.3, 0.3), rng:NextNumber(0, 6.28), rng:NextNumber(-0.3, 0.3))
 		rock.Parent = decor
 	end
-	-- Sierra exterior para dar horizonte.
+	-- Sierra exterior para dar horizonte (sin colision para evitar bloqueos invisibles).
 	for i = 1, 26 do
 		local a = i / 26 * math.pi * 2 + rng:NextNumber(-0.05, 0.05)
 		local d = R + rng:NextNumber(22, 44)
@@ -116,6 +120,9 @@ function WorldBuilder.build()
 		local m = Instance.new("Part")
 		m.Name = "Ridge"
 		m.Anchored = true
+		m.CanCollide = false
+		m.CanQuery = false
+		m.CanTouch = false
 		m.Material = Enum.Material.Slate
 		m.Color = Color3.fromRGB(96, 56, 44)
 		m.Size = Vector3.new(rng:NextNumber(50, 80), h, rng:NextNumber(30, 50))
@@ -184,14 +191,25 @@ function WorldBuilder.build()
 	end
 end
 
--- Traje de astronauta provisional sobre el avatar: mochila, visor y anillo cian.
+-- Traje de astronauta provisional sobre el avatar: proporcional incluso en skins miniatura.
 function WorldBuilder.dress(character: Model)
 	local torso = (character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso")) :: BasePart?
 	local head = character:FindFirstChild("Head") :: BasePart?
 	local root = character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local hum = character:FindFirstChildOfClass("Humanoid")
 	if not torso or not head or not root then
 		return
 	end
+	for _, old in character:GetChildren() do
+		if old.Name == "Suit" then
+			old:Destroy()
+		end
+	end
+	local tScale = math.clamp(math.min(torso.Size.Y / 2.0, torso.Size.X / 1.8), 0.35, 1.45)
+	local hScale = math.clamp(math.max(head.Size.X, head.Size.Y, head.Size.Z) / 1.25, 0.35, 1.45)
+	local hip = if hum and hum.HipHeight > 0.1 then hum.HipHeight else torso.Size.Y * 0.9
+	local footY = -(root.Size.Y * 0.5 + hip - 0.1)
+	local ringDiam = math.clamp(4.4 * math.max(tScale, 0.48), 2.1, 5.2)
 	local C = Visuals.Colors
 	local function attach(to: BasePart, size: Vector3, offset: CFrame, color: Color3, material: Enum.Material, shape: Enum.PartType?, transparency: number?)
 		local p = Instance.new("Part")
@@ -214,10 +232,10 @@ function WorldBuilder.dress(character: Model)
 		w.Parent = p
 		p.Parent = character
 	end
-	attach(torso, Vector3.new(1.7, 2.0, 0.9), CFrame.new(0, 0.1, 0.9), C.white, Enum.Material.SmoothPlastic)
-	attach(torso, Vector3.new(1.2, 0.3, 0.2), CFrame.new(0, 0.7, 1.4), C.cyan, Enum.Material.Neon)
-	attach(head, Vector3.new(2.1, 2.1, 2.1), CFrame.new(0, 0.1, 0), C.white, Enum.Material.Glass, Enum.PartType.Ball, 0.55)
-	attach(root, Vector3.new(0.15, 4.4, 4.4), CFrame.new(0, -2.9, 0) * CFrame.Angles(0, 0, math.rad(90)), C.cyan, Enum.Material.Neon, Enum.PartType.Cylinder, 0.45)
+	attach(torso, Vector3.new(1.7, 2.0, 0.9) * tScale, CFrame.new(0, 0.1 * tScale, torso.Size.Z * 0.5 + 0.4 * tScale), C.white, Enum.Material.SmoothPlastic)
+	attach(torso, Vector3.new(1.2, 0.3, 0.2) * tScale, CFrame.new(0, 0.7 * tScale, torso.Size.Z * 0.5 + 0.85 * tScale), C.cyan, Enum.Material.Neon)
+	attach(head, Vector3.new(2.05, 2.05, 2.05) * hScale, CFrame.new(0, 0.08 * hScale, 0), C.white, Enum.Material.Glass, Enum.PartType.Ball, 0.58)
+	attach(root, Vector3.new(0.14, ringDiam, ringDiam), CFrame.new(0, footY, 0) * CFrame.Angles(0, 0, math.rad(90)), C.cyan, Enum.Material.Neon, Enum.PartType.Cylinder, 0.45)
 end
 
 return WorldBuilder

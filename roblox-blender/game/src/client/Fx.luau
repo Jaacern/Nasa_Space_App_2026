@@ -17,6 +17,9 @@ local music: { [string]: Sound } = {}
 local musicTarget: { [string]: number } = { calm = 0, combat = 0, boss = 0 }
 local musicVol: { [string]: number } = {}
 local emitters: { [string]: { att: Attachment, em: ParticleEmitter } } = {}
+local sfxGroup: SoundGroup? = nil
+local musicGroup: SoundGroup? = nil
+local muted = false
 local shake = 0
 local low = false
 local qualityTier = "high"
@@ -47,23 +50,27 @@ end
 
 function Fx.init(folder: Instance)
 	-- Grupo de efectos con ecualizador: recorta agudos para que nada suene agresivo.
-	local sfxGroup = Instance.new("SoundGroup")
-	sfxGroup.Name = "AresSfx"
-	sfxGroup.Parent = SoundService
+	local sg = Instance.new("SoundGroup")
+	sg.Name = "AresSfx"
+	sg.Volume = if muted then 0 else 1
+	sg.Parent = SoundService
+	sfxGroup = sg
 	local eq = Instance.new("EqualizerSoundEffect")
 	eq.HighGain = -7
 	eq.MidGain = -1.5
 	eq.LowGain = 1
-	eq.Parent = sfxGroup
-	local musicGroup = Instance.new("SoundGroup")
-	musicGroup.Name = "AresMusic"
-	musicGroup.Parent = SoundService
+	eq.Parent = sg
+	local mg = Instance.new("SoundGroup")
+	mg.Name = "AresMusic"
+	mg.Volume = if muted then 0 else 1
+	mg.Parent = SoundService
+	musicGroup = mg
 	for name, def in Balance.Audio.Sfx :: { [string]: any } do
 		local s = Instance.new("Sound")
 		s.Name = "Sfx_" .. name
 		s.SoundId = def.id
 		s.Volume = def.vol
-		s.SoundGroup = sfxGroup
+		s.SoundGroup = sg
 		s.Parent = SoundService
 		sounds[name] = s
 	end
@@ -74,7 +81,7 @@ function Fx.init(folder: Instance)
 			s.SoundId = def.id
 			s.Looped = true
 			s.Volume = 0
-			s.SoundGroup = musicGroup
+			s.SoundGroup = mg
 			s.Parent = SoundService
 			s:Play()
 			music[name] = s
@@ -145,6 +152,20 @@ end
 function Fx.setLow(on: boolean)
 	low = on
 	qualityTier = if on then "low" else "high"
+end
+
+function Fx.setMuted(on: boolean)
+	muted = on
+	if sfxGroup then
+		sfxGroup.Volume = if on then 0 else 1
+	end
+	if musicGroup then
+		musicGroup.Volume = if on then 0 else 1
+	end
+end
+
+function Fx.isMuted(): boolean
+	return muted
 end
 
 -- Ajusta densidad de partículas, sacudida y rótulos flotantes según las especificaciones del dispositivo.

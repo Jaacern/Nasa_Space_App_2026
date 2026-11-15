@@ -17,6 +17,7 @@ local Fx = require(script.Parent.Fx)
 local Renderer = require(script.Parent.Renderer)
 local Scenery = require(script.Parent.Scenery)
 local Hud = require(script.Parent.Hud)
+local Ui = require(script.Parent.Ui)
 
 local player = Players.LocalPlayer
 local remotes = ReplicatedStorage:WaitForChild("Remotes")
@@ -92,6 +93,7 @@ local fpsEma, lowFpsT, highFpsT = 60, 0, 0
 
 local function applySettings()
 	local S = Hud.settings
+	Fx.setMuted(S.muted == true)
 	local tier = if S.qualityMode == "auto" then S.effectiveQuality else S.qualityMode
 	Hud.setEffectiveQuality(tier)
 	Fx.setQuality(tier)
@@ -150,13 +152,13 @@ end
 
 -- ------------------------------------------------------------ Biomas (solo visual)
 local BIOMES = {
-	{ ground = Color3.fromRGB(150, 85, 55), atm = Color3.fromRGB(222, 170, 120), decay = Color3.fromRGB(168, 104, 62), tint = Color3.fromRGB(255, 240, 228), clock = 15.2, density = 0.36, bright = 2.4 },
-	{ ground = Color3.fromRGB(74, 84, 108), atm = Color3.fromRGB(120, 140, 185), decay = Color3.fromRGB(40, 50, 90), tint = Color3.fromRGB(215, 228, 255), clock = 18.4, density = 0.42, bright = 1.6 },
-	{ ground = Color3.fromRGB(88, 44, 38), atm = Color3.fromRGB(255, 150, 80), decay = Color3.fromRGB(190, 60, 30), tint = Color3.fromRGB(255, 222, 200), clock = 12.5, density = 0.46, bright = 3.2 },
+	{ ground = Color3.fromRGB(150, 85, 55), atm = Color3.fromRGB(222, 170, 120), decay = Color3.fromRGB(168, 104, 62), tint = Color3.fromRGB(255, 240, 228), amb = Color3.fromRGB(128, 102, 92), outAmb = Color3.fromRGB(145, 118, 105), clock = 15.2, density = 0.36, bright = 2.5 },
+	{ ground = Color3.fromRGB(84, 96, 122), atm = Color3.fromRGB(132, 152, 198), decay = Color3.fromRGB(48, 60, 102), tint = Color3.fromRGB(224, 236, 255), amb = Color3.fromRGB(115, 128, 158), outAmb = Color3.fromRGB(132, 145, 178), clock = 17.6, density = 0.38, bright = 2.0 },
+	{ ground = Color3.fromRGB(102, 54, 46), atm = Color3.fromRGB(255, 158, 92), decay = Color3.fromRGB(190, 68, 36), tint = Color3.fromRGB(255, 228, 208), amb = Color3.fromRGB(136, 96, 84), outAmb = Color3.fromRGB(158, 112, 96), clock = 13.0, density = 0.42, bright = 3.1 },
 }
 
 local function applyBiome(i: number, instant: boolean?)
-	local b = BIOMES[i]
+	local b = BIOMES[i] or BIOMES[1]
 	local info = TweenInfo.new(if instant then 0 else 3, Enum.EasingStyle.Sine)
 	local arena = Workspace:FindFirstChild("Arena")
 	local ground = arena and arena:FindFirstChild("Ground")
@@ -171,14 +173,16 @@ local function applyBiome(i: number, instant: boolean?)
 	if cc then
 		TweenService:Create(cc, info, { TintColor = b.tint }):Play()
 	end
-	TweenService:Create(Lighting, info, { ClockTime = b.clock, Brightness = b.bright }):Play()
+	TweenService:Create(Lighting, info, { ClockTime = b.clock, Brightness = b.bright, Ambient = b.amb, OutdoorAmbient = b.outAmb }):Play()
 end
 
 -- ------------------------------------------------------------ Eventos del servidor
 local function onPhase(newPhase: string, meta: any, extra: any)
 	local old = phase
 	phase = newPhase
+	dash = nil
 	Renderer.clearAll()
+	Scenery.clearBlackHole()
 	Scenery.setMenu(newPhase == "menu")
 	if newPhase == "run" or newPhase == "tutorial" or newPhase == "menu" then
 		Scenery.clearGear()
@@ -250,10 +254,34 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 		Renderer.gemGot(ev[2])
 	end,
 	chest = function(ev)
-		Renderer.chest(ev[2], ev[3], ev[4])
+		Renderer.chest(ev[2], ev[3], ev[4], ev[5])
 	end,
 	chestGot = function(ev)
-		Renderer.chestGot(ev[2])
+		Renderer.chestGot(ev[2], ev[3])
+	end,
+	meteorBoom = function(ev)
+		Renderer.meteorBoom(ev[2], ev[3], ev[4])
+	end,
+	zone = function(ev)
+		Hud.zone(ev[2])
+	end,
+	blackhole = function(ev)
+		Scenery.triggerBlackHole(ev[2], ev[3])
+		Hud.blackHole(ev[2], ev[3])
+	end,
+	briefing = function(ev)
+		Hud.briefing(ev[2] == 1)
+	end,
+	toastMsg = function(ev)
+		Hud.toastMsg(ev[2], ev[3], ev[4])
+	end,
+	shieldHit = function()
+		Renderer.shieldHit()
+		Fx.play("block")
+	end,
+	shieldBreak = function()
+		Renderer.shieldBreak()
+		Fx.play("hurt")
 	end,
 	item = function(ev)
 		Hud.item(ev[2], ev[3])
@@ -392,6 +420,10 @@ end)
 
 UserInputService.InputBegan:Connect(function(input, processed)
 	local k = input.KeyCode
+	if Hud.isBriefingOpen() and (k == Enum.KeyCode.Space or k == Enum.KeyCode.Return or k == Enum.KeyCode.ButtonA) and not UserInputService:GetFocusedTextBox() then
+		Hud.closeBriefing()
+		return
+	end
 	if k == Enum.KeyCode.ButtonB and not UserInputService:GetFocusedTextBox() and Hud.wantsCursor() then
 		if Hud.back() then
 			return
@@ -489,7 +521,8 @@ end)
 -- ------------------------------------------------------------ Bucle de dibujo
 local camera = Workspace.CurrentCamera :: Camera
 local camFocus = Vector3.new(0, CAM.FocusHeight, 34)
-local limit = Balance.Sim.ArenaRadius - 3
+local minRad = (Balance.World and Balance.World.ShipRadius or 8.4) + 0.4
+local limit = Balance.Sim.ArenaRadius - 3.5
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Include
 local wasArrowMoving = false
@@ -503,7 +536,7 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 		local step = math.min(dash.left, D.Distance / D.Duration * dt)
 		local target = hrp.Position + dash.dir * step
 		local flatLen = math.sqrt(target.X * target.X + target.Z * target.Z)
-		local blocked = flatLen > limit or flatLen < 13
+		local blocked = flatLen > limit or flatLen < minRad
 		if not blocked then
 			hrp.CFrame = hrp.CFrame + dash.dir * step
 			hrp.AssemblyLinearVelocity = Vector3.new(0, hrp.AssemblyLinearVelocity.Y, 0)
@@ -514,12 +547,28 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 		end
 	end
 
+	-- Mantiene al jugador dentro del cráter jugable y fuera del collider de la nave.
+	if hrp and inRun() then
+		local p = hrp.Position
+		local flat = math.sqrt(p.X * p.X + p.Z * p.Z)
+		if flat > limit or flat < minRad then
+			local nx = if flat > 0.01 then p.X / flat else 0
+			local nz = if flat > 0.01 then p.Z / flat else 1
+			local rad = if flat > limit then limit else minRad
+			local rot = hrp.CFrame - hrp.CFrame.Position
+			hrp.CFrame = CFrame.new(nx * rad, math.clamp(p.Y, 1.5, 40), nz * rad) * rot
+			hrp.AssemblyLinearVelocity = Vector3.new(0, math.min(0, hrp.AssemblyLinearVelocity.Y), 0)
+		end
+	end
+
 	updateAdaptiveQuality(dt)
 	Fx.update(dt)
 	Fx.kickUpdate(dt)
 	Scenery.update(dt)
 	Renderer.update(dt)
-	Hud.update(dt, if inRun() then Renderer.nearestChest() else nil)
+	Ui.tickIcons(dt)
+	local nc, ncTier = Renderer.nearestChest()
+	Hud.update(dt, if inRun() then nc else nil, if inRun() then ncTier else nil)
 
 	local locked = inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" and UserInputService.MouseEnabled
 	UserInputService.MouseBehavior = if locked then Enum.MouseBehavior.LockCenter else Enum.MouseBehavior.Default

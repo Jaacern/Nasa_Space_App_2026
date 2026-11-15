@@ -47,7 +47,36 @@ Balance.Hero = {
 
 Balance.Skills = {
 	Dash = { Cooldown = 8, Distance = 24, Width = 5, Damage = 25, Invuln = 0.45, Duration = 0.18 },
-	Pulse = { Cooldown = 12, Radius = 18, Damage = 40, Knockback = 16, Shield = 25, ShieldTime = 4 },
+	Pulse = { Cooldown = 20, Radius = 18, Damage = 45, Knockback = 18, Shield = 35, ShieldTime = 6 },
+}
+
+Balance.World = {
+	ShipRadius = 8.4,
+	ArenaSafeMargin = 3.0,
+}
+
+Balance.Zones = {
+	{ id = "central", name = "Cráter del Módulo", bonus = "+1.5 vida/s en base segura", regen = 1.5 },
+	{ id = "north", name = "Cresta Basáltica", bonus = "+15 % XP de muestras", xp = 0.15 },
+	{ id = "east", name = "Falla Perseverance", bonus = "+20 % Datos científicos", science = 0.20 },
+	{ id = "south", name = "Llanura Roja", bonus = "+10 % Velocidad de movimiento", speed = 0.10 },
+	{ id = "west", name = "Cuenca Criogénica", bonus = "-15 % Espera de habilidades", cd = 0.15 },
+}
+
+Balance.Meteors = {
+	UnlockLevel = 5,
+	UnlockWave = 4,
+	Interval = { 22, 15, 11 },
+	Count = { 2, 3, 4 },
+	Radius = 8.5,
+	Delay = 1.65,
+	Dmg = 24,
+}
+
+Balance.BlackHole = {
+	FirstAt = 48,
+	Interval = 85,
+	Duration = 15,
 }
 
 -- Enemigos comunes. speed en studs/s; wind = aviso antes del ataque.
@@ -124,10 +153,36 @@ Balance.Upgrades = {
 	crit = { max = 5, per = 0.08 },
 	aura = { max = 4, per = 5, radius = 10, interval = 0.5 },
 }
--- Mejoras que suman unidades enteras: siempre valen 1 nivel y salen como carta epica.
+-- Mejoras que suman unidades enteras: valen 1 nivel y se desbloquean a partir de nivel 3.
 Balance.UpgradeCount = { multishot = true, pierce = true, drone = true }
+Balance.UpgradeCountMinLevel = 3
 -- Rareza de carta: 1 comun, 2 rara, 3 epica, 4 legendaria. Mult = niveles que otorga.
-Balance.CardRarity = { Weights = { 60, 27, 10, 3 }, Mult = { 1, 1.5, 2, 3 }, LuckShift = 5 }
+-- Escala por nivel del jugador: evita cartas legendarias o epicas en los primeros niveles.
+Balance.CardRarity = {
+	Weights = { 82, 18, 0, 0 },
+	Stages = {
+		{ minLvl = 1, w = { 82, 18, 0, 0 } },
+		{ minLvl = 4, w = { 62, 30, 8, 0 } },
+		{ minLvl = 7, w = { 46, 34, 17, 3 } },
+		{ minLvl = 11, w = { 32, 36, 24, 8 } },
+		{ minLvl = 15, w = { 22, 34, 29, 15 } },
+	},
+	Mult = { 1, 1.5, 2, 3 },
+	LuckShift = 5,
+}
+
+Balance.ChestTiers = {
+	{ name = "Común", itemW = { 76, 22, 2 }, science = 8, heal = 10, extra = false },
+	{ name = "Raro", itemW = { 20, 62, 18 }, science = 16, heal = 15, extra = false },
+	{ name = "Épico", itemW = { 0, 35, 65 }, science = 28, heal = 22, extra = false },
+	{ name = "Legendario", itemW = { 0, 10, 90 }, science = 45, heal = 35, extra = true },
+}
+Balance.ChestWaveWeights = {
+	{ minWave = 1, w = { 75, 25, 0, 0 } },
+	{ minWave = 4, w = { 42, 40, 16, 2 } },
+	{ minWave = 8, w = { 20, 38, 30, 12 } },
+	{ minWave = 12, w = { 10, 30, 38, 22 } },
+}
 Balance.UpgradeOrder = { "damage", "rate", "multishot", "pierce", "armor", "speed", "magnet", "drone", "cooldown", "crit", "aura" }
 Balance.LevelUpHeal = 30 -- opcion de reserva "Reparacion de campo"
 

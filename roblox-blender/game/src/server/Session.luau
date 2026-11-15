@@ -5,6 +5,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 local Balance = require(ReplicatedStorage.Shared.Balance)
+local NasaData = require(ReplicatedStorage.Shared.NasaData)
 local Loot = require(script.Parent.Loot)
 local Combat = require(script.Parent.Combat)
 local Enemies = require(script.Parent.Enemies)
@@ -19,11 +20,28 @@ local function r1(v: number): number
 	return math.round(v * 10) / 10
 end
 
+local function clampPosXZ(x: number, z: number): (number, number, boolean)
+	local W = Balance.World or { ShipRadius = 8.4, ArenaSafeMargin = 3.0 }
+	local minR = W.ShipRadius or 8.4
+	local maxR = Balance.Sim.ArenaRadius - (W.ArenaSafeMargin or 3.0)
+	local len = math.sqrt(x * x + z * z)
+	if len < 0.001 then
+		return 0, minR + 2, true
+	end
+	if len < minR then
+		return x / len * minR, z / len * minR, true
+	elseif len > maxR then
+		return x / len * maxR, z / len * maxR, true
+	end
+	return x, z, false
+end
+
 function Session.new(player: Player, sync: RemoteEvent)
 	local self = setmetatable({}, Session)
 	self.player = player
 	self.sync = sync
-	self.meta = SaveService.default()
+	self.account = SaveService.default()
+	self.meta = SaveService.activeProfile(self.account).meta
 	self.metaLoaded = false
 	self.phase = "menu"
 	self.R = nil :: Run?
@@ -31,7 +49,8 @@ function Session.new(player: Player, sync: RemoteEvent)
 	self.cmdCount = 0
 	self.cmdWindow = os.clock()
 	task.spawn(function()
-		self.meta = SaveService.load(player.UserId)
+		self.account = SaveService.load(player.UserId)
+		self.meta = SaveService.activeProfile(self.account).meta
 		self.metaLoaded = true
 		self:sendPhase()
 	end)
@@ -39,10 +58,32 @@ function Session.new(player: Player, sync: RemoteEvent)
 end
 
 function Session:metaPayload()
-	local m = self.meta
+	local acc = self.account
+	local active = SaveService.activeProfile(acc)
+	local m = active.meta
+	local profiles = {}
+	for i = 1, SaveService.MAX_PROFILES do
+		local p = acc.profiles[i]
+		local cp = p.checkpoint
+		table.insert(profiles, {
+			slot = i,
+			name = p.name,
+			science = p.meta.science,
+			runs = p.meta.runs,
+			wins = p.meta.wins,
+			best = p.meta.best,
+			checkpoint = if cp then { wave = cp.wave, lvl = cp.lvl, time = math.floor(cp.t), mode = cp.modeName } else nil,
+		})
+	end
+	local acp = active.checkpoint
 	return {
+		activeSlot = acc.activeSlot,
+		profileName = active.name,
+		hasCheckpoint = acp ~= nil,
+		checkpoint = if acp then { wave = acp.wave, lvl = acp.lvl, time = math.floor(acp.t), mode = acp.modeName } else nil,
+		profiles = profiles,
 		science = m.science, unlocks = m.unlocks, best = m.best, wins = m.wins, runs = m.runs,
-		pieces = m.pieces, tutorialDone = m.tutorialDone, offline = m.offline == true, loaded = self.metaLoaded,
+		pieces = m.pieces, tutorialDone = m.tutorialDone, offline = acc.offline == true, loaded = self.metaLoaded,
 	}
 end
 
@@ -56,42 +97,119 @@ function Session:humanoid(): Humanoid?
 end
 
 function Session:save()
-	local meta = self.meta
+	local acc = self.account
 	local userId = self.player.UserId
 	task.spawn(function()
-		SaveService.save(userId, meta)
+		SaveService.save(userId, acc)
 	end)
 end
 
-function Session:startRun(modeName: string, tutorial: boolean)
+function Session:saveCheckpoint(silent: boolean?)
+	local R = self.R
+	if not R or R.tutorial then
+		return
+	end
+	local upCopy: { [string]: number } = {}
+	for k, v in R.upgrades do
+		upCopy[k] = v
+	end
+	local itCopy: { [string]: number } = {}
+	for k, v in R.items do
+		itCopy[k] = v
+	end
+	local pcCopy = { R.pieces[1] == true, R.pieces[2] == true, R.pieces[3] == true, R.pieces[4] == true }
+	local cp = {
+		modeName = R.modeName,
+		t = R.t,
+		real = R.real,
+		wave = math.max(1, R.wave),
+		biome = math.max(1, R.biome),
+		lvl = R.lvl,
+		xp = R.xp,
+		hp = math.max(1, math.floor(R.hp)),
+		shield = R.shield,
+		shieldT = R.shieldT,
+		shieldMax = R.shieldMax or Balance.Skills.Pulse.Shield,
+		kills = R.kills,
+		chestsOpened = R.chestsOpened,
+		zone = R.zone or 1,
+		nextElite = R.nextElite,
+		chestT = R.chestT,
+		bossIdx = R.bossIdx,
+		upgrades = upCopy,
+		items = itCopy,
+		pieces = pcCopy,
+		scienceBonus = R.scienceBonus or 0,
+		px = R.px,
+		pz = R.pz,
+		savedAt = os.time(),
+	}
+	local active = SaveService.activeProfile(self.account)
+	active.checkpoint = cp
+	self:save()
+	if not silent then
+		table.insert(R.events, { "toastMsg", "CHECKPOINT GUARDADO", string.format("%s · Oleada %d · Nvl %d", active.name, cp.wave, cp.lvl) })
+	end
+end
+
+function Session:startRun(modeName: string, tutorial: boolean, cp: any?)
 	local D = Balance.Director
+	local useMode = if cp then cp.modeName else modeName
+	local startT = if cp then cp.t else Balance.Debug.StartMinute * 60
 	local R: Run = {
-		mode = Balance.Modes[modeName], modeName = modeName,
+		mode = Balance.Modes[useMode], modeName = useMode,
 		tutorial = if tutorial then { step = 1, init = false, moved = 0, timer = 0, spawnT = 0 } else nil,
 		directorOn = not tutorial,
-		t = Balance.Debug.StartMinute * 60, real = 0, stepCount = 0, paused = false, pauseKind = nil,
-		stats = {}, statsDirty = true, upgrades = {}, items = {}, pieces = { false, false, false, false }, meta = self.meta,
-		hp = 0, shield = 0, shieldT = 0, invuln = 1.5, lastHurt = -99, shelterCd = 0, reviveUsed = false, damageTaken = 0,
-		lvl = 1, xp = 0, kills = 0, pendingLevels = 0, choice = nil, chestsOpened = 0,
+		t = startT, real = if cp then cp.real else 0, stepCount = 0,
+		paused = (not tutorial and cp == nil), pauseKind = if (not tutorial and cp == nil) then "briefing" else nil,
+		stats = {}, statsDirty = true,
+		upgrades = if cp then cp.upgrades else {}, items = if cp then cp.items else {},
+		pieces = if cp then cp.pieces else { false, false, false, false }, meta = self.meta,
+		hp = 0, shield = if cp then cp.shield else 0, shieldT = if cp then cp.shieldT else 0,
+		shieldMax = if cp then (cp.shieldMax or Balance.Skills.Pulse.Shield) else Balance.Skills.Pulse.Shield,
+		invuln = 1.5, lastHurt = -99, shelterCd = 0, reviveUsed = false, damageTaken = 0,
+		lvl = if cp then cp.lvl else 1, xp = if cp then cp.xp else 0, kills = if cp then cp.kills else 0,
+		pendingLevels = 0, choice = nil, chestsOpened = if cp then cp.chestsOpened else 0,
 		enemies = {}, nextId = 0, anyDead = false, teles = {}, nextTele = 0,
 		shots = {}, nextShot = 0, shotCount = 0, eshots = {}, gems = {}, nextGem = 0, chests = {}, nextChest = 0,
 		events = {}, cds = { 0, 0 }, cdMax = { 1, 1 }, used = { false, false }, atkT = 0.5, auraT = 0,
-		spawnAcc = 0, nextElite = D.EliteInterval, chestT = D.ChestInterval * 0.5, hazT = 0, hazN = 0,
-		wave = 0, bossIdx = 1, boss = nil, bossKilled = nil, biome = 1, px = 0, pz = 0, won = false,
+		spawnAcc = 0, nextElite = if cp then cp.nextElite else (startT + D.EliteInterval),
+		chestT = if cp then cp.chestT else D.ChestInterval * 0.5, hazT = 0, hazN = 0,
+		meteorT = 12, meteorN = 0, bhT = Balance.BlackHole.FirstAt, bhIdx = 0,
+		wave = if cp then cp.wave else 0, waveSaved = if cp then cp.wave else 1,
+		bossIdx = if cp then cp.bossIdx else 1, boss = nil, bossKilled = nil,
+		biome = if cp then cp.biome else 1, zone = if cp then cp.zone else 1,
+		scienceBonus = if cp then (cp.scienceBonus or 0) else 0,
+		px = 0, pz = 0, won = false,
 	}
 	Loot.recompute(R)
-	R.hp = R.stats.maxHp
+	R.hp = if cp then math.clamp(cp.hp, 1, R.stats.maxHp) else R.stats.maxHp
+	local sx, sz = WorldBuilder.SpawnPosition.X, WorldBuilder.SpawnPosition.Z
+	if cp then
+		sx, sz = clampPosXZ(cp.px, cp.pz)
+	end
+	R.px, R.pz = sx, sz
 	local char = self.player.Character
 	if char then
-		char:PivotTo(CFrame.new(WorldBuilder.SpawnPosition))
+		char:PivotTo(CFrame.new(sx, 4, sz))
 	end
 	self.R = R
 	self.acc = 0
-	self.lastMode = modeName
+	self.lastMode = useMode
 	self.phase = if tutorial then "tutorial" else "run"
-	self:sendPhase({ mode = modeName })
+	self:sendPhase({ mode = useMode })
 	if tutorial then
 		table.insert(R.events, { "tut", 1 })
+	elseif cp then
+		table.insert(R.events, { "wave", R.wave, Balance.Run.TotalWaves })
+		table.insert(R.events, { "biome", R.biome })
+		table.insert(R.events, { "zone", R.zone })
+		for id, lv in R.upgrades do
+			table.insert(R.events, { "chosen", id, lv })
+		end
+		table.insert(R.events, { "toastMsg", "CHECKPOINT CARGADO", string.format("Retomando Oleada %d · Nvl %d", R.wave, R.lvl) })
+	else
+		table.insert(R.events, { "briefing", 1 })
 	end
 end
 
@@ -115,6 +233,7 @@ function Session:flush(R: Run, withSnapshot: boolean)
 				math.floor(R.t), r1(R.cds[1]), r1(R.cdMax[1]), r1(R.cds[2]), r1(R.cdMax[2]),
 				if boss then math.max(0, boss.hp / boss.hpMax) else -1, s.drones, if s.aura > 0 then 1 else 0, r1(R.real),
 				if R.invuln > 0.5 then 1 else 0, if R.paused then 1 else 0, s.pickup, R.wave,
+				math.ceil(R.shieldMax or Balance.Skills.Pulse.Shield), r1(math.max(0, R.shieldT)), R.zone or 1,
 			},
 		}
 	end
@@ -138,11 +257,12 @@ function Session:finish(win: boolean)
 			meta.pieces[i] = true
 		end
 	end
-	local science = math.floor(R.kills * M.SciencePerKill + R.t / 60 * M.SciencePerMinute + pieces * M.SciencePerPiece + (if win then M.ScienceWin else 0))
+	local science = math.floor(R.kills * M.SciencePerKill + R.t / 60 * M.SciencePerMinute + pieces * M.SciencePerPiece + (if win then M.ScienceWin else 0) + (R.scienceBonus or 0))
 	meta.science += science
 	meta.runs += 1
 	if win then
 		meta.wins += 1
+		SaveService.activeProfile(self.account).checkpoint = nil
 	end
 	meta.best.time = math.max(meta.best.time, math.floor(R.t))
 	meta.best.level = math.max(meta.best.level, R.lvl)
@@ -181,7 +301,8 @@ function Session:onBossKilled(R: Run)
 	local bonus = Balance.Pieces[idx] :: any
 	R.hp = math.min(R.stats.maxHp, R.hp + (bonus.heal or 0) + (bonus.maxHp or 0))
 	if idx < 4 then
-		Loot.spawnChest(R, e.x, e.z)
+		Loot.spawnChest(R, e.x, e.z, if idx >= 2 then 4 else 3)
+		self:saveCheckpoint(true)
 	else
 		Enemies.clear(R)
 		R.won = true
@@ -300,16 +421,39 @@ function Session:step(dt: number)
 	if not hrp then
 		return
 	end
-	R.px, R.pz = hrp.Position.X, hrp.Position.Z
+	local cx, cz, moved = clampPosXZ(hrp.Position.X, hrp.Position.Z)
+	if moved or hrp.Position.Y < 0.4 then
+		local ny = math.max(hrp.Position.Y, 3.2)
+		hrp.CFrame = CFrame.new(cx, ny, cz) * hrp.CFrame.Rotation
+	end
+	R.px, R.pz = cx, cz
+	local newZone = Loot.computeZone(cx, cz)
+	if newZone ~= R.zone then
+		R.zone = newZone
+		Loot.recompute(R)
+		table.insert(R.events, { "zone", newZone })
+	end
 	R.stepCount += 1
 	if not R.paused then
 		R.real += dt
 		if R.directorOn then
 			R.t += dt * R.mode.TimeScale
+			R.bhT -= dt
+			if R.bhT <= 0 then
+				R.bhT = Balance.BlackHole.Interval
+				R.bhIdx += 1
+				local bh = NasaData.blackHoleForEvent(R.bhIdx)
+				table.insert(R.events, { "blackhole", R.bhIdx, Balance.BlackHole.Duration })
+				table.insert(R.events, { "nasa", bh.title, bh.sub })
+			end
 		end
 		Combat.update(R, dt)
 		Enemies.update(R, dt)
 		Loot.update(R, dt)
+		if not R.tutorial and R.wave > (R.waveSaved or 1) then
+			R.waveSaved = R.wave
+			self:saveCheckpoint(true)
+		end
 		if R.tutorial then
 			self:updateTutorial(R, dt)
 		end
@@ -362,6 +506,48 @@ function Session:onCmd(name: any, a: any, b: any, c: any)
 		if not R and self.metaLoaded then
 			self:startRun(if a == "demo" then "demo" else "full", false)
 		end
+	elseif name == "resume" then
+		if not R and self.metaLoaded then
+			local cp = SaveService.activeProfile(self.account).checkpoint
+			if cp then
+				self:startRun(cp.modeName, false, cp)
+			end
+		end
+	elseif name == "briefOk" then
+		if R and R.pauseKind == "briefing" then
+			R.paused = false
+			R.pauseKind = nil
+			table.insert(R.events, { "briefing", 0 })
+		end
+	elseif name == "saveCheckpoint" then
+		if R and not R.tutorial then
+			self:saveCheckpoint(false)
+		end
+	elseif name == "restart" then
+		if R then
+			local mode = if R.tutorial then "full" else R.modeName
+			local tut = R.tutorial ~= nil
+			Enemies.clear(R)
+			self:flush(R, false)
+			self.R = nil
+			self:startRun(mode, tut)
+		end
+	elseif name == "selectProfile" then
+		if not R and self.metaLoaded and type(a) == "number" then
+			local slot = math.clamp(math.floor(a), 1, SaveService.MAX_PROFILES)
+			self.account.activeSlot = slot
+			self.meta = SaveService.activeProfile(self.account).meta
+			self:save()
+			self:sendPhase()
+		end
+	elseif name == "resetProfile" then
+		if not R and self.metaLoaded and type(a) == "number" then
+			local slot = math.clamp(math.floor(a), 1, SaveService.MAX_PROFILES)
+			self.account.profiles[slot] = SaveService.defaultProfile(slot)
+			self.meta = SaveService.activeProfile(self.account).meta
+			self:save()
+			self:sendPhase()
+		end
 	elseif name == "tutorial" then
 		if not R and self.metaLoaded then
 			self:startRun("full", true)
@@ -407,6 +593,15 @@ function Session:onCmd(name: any, a: any, b: any, c: any)
 		if R then
 			if R.tutorial then
 				self:endTutorial()
+			elseif a == "direct" then
+				if R.hp > 0 and not R.won and R.pauseKind ~= "briefing" and (R.wave > 1 or R.lvl > 1 or R.kills > 0) then
+					self:saveCheckpoint(true)
+				end
+				Enemies.clear(R)
+				self:flush(R, false)
+				self.R = nil
+				self.phase = "menu"
+				self:sendPhase()
 			else
 				self:finish(false)
 			end

@@ -68,7 +68,7 @@ Players.PlayerRemoving:Connect(function(player)
 	local s = sessions[player]
 	sessions[player] = nil
 	if s then
-		SaveService.save(player.UserId, s.meta)
+		SaveService.save(player.UserId, s.account)
 	end
 end)
 
@@ -87,6 +87,6 @@ end)
 
 game:BindToClose(function()
 	for player, s in sessions do
-		SaveService.save(player.UserId, s.meta)
+		SaveService.save(player.UserId, s.account)
 	end
 end)

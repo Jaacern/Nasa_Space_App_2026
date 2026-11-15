@@ -9,9 +9,20 @@ type Run = any
 
 local rng = Random.new()
 
+function Loot.computeZone(x: number, z: number): number
+	if x * x + z * z <= 34 * 34 then
+		return 1
+	end
+	if math.abs(z) >= math.abs(x) then
+		return if z <= 0 then 2 else 4
+	end
+	return if x >= 0 then 3 else 5
+end
+
 function Loot.recompute(R: Run)
 	local H, U, I, M, PC, Caps = Balance.Hero, Balance.Upgrades, Balance.Items, Balance.Meta, Balance.Pieces, Balance.Caps
 	local up, it, mu, pc = R.upgrades, R.items, R.meta.unlocks, R.pieces
+	local zDef = (Balance.Zones :: any)[R.zone or 1] or {}
 	local function ul(id: string): number
 		return up[id] or 0
 	end
@@ -28,14 +39,15 @@ function Loot.recompute(R: Run)
 	s.projCount = 1 + math.floor(U.multishot.per * ul("multishot"))
 	s.pierce = math.floor(U.pierce.per * ul("pierce")) + I.ion.pierce * il("ion")
 	s.projSpeed = H.ProjSpeed * (1 + I.ion.per * il("ion"))
-	s.speed = H.WalkSpeed * (1 + U.speed.per * ul("speed") + I.boots.per * il("boots") + M.speed.per * ml("speed"))
+	s.speed = H.WalkSpeed * (1 + U.speed.per * ul("speed") + I.boots.per * il("boots") + M.speed.per * ml("speed") + (zDef.speed or 0))
 	s.pickup = H.PickupRadius * (1 + U.magnet.per * ul("magnet") + I.arm.per * il("arm") + M.magnet.per * ml("magnet"))
-	s.cdMult = math.max(Caps.CdMult, 1 - U.cooldown.per * ul("cooldown") - I.antenna.per * il("antenna") - (pc[1] and PC[1].cd or 0))
+	s.cdMult = math.max(Caps.CdMult, 1 - U.cooldown.per * ul("cooldown") - I.antenna.per * il("antenna") - (pc[1] and PC[1].cd or 0) - (zDef.cd or 0))
 	s.crit = math.min(Caps.Crit, H.CritChance + U.crit.per * ul("crit") + I.spectro.per * il("spectro"))
 	s.armor = math.min(Caps.Armor, I.mli.per * il("mli") + M.armor.per * ml("armor"))
 	s.block = math.min(Caps.Block, I.whipple.per * il("whipple"))
-	s.regen = I.filter.per * il("filter") + (pc[1] and PC[1].regen or 0)
-	s.xpMult = R.mode.XpMult * (1 + I.solar.per * il("solar") + M.xp.per * ml("xp") + (pc[2] and PC[2].xp or 0))
+	s.regen = I.filter.per * il("filter") + (pc[1] and PC[1].regen or 0) + (zDef.regen or 0)
+	s.xpMult = R.mode.XpMult * (1 + I.solar.per * il("solar") + M.xp.per * ml("xp") + (pc[2] and PC[2].xp or 0) + (zDef.xp or 0))
+	s.scienceZoneMult = 1 + (zDef.science or 0)
 	s.drones = math.floor(ul("drone"))
 	s.aura = U.aura.per * ul("aura")
 	s.plasma = il("plasma") > 0
@@ -72,14 +84,46 @@ function Loot.dropGem(R: Run, x: number, z: number, val: number)
 	table.insert(R.events, { "gem", R.nextGem, math.round(x * 10) / 10, math.round(z * 10) / 10 })
 end
 
-function Loot.spawnChest(R: Run, x: number, z: number)
-	R.nextChest += 1
-	table.insert(R.chests, { id = R.nextChest, x = x, z = z })
-	table.insert(R.events, { "chest", R.nextChest, math.round(x), math.round(z) })
+local function rollChestTier(wave: number): number
+	local w = Balance.ChestWaveWeights[1].w
+	for _, stage in Balance.ChestWaveWeights do
+		if wave >= stage.minWave then
+			w = stage.w
+		end
+	end
+	local total = w[1] + w[2] + w[3] + w[4]
+	local roll = rng:NextNumber(0, total)
+	for i = 1, 4 do
+		roll -= w[i]
+		if roll <= 0 then
+			return i
+		end
+	end
+	return 1
 end
 
-local function rollItem(R: Run): string
-	local w = Balance.RarityWeights
+function Loot.spawnChest(R: Run, x: number, z: number, forcedTier: number?)
+	local minR = 22
+	local maxR = Balance.Sim.ArenaRadius - 14
+	local len = math.sqrt(x * x + z * z)
+	if len < minR then
+		if len < 0.01 then
+			x, z, len = minR, 0, minR
+		else
+			x, z = x / len * minR, z / len * minR
+		end
+	elseif len > maxR then
+		x, z = x / len * maxR, z / len * maxR
+	end
+	local tier = forcedTier or rollChestTier(R.wave or 1)
+	R.nextChest += 1
+	table.insert(R.chests, { id = R.nextChest, x = x, z = z, tier = tier })
+	table.insert(R.events, { "chest", R.nextChest, math.round(x), math.round(z), tier })
+end
+
+local function rollItem(R: Run, tier: number?): string
+	local tDef = Balance.ChestTiers[tier or 1] or Balance.ChestTiers[1]
+	local w = tDef.itemW
 	for _ = 1, 8 do
 		local roll = rng:NextNumber(0, w[1] + w[2] + w[3])
 		local rar = if roll < w[1] then 1 elseif roll < w[1] + w[2] then 2 else 3
@@ -108,13 +152,33 @@ function Loot.giveItem(R: Run, id: string)
 	table.insert(R.events, { "item", id, R.items[id] })
 end
 
+local function baseWeightsForLevel(lvl: number): { number }
+	local stages = Balance.CardRarity.Stages
+	local w = stages[1].w
+	for _, st in stages do
+		if lvl >= st.minLvl then
+			w = st.w
+		end
+	end
+	return w
+end
+
 local function rollRarity(R: Run): number
 	local CR = Balance.CardRarity
+	local base = baseWeightsForLevel(R.lvl)
 	local luck = (R.meta.unlocks.luck or 0) * Balance.Meta.luck.per * CR.LuckShift
-	local w = { math.max(10, CR.Weights[1] - luck), CR.Weights[2] + luck * 0.5, CR.Weights[3] + luck * 0.3, CR.Weights[4] + luck * 0.2 }
-	local roll = rng:NextNumber(0, w[1] + w[2] + w[3] + w[4])
+	-- La suerte solo impulsa rarezas ya desbloqueadas para el nivel actual.
+	local w1 = base[1]
+	local w2 = if base[2] > 0 then (base[2] + luck * 0.5) else 0
+	local w3 = if base[3] > 0 then (base[3] + luck * 0.3) else 0
+	local w4 = if base[4] > 0 then (base[4] + luck * 0.2) else 0
+	if w2 + w3 + w4 > 0 then
+		w1 = math.max(10, w1 - luck)
+	end
+	local roll = rng:NextNumber(0, w1 + w2 + w3 + w4)
+	local weights = { w1, w2, w3, w4 }
 	for i = 1, 4 do
-		roll -= w[i]
+		roll -= weights[i]
 		if roll <= 0 then
 			return i
 		end
@@ -122,12 +186,15 @@ local function rollRarity(R: Run): number
 	return 1
 end
 
--- Devuelve hasta 3 cartas { id, rar }.
+-- Devuelve hasta 3 cartas { id, rar }. Las cartas de unidades enteras arrancan en nivel 3.
 function Loot.makeOptions(R: Run): { any }
+	local minSpec = Balance.UpgradeCountMinLevel or 3
 	local pool = {}
 	for _, id in Balance.UpgradeOrder do
 		if (R.upgrades[id] or 0) < Balance.Upgrades[id].max then
-			table.insert(pool, id)
+			if not Balance.UpgradeCount[id] or R.lvl >= minSpec then
+				table.insert(pool, id)
+			end
 		end
 	end
 	local out = {}
@@ -136,7 +203,8 @@ function Loot.makeOptions(R: Run): { any }
 			break
 		end
 		local id = table.remove(pool, rng:NextInteger(1, #pool)) :: string
-		table.insert(out, { id = id, rar = if Balance.UpgradeCount[id] then 3 else rollRarity(R) })
+		local rar = if Balance.UpgradeCount[id] then (if R.lvl >= 4 then 3 else 2) else rollRarity(R)
+		table.insert(out, { id = id, rar = rar })
 	end
 	if #out < 3 then
 		table.insert(out, { id = "heal", rar = 1 })
@@ -193,11 +261,16 @@ function Loot.update(R: Run, dt: number)
 		local c = chests[i]
 		local dx, dz = c.x - px, c.z - pz
 		if dx * dx + dz * dz <= 30 then
-			table.insert(R.events, { "chestGot", c.id })
+			local tier = c.tier or 1
+			local tDef = Balance.ChestTiers[tier] or Balance.ChestTiers[1]
+			table.insert(R.events, { "chestGot", c.id, tier })
 			table.remove(chests, i)
 			R.chestsOpened += 1
-			for _ = 1, R.stats.chestItems do
-				Loot.giveItem(R, rollItem(R))
+			R.hp = math.min(R.stats.maxHp, R.hp + tDef.heal)
+			R.scienceBonus = (R.scienceBonus or 0) + tDef.science
+			local rolls = R.stats.chestItems + (if tDef.extra then 1 else 0)
+			for _ = 1, rolls do
+				Loot.giveItem(R, rollItem(R, tier))
 			end
 		end
 	end
@@ -209,14 +282,6 @@ function Loot.update(R: Run, dt: number)
 			local a = rng:NextNumber(0, math.pi * 2)
 			local d = rng:NextNumber(34, 52)
 			local x, z = px + math.cos(a) * d, pz + math.sin(a) * d
-			local lim = Balance.Sim.ArenaRadius - 14
-			local len = math.sqrt(x * x + z * z)
-			if len > lim then
-				x, z = x / len * lim, z / len * lim
-			end
-			if x * x + z * z < 24 * 24 then -- no dentro de la nave
-				x, z = x + 30, z + 30
-			end
 			Loot.spawnChest(R, x, z)
 		end
 	end

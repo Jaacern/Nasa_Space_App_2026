@@ -90,8 +90,8 @@ local function addTele(R: Run, t: any)
 	R.nextTele += 1
 	t.id = R.nextTele
 	table.insert(R.teles, t)
-	if t.shape == "c" then
-		table.insert(R.events, { "tele", t.id, "c", r1(t.x), r1(t.z), t.r, t.t })
+	if t.shape == "c" or t.shape == "m" then
+		table.insert(R.events, { "tele", t.id, t.shape, r1(t.x), r1(t.z), t.r, t.t })
 	else
 		table.insert(R.events, { "tele", t.id, "l", r1(t.x), r1(t.z), r1(t.x2), r1(t.z2), t.w, t.t, t.dmg > 0 and 1 or 0 })
 	end
@@ -204,7 +204,7 @@ local function resolveTeles(R: Run, dt: number)
 		table.remove(teles, i)
 		if t.dmg > 0 then
 			local inside = false
-			if t.shape == "c" then
+			if t.shape == "c" or t.shape == "m" then
 				local dx, dz = R.px - t.x, R.pz - t.z
 				inside = dx * dx + dz * dz <= (t.r + hr) * (t.r + hr)
 			else
@@ -220,6 +220,9 @@ local function resolveTeles(R: Run, dt: number)
 			if inside then
 				Combat.damagePlayer(R, t.dmg)
 			end
+		end
+		if t.shape == "m" then
+			table.insert(R.events, { "meteorBoom", math.round(t.x), math.round(t.z), t.r })
 		end
 		if owner then
 			if t.act == "shoot" then
@@ -394,6 +397,38 @@ local function director(R: Run, dt: number)
 				local ev = NasaData.eventForAlert(math.ceil(R.hazN / 3))
 				table.insert(R.events, { "nasa", ev.label, ev.date })
 			end
+		end
+	end
+
+	-- Caida esporadica de meteoros en niveles/oleadas avanzados (NASA InSight / CNEOS).
+	local M = Balance.Meteors
+	if R.lvl >= M.UnlockLevel or R.wave >= M.UnlockWave then
+		R.meteorT -= dt
+		if R.meteorT <= 0 then
+			local mInterval = M.Interval[R.biome] or 18
+			R.meteorT = mInterval
+			R.meteorN += 1
+			local count = M.Count[R.biome] or 2
+			local dmg = M.Dmg * Balance.dmgMult(R.t / 60)
+			for i = 1, count do
+				local ox, oz = 0, 0
+				if i == 1 then
+					local a = rng:NextNumber(0, math.pi * 2)
+					local d = rng:NextNumber(2, 10)
+					ox, oz = math.cos(a) * d, math.sin(a) * d
+				else
+					local a = rng:NextNumber(0, math.pi * 2)
+					local d = rng:NextNumber(12, 34)
+					ox, oz = math.cos(a) * d, math.sin(a) * d
+				end
+				local mx, mz = clampArena(R.px + ox, R.pz + oz, 10)
+				if mx * mx + mz * mz < 16 * 16 then
+					mx, mz = clampArena(mx + 22, mz + 12, 10)
+				end
+				addTele(R, { shape = "m", x = mx, z = mz, r = M.Radius, t = M.Delay + (i - 1) * 0.28, dmg = dmg })
+			end
+			local mf = NasaData.meteorForAlert(R.meteorN)
+			table.insert(R.events, { "nasa", mf.title, mf.sub })
 		end
 	end
 end

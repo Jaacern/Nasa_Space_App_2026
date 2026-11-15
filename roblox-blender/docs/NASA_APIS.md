@@ -139,3 +139,20 @@ Páginas:
 - E: https://science.nasa.gov/mission/msl-curiosity/science-instruments/
 
 Límite de esta verificación: las citas se extrajeron con una herramienta de lectura automática de la página. Conviene que una persona abra cada enlace una vez antes del pitch.
+
+## 11. Eventos astrofísicos y meteoroides (`NasaData.BlackHoleEvents` y `NasaData.MeteorEvents`)
+
+Añadidos en `game/src/shared/NasaData.luau` para los eventos esporádicos visuales y de peligro en partida:
+
+| Evento en juego | Fuente pública NASA / misión | Dato resumido |
+|---|---|---|
+| `Sagittarius A*` (`sgra`) | Event Horizon Telescope + NASA Chandra X-ray Observatory | Centro galáctico (~26 000 años luz, ~4 M masas solares); primera imagen EHT (mayo 2022) y plasma en rayos X observado por Chandra |
+| `M87*` (`m87`) | EHT + NASA Chandra | Galaxia M87 (~55 M años luz, ~6 500 M masas solares) con chorro relativista medido en rayos X |
+| `Cygnus X-1` (`cygx1`) | NASA Chandra / NuSTAR | Binaria de rayos X con disco de acreción supercaliente alrededor del horizonte de sucesos |
+| Lluvia de meteoros en Marte | NASA InSight (sismómetro SEIS) + MRO HiRISE | Impacto confirmado en Elysium Planitia (05-09-2021) mediante ondas sísmicas/acústicas y cráteres detectados desde órbita |
+| Bólidos y entrada atmosférica | NASA/JPL CNEOS (`ssd-api.jpl.nasa.gov/doc/fireball.html`) | Modelos de fragmentación atmosférica e impacto de meteoroides |
+
+Notas de enlace:
+- NASA Black Holes / Chandra: `https://science.nasa.gov/universe/black-holes/` y `https://chandra.harvard.edu/`
+- NASA InSight meteoroid impacts: `https://mars.nasa.gov/insight/` y `https://www.jpl.nasa.gov/news/`
+- JPL CNEOS Fireballs: `https://cneos.jpl.nasa.gov/fireballs/`

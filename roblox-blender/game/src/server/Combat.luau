@@ -18,10 +18,13 @@ function Combat.kill(R: Run, e: any)
 	e.dead = true
 	R.kills += 1
 	R.anyDead = true
+	if R.stats and (R.stats.scienceZoneMult or 1) > 1 then
+		R.scienceBonus = (R.scienceBonus or 0) + Balance.Meta.SciencePerKill * ((R.stats.scienceZoneMult or 1) - 1)
+	end
 	table.insert(R.events, { "die", e.id })
 	Loot.dropGem(R, e.x, e.z, e.xp)
 	if e.elite then
-		Loot.spawnChest(R, e.x, e.z)
+		Loot.spawnChest(R, e.x, e.z, if (R.wave or 1) >= 6 then 3 else 2)
 	end
 	if e.boss then
 		R.bossKilled = e
@@ -72,9 +75,14 @@ function Combat.damagePlayer(R: Run, dmg: number): boolean
 		local absorbed = math.min(R.shield, dmg)
 		R.shield -= absorbed
 		dmg -= absorbed
+		table.insert(R.events, { "shieldHit", math.ceil(R.shield), math.max(1, math.round(absorbed)) })
+		if R.shield <= 0 then
+			R.shield = 0
+			R.shieldT = 0
+			table.insert(R.events, { "shieldBreak" })
+		end
 	end
 	if dmg <= 0 then
-		table.insert(R.events, { "block" })
 		return false
 	end
 	R.hp -= dmg
@@ -218,6 +226,7 @@ function Combat.useSkill(R: Run, idx: number, dx: number, dz: number)
 		local P = Balance.Skills.Pulse
 		Combat.areaDamage(R, R.px, R.pz, P.Radius, P.Damage * s.dmgMult, P.Knockback)
 		R.shield = P.Shield
+		R.shieldMax = P.Shield
 		R.shieldT = P.ShieldTime
 		R.cds[2] = P.Cooldown * s.cdMult
 		R.cdMax[2] = R.cds[2]
@@ -245,6 +254,8 @@ function Combat.update(R: Run, dt: number)
 		R.shieldT -= dt
 		if R.shieldT <= 0 then
 			R.shield = 0
+			R.shieldT = 0
+			table.insert(R.events, { "shieldBreak" })
 		end
 	end
 

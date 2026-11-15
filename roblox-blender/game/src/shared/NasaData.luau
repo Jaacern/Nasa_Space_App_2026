@@ -27,6 +27,44 @@ NasaData.SpaceWeather = {
 	},
 }
 
+-- Catalogo curado de observaciones reales de agujeros negros (NASA Chandra / NuSTAR / EHT).
+NasaData.BlackHoleEvents = {
+	{
+		id = "sgra",
+		title = "ANOMALÍA GRAVITACIONAL · SAGITTARIUS A*",
+		sub = "EHT + NASA Chandra · Centro galáctico a ~26 000 años luz · ~4 millones de masas solares",
+		fact = "Imagen EHT (mayo 2022) y rayos X de Chandra: gas caliente orbitando el horizonte de sucesos de Sgr A*.",
+		tint = { 255, 165, 85 },
+	},
+	{
+		id = "m87",
+		title = "CHORRO RELATIVISTA · M87*",
+		sub = "EHT + NASA Chandra · Galaxia M87 (~55 M años luz) · ~6 500 millones de masas solares",
+		fact = "M87* expulsa un chorro de partículas a miles de años luz observado en rayos X por NASA Chandra.",
+		tint = { 130, 210, 255 },
+	},
+	{
+		id = "cygx1",
+		title = "DISCO DE ACRECIÓN · CYGNUS X-1",
+		sub = "NASA Chandra / NuSTAR · Binaria de rayos X · Lente gravitacional sobre el horizonte",
+		fact = "Observatorios de rayos X de NASA miden el gas supercaliente que cae en espiral hacia el agujero negro.",
+		tint = { 210, 145, 255 },
+	},
+}
+
+NasaData.MeteorEvents = {
+	{
+		title = "LLUVIA DE METEOROS · DETECCIÓN SÍSMICA",
+		sub = "NASA InSight (SEIS) + MRO HiRISE · Impactos en Elysium Planitia",
+		fact = "El 05-09-2021 NASA InSight registró ondas sísmicas y acústicas de un meteoroide fragmentado en Marte.",
+	},
+	{
+		title = "ENTRADA ATMOSFÉRICA · BÓLIDO ACTIVO",
+		sub = "NASA JPL CNEOS · Monitoreo de bólidos y fragmentación atmosférica",
+		fact = "CNEOS de NASA/JPL analiza bólidos e impactos para modelar cómo se fragmentan meteoroides al entrar.",
+	},
+}
+
 -- Lineas para la telemetria del HUD. Solo hechos presentes en el snapshot.
 function NasaData.tickerLines(): { string }
 	local sw = NasaData.SpaceWeather
@@ -34,6 +72,8 @@ function NasaData.tickerLines(): { string }
 		string.format("DONKI %s a %s: %d erupciones solares registradas", sw.windowStart, sw.windowEnd, sw.counts.FLR),
 		string.format("DONKI: %d nubes de plasma (CME) en 30 días", sw.counts.CME),
 		string.format("DONKI: %d tormenta geomagnética en 30 días", sw.counts.GST),
+		"EHT + NASA Chandra: Sagittarius A* (~4 M masas solares, 26 000 años luz)",
+		"NASA InSight / MRO: impactos sísmicos confirmados con cráteres en Marte",
 	}
 	for _, e in sw.events do
 		table.insert(lines, string.format("%s: %s", e.date, e.label))
@@ -44,6 +84,16 @@ end
 function NasaData.eventForAlert(index: number)
 	local ev = NasaData.SpaceWeather.events
 	return ev[((index - 1) % #ev) + 1]
+end
+
+function NasaData.blackHoleForEvent(index: number)
+	local list = NasaData.BlackHoleEvents
+	return list[((index - 1) % #list) + 1]
+end
+
+function NasaData.meteorForAlert(index: number)
+	local list = NasaData.MeteorEvents
+	return list[((index - 1) % #list) + 1]
 end
 
 return NasaData
