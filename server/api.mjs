@@ -153,6 +153,8 @@ const MIME = {
   ".wasm": "application/wasm",
   ".woff2": "font/woff2",
   ".woff": "font/woff",
+  ".otf": "font/otf",
+  ".ttf": "font/ttf",
 };
 
 const ALLOWED_MEDIA_HOSTS = new Set([

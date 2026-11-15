@@ -165,117 +165,132 @@ function telemetryFacts() {
 // ============================================================================
 // 2. LAS 6 PARADAS: TÍTULOS, TELEMETRÍA DEL HUD Y TABLEROS HOLOGRÁFICOS (ES)
 // ============================================================================
-const ROBLOX_REACH = "Roblox: más de 85 millones de usuarios activos al día; más del 40 % son menores de 13 años.";
+/** Tripulación CODE OR DIE: etiquetas exactas de los astronautas y créditos del HUD. */
+const TEAM = [
+  { key: "javier", name: "JAVIER", role: "Estudiante Ingeniería Informática" },
+  { key: "gonzalo", name: "GONZALO", role: "Psicólogo" },
+  { key: "cristobal", name: "CRISTÓBAL", role: "Estudiante" },
+];
+// Cada tablero: un párrafo breve + 3 viñetas escaneables (aprendizaje incidental, sin jerga técnica).
 const STOPS = [
   {
     id: "pad39b",
     short: "CONTEXTO",
-    title: "01 · CONTEXTO Y EQUIPO (Pad 39B)",
+    title: "01 · CONTEXTO Y EQUIPO (Cabo Cañaveral · Pad 39B)",
     color: 0x38bdf8,
-    window: "00:00–00:30",
-    hud: () => "KENNEDY SPACE CENTER PAD 39B · SATURN V (34.5 MN)",
+    window: "00:00–00:15",
+    hud: () => "DESAFÍO NASA SPACE APPS 2026 · KENNEDY SPACE CENTER PAD 39B",
     board: () => ({
       eyebrow: "01 · CONTEXTO Y EQUIPO",
-      place: "PAD 39B",
+      place: "CABO CAÑAVERAL · PAD 39B",
       title: "CODE OR DIE · Entrenador Espacial",
-      lines: [
-        "Desafío NASA: Build a Junior Astronaut Mission Trainer (7–12 años).",
-        "Equipo: Javier (Ing. Informático), Gonzalo (Psicólogo) y Cristóbal (Estudiante).",
-        ROBLOX_REACH,
-        "Ciencia real NASA en un juego interactivo en Roblox.",
+      intro: "En los últimos años ha caído el interés infantil por la lectura y la ciencia tradicional. Transformamos el desafío Junior Astronaut Mission Trainer en un videojuego interactivo en Roblox para niños de 7 a 12 años.",
+      bullets: [
+        "Alcance real: Roblox conecta con más de 85 millones de usuarios diarios (40 % menores de 13 años).",
+        "Equipo: Javier (Estudiante Ingeniería Informática), Gonzalo (Psicólogo) y Cristóbal (Estudiante).",
+        "Propósito: Convertir ciencia real de la NASA en exploración viva y significativa.",
       ],
-      footer: "KENNEDY SPACE CENTER PAD 39B · SATURN V (34.5 MN)",
+      footer: "DESAFÍO NASA SPACE APPS 2026 · KENNEDY SPACE CENTER PAD 39B",
     }),
   },
   {
     id: "leo",
     short: "EL PROBLEMA",
-    title: "02 · EL PROBLEMA (Órbita LEO · ISS)",
+    title: "02 · EL PROBLEMA (Órbita Baja Terrestre · ISS)",
     color: 0x60a5fa,
-    window: "00:30–01:00",
-    hud: () => "FUENTE REAL: NASA RADLAB ISS · ÓRBITA 400 KM",
+    window: "00:15–00:30",
+    hud: () => "FUENTE REAL: NASA RADLAB & OSDR (ESTACIÓN ESPACIAL INTERNACIONAL)",
     board: () => ({
       eyebrow: "02 · EL PROBLEMA",
-      place: "ÓRBITA LEO · ISS",
-      title: "Juegos irreales o manuales aburridos",
-      lines: [
-        "Los juegos comunes ocultan los riesgos del espacio y los simuladores técnicos frustran a los niños.",
-        "Fuera del escudo terrestre, la radiación base sube a 4.20 µGy/h.",
+      place: "ÓRBITA BAJA TERRESTRE · ISS",
+      title: "Por qué fallan los métodos tradicionales",
+      intro: "Los libros y carteles presentan datos abstractos que aburren, mientras los juegos espaciales comunes ocultan las verdaderas leyes físicas que mantienen viva a una tripulación.",
+      bullets: [
+        "Brecha de atención: Sin interacción ni consecuencias, los niños desconectan de la lectura científica.",
+        "Ficción sin criterio: Simplificar el espacio impide comprender los riesgos reales de una misión.",
+        "Dato real NASA (RadLab ISS): A 400 km de altura, la radiación base sube a 4.20 µGy/h.",
       ],
-      footer: "FUENTE REAL: NASA RADLAB ISS · ÓRBITA 400 KM",
+      footer: "FUENTE REAL: NASA RADLAB & OSDR (ESTACIÓN ESPACIAL INTERNACIONAL)",
     }),
   },
   {
     id: "deep",
-    short: "PSICOLOGÍA",
-    title: "03 · PSICOLOGÍA DEL JUEGO (Bennu & JWST)",
+    short: "APRENDIZAJE",
+    title: "03 · APRENDIZAJE INCIDENTAL (Espacio Profundo · Bennu & JWST)",
     color: 0xf59e0b,
-    window: "01:00–01:30",
-    hud: () => "FUENTE REAL: API NASA DONKI & OSIRIS-REX (BENNU)",
+    window: "00:30–00:45",
+    hud: () => "FUENTE REAL: API NASA DONKI & MISIÓN OSIRIS-REX (BENNU)",
     board: () => ({
-      eyebrow: "03 · PSICOLOGÍA DEL JUEGO",
-      place: "BENNU & JWST",
-      title: "Aprender jugando por causa y efecto",
-      lines: [
-        "Diseño Gonzalo (Psicólogo): cero muros de texto y aprendizaje activo.",
-        "Las tormentas solares reales golpean en vivo y exigen decidir en segundos.",
+      eyebrow: "03 · APRENDIZAJE INCIDENTAL",
+      place: "ESPACIO PROFUNDO · BENNU & JWST",
+      title: "Aprender jugando de forma implícita",
+      intro: "Aplicamos el aprendizaje incidental o implícito: los niños absorben vocabulario científico, pensamiento crítico y datos reales de manera indirecta mediante recursos audiovisuales y juego activo.",
+      bullets: [
+        "Diseño cognitivo (Gonzalo): Cero muros de texto; el conocimiento se integra en la acción.",
+        "Causa y efecto real: Ahorrar energía hoy puede costar reservas de oxígeno mañana.",
+        "Clima espacial vivo: Tormentas solares reales (API NASA DONKI) obligan a decidir en segundos.",
       ],
-      footer: "FUENTE REAL: API NASA DONKI & OSIRIS-REX (BENNU)",
+      footer: "FUENTE REAL: API NASA DONKI & MISIÓN OSIRIS-REX (BENNU)",
     }),
   },
   {
     id: "moon",
     short: "SOLUCIÓN",
-    title: "04 · SOLUCIÓN EN ROBLOX (Base Lunar)",
+    title: "04 · NUESTRA SOLUCIÓN (Base Lunar · Mare Tranquillitatis)",
     color: 0xe2e8f0,
-    window: "01:30–02:00",
-    hud: () => "FUENTE REAL: NASA LRO CRaTER (13.72 µGy/h · 3.3× ISS)",
+    window: "00:45–01:00",
+    hud: () => "FUENTE REAL: NASA ARTEMIS & LRO CRaTER (13.72 µGy/h)",
     board: () => ({
-      eyebrow: "04 · SOLUCIÓN EN ROBLOX",
-      place: "BASE LUNAR",
-      title: "Motor Roblox + Telemetría Real NASA",
-      lines: [
-        "Ingeniería Javier & Cristóbal: pipeline cliente-servidor en Luau conectado vía HTTP/JSON a telemetría oficial NASA DONKI, RadLab e InSight.",
-        ROBLOX_REACH,
-        "Los niños construyen hábitats y escudos; ahorrar energía hoy puede costar aire mañana.",
+      eyebrow: "04 · NUESTRA SOLUCIÓN",
+      place: "BASE LUNAR · MARE TRANQUILLITATIS",
+      title: "Simulador de Misión en Roblox",
+      intro: "Creamos un puesto avanzado interactivo alimentado por mediciones oficiales de la NASA, donde cada decisión de ingeniería transforma la supervivencia del equipo.",
+      bullets: [
+        "Equilibrio de 3 pilares: Gestiona Energía, Soporte Vital y Blindaje sin abrumar al jugador.",
+        "Entorno lunar auténtico: En la Luna la radiación sube a 13.72 µGy/h (3.3× la órbita terrestre).",
+        "Experimentación segura: Equivocarse enseña física real y motiva a probar nuevas estrategias.",
       ],
-      footer: "FUENTE REAL: NASA LRO CRaTER (13.72 µGy/h · 3.3× ISS)",
+      footer: "FUENTE REAL: NASA ARTEMIS & LRO CRaTER (13.72 µGy/h)",
     }),
   },
   {
     id: "marsorbit",
-    short: "BRECHA FÍSICA",
-    title: "05 · BRECHA FÍSICA (Órbita de Marte)",
+    short: "DESAFÍO MARTE",
+    title: "05 · DESAFÍO EN MARTE (Órbita de Marte · Fobos y Deimos)",
     color: 0xfb923c,
-    window: "02:00–02:30",
-    hud: () => "FUENTE REAL: MARS RECONNAISSANCE / MGS MOLA",
+    window: "01:00–01:15",
+    hud: () => "FUENTE REAL: MARS RECONNAISSANCE ORBITER & MGS MOLA",
     board: () => ({
-      eyebrow: "05 · BRECHA FÍSICA",
-      place: "ÓRBITA DE MARTE",
+      eyebrow: "05 · DESAFÍO EN MARTE",
+      place: "ÓRBITA DE MARTE · FOBOS Y DEIMOS",
       title: "Aislamiento extremo a millones de km",
-      lines: [
-        "En Marte nadie puede rescatarte: la estrategia es tu único soporte vital.",
-        "La señal con la Tierra tarda entre 3 y 22 minutos y la radiación sube a 15.23 µGy/h.",
+      intro: "En el espacio profundo no existe rescate inmediato desde la Tierra: la anticipación y el criterio científico del jugador son el único soporte vital de la base.",
+      bullets: [
+        "Retraso real de señal: Las comunicaciones con la Tierra tardan entre 3 y 22 minutos.",
+        "Radiación triplicada: En Marte la exposición alcanza 15.23 µGy/h (3.63× la ISS).",
+        "Ciencia comprensible: Cada concepto técnico se vive en contexto, sin jerga innecesaria.",
       ],
-      footer: "FUENTE REAL: MARS RECONNAISSANCE / MGS MOLA",
+      footer: "FUENTE REAL: MARS RECONNAISSANCE ORBITER & MGS MOLA",
     }),
   },
   {
     id: "jezero",
     short: "EVIDENCIA",
-    title: "06 · EVIDENCIA 30 SOLES (Cráter Jezero)",
+    title: "06 · EVIDENCIA Y AGRADECIMIENTOS (Cráter Jezero · Marte)",
     color: 0xfc3d21,
-    window: "02:30–03:00",
-    hud: () => "FUENTE REAL: NASA INSIGHT, PERSEVERANCE & INGENUITY",
+    window: "01:15–01:30",
+    hud: () => "GRACIAS · NASA INSIGHT, PERSEVERANCE & INGENUITY",
     board: () => ({
-      eyebrow: "06 · EVIDENCIA 30 SOLES",
-      place: "CRÁTER JEZERO",
-      title: "Sobrevive 30 soles con ciencia NASA",
-      lines: [
-        "Vientos reales de 27 m/s cubren los paneles solares con polvo marciano.",
-        "Gestiona Energía, Aire y Blindaje junto a Perseverance e Ingenuity.",
+      eyebrow: "06 · EVIDENCIA Y AGRADECIMIENTOS",
+      place: "CRÁTER JEZERO · MARTE",
+      title: "30 soles de ciencia real · Gracias",
+      intro: "Nuestro prototipo demuestra cómo datos reales de Marte entrenan a futuros exploradores. ¡Muchas gracias al jurado y mentores de NASA Space Apps Challenge 2026!",
+      bullets: [
+        "Tormentas marcianas: Vientos reales de 27 m/s (InSight) cubren los paneles y reducen energía.",
+        "Agradecimientos: A NASA Space Apps, nuestras familias y comunidad educativa por impulsar la ciencia.",
+        "Equipo CODE OR DIE: Javier, Gonzalo y Cristóbal — listos para el demo en vivo.",
       ],
-      footer: "FUENTE REAL: NASA INSIGHT, PERSEVERANCE & INGENUITY",
+      footer: "GRACIAS · NASA INSIGHT, PERSEVERANCE & INGENUITY",
     }),
   },
 ];
@@ -550,7 +565,7 @@ const RING_FRAG = `
   }
 `;
 
-/* --- Cono de proyección del holograma: del proyector del alien a las 4 esquinas de la pantalla --- */
+/* --- Cono de proyección del holograma: del astronauta a las 4 esquinas de la pantalla --- */
 const BEAM_FRAG = `
   uniform float uTime; uniform vec3 uColor; uniform float uOpacity;
   varying vec2 vUv;
@@ -995,92 +1010,111 @@ function initEngine() {
     return lines;
   }
   function drawHologramCanvas(ctx, data, accentHex) {
-    const W = HOLO_W, H = HOLO_H, M = 78;
+    const W = HOLO_W, H = HOLO_H, M = 76;
     ctx.clearRect(0, 0, W, H);
     ctx.textAlign = "start";
     const accent = `#${accentHex.toString(16).padStart(6, "0")}`;
-    // Fondo casi opaco y muy oscuro: el texto se lee nítido contra cualquier planeta.
-    ctx.fillStyle = "rgba(2, 6, 14, 0.93)";
+    // Fondo oscuro translúcido de alto contraste: el texto se lee nítido contra cualquier planeta.
+    ctx.fillStyle = "rgba(5, 10, 22, 0.90)";
     roundRect(ctx, 18, 18, W - 36, H - 36, 34);
     ctx.fill();
     ctx.lineWidth = 4;
     ctx.strokeStyle = "rgba(160, 220, 255, 0.6)";
     roundRect(ctx, 18, 18, W - 36, H - 36, 34);
     ctx.stroke();
-    // Banda de acento superior.
     ctx.fillStyle = accent;
-    ctx.fillRect(M, 52, 150, 8);
+    ctx.fillRect(M, 50, 150, 8);
     ctx.textBaseline = "top";
 
-    // Encabezado de parada en Nasalization + lugar a la derecha.
+    // Encabezado de parada + lugar a la derecha.
     ctx.fillStyle = accent;
-    ctx.font = "400 36px 'Nasalization', 'Michroma', 'Inter', sans-serif";
-    ctx.fillText(String(data.eyebrow).toUpperCase(), M, 78);
+    ctx.font = "400 30px 'Nasalization', 'Michroma', 'Inter', sans-serif";
+    ctx.fillText(String(data.eyebrow).toUpperCase(), M, 74);
     if (data.place) {
       ctx.textAlign = "right";
       ctx.fillStyle = "rgba(203, 225, 255, 0.85)";
-      ctx.font = "500 30px 'DM Mono', 'IBM Plex Mono', monospace";
-      ctx.fillText(String(data.place).toUpperCase(), W - M, 82);
+      ctx.font = "500 24px 'DM Mono', 'IBM Plex Mono', monospace";
+      ctx.fillText(String(data.place).toUpperCase(), W - M, 78);
       ctx.textAlign = "start";
     }
 
-    // Pie con la fuente real NASA (34 px), siempre visible sobre una franja propia.
-    const footFont = "500 34px 'DM Mono', 'IBM Plex Mono', monospace";
-    ctx.font = footFont;
+    // Pie con la fuente real NASA (≥30 px) en una franja propia.
+    ctx.font = "500 30px 'DM Mono', 'IBM Plex Mono', monospace";
     const footerLines = wrapCanvasText(ctx, data.footer, W - M * 2 - 34).slice(0, 2);
-    const footH = footerLines.length * 42 + 34;
-    const footTop = H - 52 - footH;
-    ctx.fillStyle = "rgba(120, 190, 255, 0.1)";
+    const footH = footerLines.length * 38 + 30;
+    const footTop = H - 48 - footH;
+    ctx.fillStyle = "rgba(120, 190, 255, 0.12)";
     roundRect(ctx, M, footTop, W - M * 2, footH, 14);
     ctx.fill();
     ctx.fillStyle = accent;
     ctx.fillRect(M, footTop, 8, footH);
     ctx.fillStyle = "#dbeafe";
-    footerLines.forEach((line, k) => ctx.fillText(line, M + 30, footTop + 18 + k * 42));
+    footerLines.forEach((line, k) => ctx.fillText(line, M + 30, footTop + 16 + k * 38));
 
-    // Título (64–78 px) y cuerpo (44–64 px): se usa el mayor tamaño que quepa en el tablero.
-    const bodyBottom = footTop - 22;
-    let titlePx = 78, bodyPx = 64, layout = null;
-    for (; titlePx > 60; titlePx -= 2) {
+    // Tipografía base (título 58, párrafo 36, viñetas 34); se amplía hasta 1.4× mientras todo quepa.
+    const bodyBottom = footTop - 20;
+    const bullets = data.bullets ?? data.lines ?? [];
+    const colW = W - M * 2;
+    let layout = null;
+    for (let scale = 1.4; scale >= 1.0; scale -= 0.04) {
+      const titlePx = Math.round(58 * scale), introPx = Math.round(36 * scale), bulletPx = Math.round(34 * scale);
       ctx.font = `800 ${titlePx}px 'Inter', 'Public Sans', sans-serif`;
-      if (ctx.measureText(data.title).width <= W - M * 2) break;
+      const titleLines = wrapCanvasText(ctx, data.title, colW).slice(0, 2);
+      ctx.font = `500 ${introPx}px 'Inter', 'Public Sans', sans-serif`;
+      const introLines = data.intro ? wrapCanvasText(ctx, data.intro, colW) : [];
+      ctx.font = `600 ${bulletPx}px 'Inter', 'Public Sans', sans-serif`;
+      const bulletBlocks = bullets.map((entry) => wrapCanvasText(ctx, String(entry), colW - 44));
+      const titleH = titleLines.length * Math.round(titlePx * 1.12);
+      const introLH = Math.round(introPx * 1.3), bulletLH = Math.round(bulletPx * 1.26);
+      const gap = Math.round(bulletPx * 0.42);
+      const top = 126;
+      const total = titleH + 26 + introLines.length * introLH + (introLines.length ? 26 : 0)
+        + bulletBlocks.reduce((acc, bl) => acc + bl.length * bulletLH, 0) + Math.max(0, bulletBlocks.length - 1) * gap;
+      layout = { titlePx, introPx, bulletPx, titleLines, introLines, bulletBlocks, titleH, introLH, bulletLH, gap, top };
+      if (top + total <= bodyBottom) break;
     }
-    for (let attempt = 0; attempt < 16; attempt++) {
-      ctx.font = `800 ${titlePx}px 'Inter', 'Public Sans', sans-serif`;
-      const titleLines = wrapCanvasText(ctx, data.title, W - M * 2).slice(0, 2);
-      ctx.font = `600 ${bodyPx}px 'Inter', 'Public Sans', sans-serif`;
-      const paragraphs = data.lines.map((entry) => wrapCanvasText(ctx, Array.isArray(entry) ? entry.join(" · ") : String(entry), W - M * 2 - 40));
-      const bodyTop = 138 + titleLines.length * (titlePx + 10) + 34;
-      const lineH = Math.round(bodyPx * 1.24);
-      const gap = Math.round(bodyPx * 0.42);
-      const bodyH = paragraphs.reduce((a, p) => a + p.length * lineH, 0) + (paragraphs.length - 1) * gap;
-      layout = { titleLines, paragraphs, bodyTop, lineH, gap };
-      if (bodyTop + bodyH <= bodyBottom) break;
-      bodyPx -= 2;
-      if (attempt % 2) titlePx -= 2;
-    }
+    let y = layout.top;
     ctx.fillStyle = "#ffffff";
-    ctx.font = `800 ${titlePx}px 'Inter', 'Public Sans', sans-serif`;
-    layout.titleLines.forEach((line, k) => ctx.fillText(line, M, 138 + k * (titlePx + 10)));
-    const ruleY = layout.bodyTop - 20;
+    ctx.font = `800 ${layout.titlePx}px 'Inter', 'Public Sans', sans-serif`;
+    layout.titleLines.forEach((line, k) => ctx.fillText(line, M, y + k * Math.round(layout.titlePx * 1.12)));
+    y += layout.titleH + 8;
     const grad = ctx.createLinearGradient(M, 0, W - M, 0);
     grad.addColorStop(0, accent);
     grad.addColorStop(0.3, "rgba(160, 220, 255, 0.45)");
     grad.addColorStop(1, "rgba(160, 220, 255, 0.05)");
     ctx.fillStyle = grad;
-    ctx.fillRect(M, ruleY, W - M * 2, 4);
-
-    ctx.font = `600 ${bodyPx}px 'Inter', 'Public Sans', sans-serif`;
-    let cursorY = layout.bodyTop;
-    for (const lines of layout.paragraphs) {
+    ctx.fillRect(M, y, colW, 4);
+    y += 18;
+    ctx.fillStyle = "#e6f0ff";
+    ctx.font = `500 ${layout.introPx}px 'Inter', 'Public Sans', sans-serif`;
+    for (const line of layout.introLines) {
+      ctx.fillText(line, M, y);
+      y += layout.introLH;
+    }
+    if (layout.introLines.length) y += 26;
+    ctx.font = `600 ${layout.bulletPx}px 'Inter', 'Public Sans', sans-serif`;
+    for (const block of layout.bulletBlocks) {
       ctx.fillStyle = accent;
-      ctx.fillRect(M, cursorY + bodyPx * 0.3, 12, 12);
-      ctx.fillStyle = "#f8fbff";
-      for (const line of lines) {
-        ctx.fillText(line, M + 40, cursorY);
-        cursorY += layout.lineH;
-      }
-      cursorY += layout.gap;
+      ctx.fillRect(M, y + layout.bulletPx * 0.3, 12, 12);
+      // "Etiqueta: texto" → la etiqueta va resaltada en el color de la parada.
+      const first = block[0];
+      const colon = first.indexOf(":");
+      block.forEach((line, k) => {
+        let x = M + 44;
+        if (k === 0 && colon > 0 && colon < 34) {
+          const head = line.slice(0, colon + 1);
+          ctx.fillStyle = accent;
+          ctx.fillText(head, x, y);
+          x += ctx.measureText(`${head} `).width;
+          ctx.fillStyle = "#f8fbff";
+          ctx.fillText(line.slice(colon + 1).trimStart(), x, y);
+        } else {
+          ctx.fillStyle = "#f8fbff";
+          ctx.fillText(line, x, y);
+        }
+        y += layout.bulletLH;
+      });
+      y += layout.gap;
     }
   }
   function roundRect(ctx, x, y, w, h, r) {
@@ -1901,9 +1935,9 @@ function initEngine() {
 
   // ---- 5.4 Tripulación chilena: JAVIER, GONZALO y CRISTÓBAL (3 astronautas articulados) ----
   const CREW = [
-    { key: "javier", name: "JAVIER", role: "Ing. Informático", color: "#38bdf8", start: V3(-1.95, 0, 2.55), tagY: 1.7 },
-    { key: "gonzalo", name: "GONZALO", role: "Psicólogo", color: "#a78bfa", start: V3(-0.75, 0, 2.95), tagY: 1.36 },
-    { key: "cristobal", name: "CRISTÓBAL", role: "Estudiante", color: "#fbbf24", start: V3(-3.15, 0, 2.05), tagY: 2.04 },
+    { key: "javier", name: TEAM[0].name, role: TEAM[0].role, color: "#38bdf8", start: V3(-1.95, 0, 2.55), tagY: 1.62 },
+    { key: "gonzalo", name: TEAM[1].name, role: TEAM[1].role, color: "#a78bfa", start: V3(-0.75, 0, 2.95), tagY: 1.3 },
+    { key: "cristobal", name: TEAM[2].name, role: TEAM[2].role, color: "#fbbf24", start: V3(-3.15, 0, 2.05), tagY: 1.94 },
   ];
   const astroState = { phase: "wave", t0: 0, boardDur: 6.5, clips: null, root: null, fallback: false, members: [] };
   const HATCH = V3(ROCKET_X - 0.3, 2.62, ROCKET_Z + 0.08);
@@ -1940,20 +1974,20 @@ function initEngine() {
     flag.userData.isCrewFlag = true;
     return flag;
   }
-  // Etiqueta 3D flotante en una línea: "JAVIER · Ing. Informático".
+  // Etiqueta 3D flotante en una línea: "JAVIER · Estudiante Ingeniería Informática".
   function makeCrewTag(member) {
     const cv = document.createElement("canvas");
-    cv.width = 1024; cv.height = 176;
+    cv.width = 1800; cv.height = 176;
     const c = cv.getContext("2d");
     const drawTag = () => {
-      c.clearRect(0, 0, 1024, 176);
+      c.clearRect(0, 0, 1800, 176);
       c.textBaseline = "middle";
-      c.font = "400 60px 'Nasalization', 'Michroma', 'Inter', sans-serif";
+      c.font = "400 56px 'Nasalization', 'Michroma', 'Inter', sans-serif";
       const nameW = c.measureText(member.name).width;
       c.font = "600 46px 'Inter', 'Public Sans', sans-serif";
       const roleText = ` · ${member.role}`;
       const total = 92 + nameW + c.measureText(roleText).width + 40;
-      const x0 = (1024 - total) / 2;
+      const x0 = (1800 - total) / 2;
       c.fillStyle = "rgba(2, 8, 18, 0.9)";
       roundRect(c, x0, 14, total, 148, 74); c.fill();
       c.strokeStyle = member.color; c.lineWidth = 5;
@@ -1961,7 +1995,7 @@ function initEngine() {
       c.fillStyle = member.color;
       c.beginPath(); c.arc(x0 + 52, 88, 16, 0, Math.PI * 2); c.fill();
       c.fillStyle = "#ffffff";
-      c.font = "400 60px 'Nasalization', 'Michroma', 'Inter', sans-serif";
+      c.font = "400 56px 'Nasalization', 'Michroma', 'Inter', sans-serif";
       c.fillText(member.name, x0 + 86, 90);
       c.fillStyle = "rgba(219, 234, 254, 0.98)";
       c.font = "600 46px 'Inter', 'Public Sans', sans-serif";
@@ -1972,12 +2006,12 @@ function initEngine() {
     tex.colorSpace = THREE.SRGBColorSpace;
     tex.anisotropy = Math.min(8, maxAniso);
     const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, depthTest: false }));
-    sprite.scale.set(1.72, 0.296, 1);
+    sprite.scale.set(2.9, 0.284, 1);
     sprite.position.set(0, member.tagY ?? 1.4, 0);
     sprite.renderOrder = 30;
     const redraw = () => { drawTag(); tex.needsUpdate = true; };
     document.fonts?.ready?.then(redraw);
-    document.fonts?.load?.("400 60px Nasalization").then(redraw).catch(() => {});
+    document.fonts?.load?.("400 56px Nasalization").then(redraw).catch(() => {});
     return sprite;
   }
   function decorateCrewFigure(fig, member) {
@@ -2065,8 +2099,8 @@ function initEngine() {
     }
   }
   loadGlb(
-    "astronaut_chile.glb",
-    0.98,
+    "astronaut_guide.glb",
+    1.0,
     (m, clips) => {
       astronautTemplate = m;
       astroState.clips = clips;
@@ -2114,55 +2148,34 @@ function initEngine() {
     });
   }
 
-  // ---- 5.5 Narradores alien: la pantalla 2.8 × 1.75 m nace de su proyector por un cono translúcido ----
-  const BOARD_W = 2.8;
+  // ---- 5.5 Narradores: el astronauta guía (GLB con esqueleto) proyecta la pantalla de 3.1 × 1.95 m ----
+  const BOARD_W = 3.1;
   const narrators = [];
-  const alienSlots = [];
-  let alienTemplate = null;
-  let alienClips = [];
-  const alienAlternators = [];
-  function spawnAliens() {
-    if (!alienTemplate) return;
-    for (const slot of alienSlots) {
+  const guideSlots = [];
+  let guideTemplate = null;
+  let guideClips = [];
+  function spawnGuides() {
+    if (!guideTemplate) return;
+    for (const slot of guideSlots) {
       if (slot.filled) continue;
-      const fig = SkeletonUtils.clone(alienTemplate);
-      fig.traverse((o) => {
-        if (!o.isMesh) return;
-        const mats = Array.isArray(o.material) ? o.material : [o.material];
-        const own = `${o.name} ${o.parent?.name ?? ""} ${mats.map((mt) => mt?.name ?? "").join(" ")}`.toLowerCase();
-        // Fuera el marco cian vacío y la pantalla duplicada del GLB: el tablero real lo proyecta el alien.
-        if (/hologramscreen|hologramframe|holoframe/.test(own)) {
-          o.visible = false;
-          return;
-        }
-        for (const mt of mats) {
-          if (/eyes|trim/i.test(mt?.name ?? "")) {
-            mt.emissive = new THREE.Color(0x38bdf8);
-            mt.emissiveIntensity = 1.6;
-          }
-        }
-      });
+      const fig = SkeletonUtils.clone(guideTemplate);
       slot.parent.add(fig);
       slot.fig = fig;
-      slot.projector = fig.getObjectByName("Projector") ?? null;
-      const mixer = new THREE.AnimationMixer(fig);
-      const present = alienClips.find((c) => c.name === "present") ?? alienClips[0];
-      const gesture = alienClips.find((c) => c.name === "gesture") ?? alienClips[0];
-      if (present && gesture) {
-        const a = mixer.clipAction(present), b = mixer.clipAction(gesture);
-        a.play();
-        b.play();
-        b.setEffectiveWeight(0);
-        alienAlternators.push({ a, b, swapAt: performance.now() + 5000 + Math.random() * 3000, useB: false });
+      const idle = guideClips.find((c) => c.name === "idle") ?? guideClips[0];
+      if (idle) {
+        const mixer = new THREE.AnimationMixer(fig);
+        const action = mixer.clipAction(idle);
+        action.time = Math.random() * idle.duration;
+        action.play();
+        mixers.push(mixer);
       }
-      mixers.push(mixer);
       slot.filled = true;
     }
   }
-  loadGlb("alien_hologram.glb", 1.55, (m, clips) => {
-    alienTemplate = m;
-    alienClips = clips;
-    spawnAliens();
+  loadGlb("astronaut_guide.glb", 1.55, (m, clips) => {
+    guideTemplate = m;
+    guideClips = clips;
+    spawnGuides();
   }, { ground: true, kind: "suit" });
 
   function addNarrator(stopIndex, feet, { zeroG = false, side = 1 } = {}) {
@@ -2172,21 +2185,21 @@ function initEngine() {
     holder.position.copy(feet);
     holder.rotation.y = Math.atan2(cam.x - feet.x, cam.z - feet.z);
     scene.add(holder);
-    const alienHolder = new THREE.Group();
-    alienHolder.rotation.y = side * 0.3;
-    holder.add(alienHolder);
-    const slot = { parent: alienHolder, filled: false, fig: null, projector: null };
-    alienSlots.push(slot);
+    const guideHolder = new THREE.Group();
+    guideHolder.rotation.y = side * 0.3;
+    holder.add(guideHolder);
+    const slot = { parent: guideHolder, filled: false, fig: null, projector: null };
+    guideSlots.push(slot);
 
     const board = createHologramBoard(stop, BOARD_W);
-    board.position.set(side * (BOARD_W / 2 + 0.45), 1.72, -0.12);
+    board.position.set(side * (BOARD_W / 2 + 0.5), 1.78, -0.12);
     board.rotation.y = -side * 0.2;
     board.renderOrder = 22;
     holder.add(board);
     board.updateMatrix();
     const hw = BOARD_W / 2, hh = board.userData.height / 2;
     const corners = [[-hw, -hh], [hw, -hh], [hw, hh], [-hw, hh]].map(([x, y]) => new THREE.Vector3(x, y, 0).applyMatrix4(board.matrix));
-    const apex = new THREE.Vector3(side * 0.1, 0.8, 0.5);
+    const apex = new THREE.Vector3(side * 0.1, 0.85, 0.35);
     const positions = new Float32Array(36), uvs = new Float32Array(24);
     for (let k = 0; k < 4; k++) {
       const a = corners[k], b = corners[(k + 1) % 4];
@@ -2218,7 +2231,7 @@ function initEngine() {
     narrators.push({ holder, slot, beam, lens, apex, baseY: feet.y, zeroG, phase: stopIndex * 1.7 });
     return holder;
   }
-  /** Punto de pantalla estándar del narrador: alien abajo al centro, pantalla ocupando el tercio derecho. */
+  /** Punto de pantalla estándar del narrador: astronauta abajo al centro, pantalla ocupando el tercio derecho. */
   const narratorSpot = (i) => viewPoint(i, 5.0, -0.01, -0.76);
 
   // PARADA 01: el narrador flota en gravedad cero frente al complejo de lanzamiento.
@@ -2762,7 +2775,12 @@ function initEngine() {
     launching: false,
     launchT0: 0,
     queuedStop: null,
+    manual: false, // la rueda del ratón controla u directamente
+    seg: -1,
   };
+  const throttle = { vel: 0 };
+  const THROTTLE_MAX = 0.03; // fracción de la trayectoria por segundo (≈ 33 s de punta a punta)
+  const THROTTLE_GAIN = 0.02; // por cada 100 px de rueda
   const fx = { warp: 0, flash: 0, shake: 0, plume: 0 };
   const orbit = { yaw: 0, pitch: 0, targetYaw: 0, targetPitch: 0, dragging: false, moved: 0, px: 0, py: 0 };
   const pointer = new THREE.Vector2(-2, -2);
@@ -2806,19 +2824,40 @@ function initEngine() {
     }
   }
 
+  // ---- 6.1b Tarjeta final de agradecimientos (Parada 06) ----
+  const thanksCard = document.getElementById("thanks-card");
+  let thanksTimer = 0;
+  function setThanks(show) {
+    if (!thanksCard) return;
+    clearTimeout(thanksTimer);
+    if (!show) {
+      thanksCard.classList.remove("show");
+      thanksCard.setAttribute("aria-hidden", "true");
+      return;
+    }
+    // Entra con calma: primero se lee el tablero de la parada, luego aparece el cierre.
+    thanksTimer = setTimeout(() => {
+      thanksCard.classList.add("show");
+      thanksCard.setAttribute("aria-hidden", "false");
+    }, PREFERS_REDUCED_MOTION ? 0 : 1800);
+  }
+
   // ---- 6.2 Tránsitos sobre la curva ----
   function beginTravel(toStop, duration = null) {
     const from = flight.u;
     const to = STOP_U[toStop];
-    if (Math.abs(to - from) < 1e-4) return;
+    flight.manual = false;
+    throttle.vel = 0;
+    setThanks(false);
+    if (Math.abs(to - from) < 1e-4) { flight.travelling = false; return; }
     flight.travelling = true;
     flight.fromU = from;
     flight.toU = to;
     flight.toStop = toStop;
     flight.t0 = performance.now();
-    // Duración proporcional a la distancia: un viaje se siente como viaje (7–13 s por tramo)
+    // Duración proporcional a la distancia: un viaje se siente como viaje (4–9 s por tramo; recorrido completo ≈ 90 s)
     const legs = Math.abs(toStop - flight.stop) || 1;
-    flight.dur = duration ?? (PREFERS_REDUCED_MOTION ? 600 : THREE.MathUtils.clamp(8200 * Math.sqrt(legs), 7000, 15000));
+    flight.dur = duration ?? (PREFERS_REDUCED_MOTION ? 600 : THREE.MathUtils.clamp(5600 * Math.sqrt(legs), 4500, 9500));
     flight.progress = 0;
     lastPortalSide = GATE_U.map((gu) => Math.sign(flight.u - gu) || -1);
     orbit.targetYaw = 0;
@@ -2828,10 +2867,13 @@ function initEngine() {
 
   function arrive() {
     flight.travelling = false;
+    flight.manual = false;
+    flight.hudStop = null;
     flight.stop = flight.toStop;
     flight.u = flight.toU;
     updateHud();
     onStopArrived(flight.stop);
+    setThanks(flight.stop === STOPS.length - 1);
     if (flight.queuedStop != null && flight.queuedStop !== flight.stop) {
       const q = flight.queuedStop;
       flight.queuedStop = null;
@@ -2841,7 +2883,7 @@ function initEngine() {
     }
   }
 
-  function startLaunch(travelMs = 12500) {
+  function startLaunch(travelMs = 8500) {
     if (flight.launched || flight.launching) return;
     const now = performance.now();
     // Si la tripulación aún saluda, aborda a paso rápido; la ignición espera a que cierren la escotilla.
@@ -2886,12 +2928,12 @@ function initEngine() {
   engine.getStopIndex = () => (flight.travelling ? flight.toStop : flight.stop);
   const pitchBtn = document.getElementById("btn-pitch");
   const pitchLabel = document.getElementById("pitch-label");
-  // Auto-piloto del pitch: 180 s = 6 ventanas de 30 s. Cada tránsito sale antes para llegar justo al abrir la ventana.
-  const PITCH_TOTAL = 180, PITCH_SLOT = 30, PITCH_TRAVEL_MS = 9000, PITCH_LAUNCH_MS = 12000;
+  // Auto-piloto del pitch: 90 s = 6 ventanas de 15 s. Cada tránsito sale antes para llegar justo al abrir la ventana.
+  const PITCH_TOTAL = 90, PITCH_SLOT = 15, PITCH_TRAVEL_MS = 6500, PITCH_LAUNCH_MS = 8500;
   const pitch = { active: false, t0: 0 };
   function pitchButtonLabel(remaining = PITCH_TOTAL) {
     const r = Math.max(0, Math.ceil(remaining));
-    const text = pitch.active ? `PITCH ${Math.floor(r / 60)}:${String(r % 60).padStart(2, "0")}` : "PITCH 3:00";
+    const text = pitch.active ? `PITCH ${Math.floor(r / 60)}:${String(r % 60).padStart(2, "0")}` : "PITCH 1:30";
     if (pitchLabel) {
       if (pitchLabel.textContent !== text) pitchLabel.textContent = text;
     } else if (pitchBtn && pitchBtn.textContent !== text) {
@@ -2927,9 +2969,9 @@ function initEngine() {
     const current = flight.travelling ? flight.toStop : flight.stop;
     const next = Math.min(STOPS.length - 1, Math.floor(elapsed / PITCH_SLOT) + 1);
     if (!flight.launched) {
-      // Parada 01: la tripulación saluda, aborda a los 6 s y el Saturn V despega para llegar a LEO en 0:30.
-      if (astroState.phase === "wave" && elapsed > 6) setAstronautPhase("board");
-      if (!flight.launching && elapsed >= PITCH_SLOT - 3 - PITCH_LAUNCH_MS / 1000) startLaunch(PITCH_LAUNCH_MS);
+      // Parada 01: la tripulación saluda, aborda a los 3 s y el Saturn V despega para llegar a LEO en 0:15.
+      if (astroState.phase === "wave" && elapsed > 1.5) setAstronautPhase("board");
+      if (!flight.launching && elapsed >= PITCH_SLOT - 2.5 - PITCH_LAUNCH_MS / 1000) startLaunch(PITCH_LAUNCH_MS);
       return;
     }
     if (!flight.launching && !flight.travelling && current < next && elapsed >= next * PITCH_SLOT - PITCH_TRAVEL_MS / 1000) {
@@ -2958,6 +3000,7 @@ function initEngine() {
     camOffset.copy(RIG[target].offset);
     updateHud();
     onStopArrived(target);
+    setThanks(target === STOPS.length - 1);
   }
   engine.jumpToStop = jumpToStop;
 
@@ -3086,15 +3129,27 @@ function initEngine() {
     orbit.targetYaw = 0;
     orbit.targetPitch = 0;
   });
-  let wheelLock = 0;
+  // Rueda del ratón = acelerador del cohete: hacia abajo acelera, hacia arriba frena y retrocede.
   canvas.addEventListener(
     "wheel",
     (e) => {
       e.preventDefault();
-      const now = performance.now();
-      if (now < wheelLock || Math.abs(e.deltaY) < 8) return;
-      wheelLock = now + 900;
-      goToStop(engine.getStopIndex() + (e.deltaY > 0 ? 1 : -1));
+      if (flight.launching) return;
+      const delta = e.deltaY * (e.deltaMode === 1 ? 33 : e.deltaMode === 2 ? 400 : 1);
+      if (Math.abs(delta) < 1) return;
+      engine.stopPitch?.();
+      if (!flight.launched) {
+        if (delta > 0) goToStop(1); // el primer avance inicia la secuencia de despegue
+        return;
+      }
+      if (flight.travelling && !flight.manual) {
+        // El usuario toma el mando de un tránsito automático.
+        flight.manual = true;
+        flight.seg = -1;
+        throttle.vel = (flight.toU >= flight.fromU ? 1 : -1) * Math.max(0.008, THROTTLE_MAX * Math.sin(Math.PI * flight.progress) * 0.5);
+      }
+      flight.manual ||= true;
+      throttle.vel = THREE.MathUtils.clamp(throttle.vel + (delta / 100) * THROTTLE_GAIN, -THROTTLE_MAX, THROTTLE_MAX);
     },
     { passive: false },
   );
@@ -3159,12 +3214,53 @@ function initEngine() {
         flight.launching = false;
         flight.launched = true;
         launchButton.visible = false;
-        beginTravel(1, PREFERS_REDUCED_MOTION ? 600 : flight.launchTravelMs ?? 12500);
+        beginTravel(1, PREFERS_REDUCED_MOTION ? 600 : flight.launchTravelMs ?? 8500);
+      }
+    }
+
+    // --- Acelerador de la rueda: u avanza con velocidad amortiguada a lo largo de toda la trayectoria ---
+    if (flight.manual && flight.launched && !flight.launching) {
+      throttle.vel *= Math.exp(-dt * 0.9);
+      const uMin = STOP_U[1], uMax = 1;
+      flight.u = THREE.MathUtils.clamp(flight.u + throttle.vel * dt, uMin, uMax);
+      if (flight.u === uMin && throttle.vel < 0) throttle.vel = 0;
+      if (flight.u === uMax && throttle.vel > 0) throttle.vel = 0;
+      const a = THREE.MathUtils.clamp(STOP_U.findLastIndex((su) => su <= flight.u + 1e-6), 0, STOPS.length - 2);
+      if (a !== flight.seg) {
+        flight.seg = a;
+        flight.stop = a;
+        flight.toStop = a + 1;
+        flight.fromU = STOP_U[a];
+        flight.toU = STOP_U[a + 1];
+        lastPortalSide = GATE_U.map((gu) => Math.sign(flight.u - gu) || -1);
+        setThanks(false);
+      }
+      flight.travelling = true;
+      flight.progress = clamp01((flight.u - flight.fromU) / (flight.toU - flight.fromU));
+      // Cerca de una parada y casi sin velocidad, el cohete se acopla suavemente a ella.
+      const nearest = STOP_U.reduce((best, su, i) => (Math.abs(su - flight.u) < Math.abs(STOP_U[best] - flight.u) ? i : best), 0);
+      const dist = STOP_U[nearest] - flight.u;
+      if (nearest >= 1 && Math.abs(throttle.vel) < 0.0025 && Math.abs(dist) < 0.012) {
+        flight.u += dist * (1 - Math.exp(-dt * 2.4));
+        if (Math.abs(dist) < 0.0008) {
+          flight.u = STOP_U[nearest];
+          flight.toStop = nearest;
+          flight.toU = flight.u;
+          throttle.vel = 0;
+          arrive();
+        }
+      }
+      if (flight.manual) {
+        const heading = throttle.vel >= 0 ? flight.toStop : flight.stop;
+        if (flight.hudStop !== heading) {
+          flight.hudStop = heading;
+          updateHud(heading);
+        }
       }
     }
 
     // --- Avance sobre la curva ---
-    if (flight.travelling) {
+    if (flight.travelling && !flight.manual) {
       flight.progress = clamp01((now - flight.t0) / flight.dur);
       // Curva cúbica de entrada y salida en todos los tramos: el despegue arranca lento y frena suave en órbita.
       const k = easeInOut(flight.progress);
@@ -3174,14 +3270,16 @@ function initEngine() {
     const u = THREE.MathUtils.clamp(flight.u, 0, 1);
     flightCurve.getPointAt(u, ship.position);
     flightCurve.getTangentAt(Math.min(0.9995, Math.max(0.0005, u)), shipTangent).normalize();
-    if (flight.toU < flight.fromU && flight.travelling) shipTangent.negate(); // viaje de regreso
+    if (flight.toU < flight.fromU && flight.travelling && !flight.manual) shipTangent.negate(); // viaje de regreso
     if (u < 0.002 && !flight.travelling) shipTangent.set(0, 1, 0); // vertical en el pad
     shipQuat.setFromUnitVectors(Z_AXIS, shipTangent);
     ship.quaternion.slerp(shipQuat, flight.travelling ? 0.12 : 0.06);
 
     // --- Motores ---
-    const speed = flight.travelling ? Math.sin(Math.PI * flight.progress) : 0;
-    const plumeTarget = flight.launching ? ignition * 0.75 : flight.travelling ? 0.55 + speed * 0.45 : flight.launched && flight.stop > 0 ? 0.1 : 0;
+    const throttleLevel = clamp01(Math.abs(throttle.vel) / THROTTLE_MAX);
+    const speed = flight.manual ? throttleLevel : flight.travelling ? Math.sin(Math.PI * flight.progress) : 0;
+    // En modo manual la columna de motor crece con la velocidad: casi apagada en ralentí, plena a todo gas.
+    const plumeTarget = flight.launching ? ignition * 0.75 : flight.manual ? 0.1 + throttleLevel * 0.95 : flight.travelling ? 0.55 + speed * 0.45 : flight.launched && flight.stop > 0 ? 0.1 : 0;
     fx.plume = lerp(fx.plume, plumeTarget, 0.08);
     plumeMat.uniforms.uTime.value = t;
     plumeMat.uniforms.uIntensity.value = fx.plume;
@@ -3354,7 +3452,7 @@ function initEngine() {
     driveRover(perseveranceDrive, perseveranceHolder, perseveranceWheels, jezHeight, 0.2);
     driveRover(lunarRoverDrive, lunarRover, lunarWheels, moonHeight, 0.145);
 
-    // Narradores: flotación en gravedad cero y cono de proyección anclado al proyector del alien.
+    // Narradores: flotación en gravedad cero y cono de proyección anclado al astronauta guía.
     for (const n of narrators) {
       if (n.zeroG) {
         n.holder.position.y = n.baseY + Math.sin(t * 0.55 + n.phase) * 0.07;
@@ -3364,16 +3462,6 @@ function initEngine() {
       n.lens.material.opacity = 0.75 + 0.25 * Math.sin(t * 7 + n.phase);
     }
 
-    // Narradores alien: alternan "present" y "gesture" con fundido
-    for (const alt of alienAlternators) {
-      if (now > alt.swapAt) {
-        alt.useB = !alt.useB;
-        alt.swapAt = now + 4500 + Math.random() * 3500;
-      }
-      const w = lerp(alt.b.getEffectiveWeight(), alt.useB ? 1 : 0, 0.05);
-      alt.b.setEffectiveWeight(w);
-      alt.a.setEffectiveWeight(1 - w);
-    }
     updateAstronaut(now, t);
     for (const m of mixers) m.update(dt);
     for (const n of narrators) {
@@ -3654,6 +3742,8 @@ function bindEvents() {
   document.getElementById("btn-toggle-drawer")?.addEventListener("click", () => setDrawerOpen(!isDrawerOpen()));
   document.getElementById("btn-close-drawer")?.addEventListener("click", () => setDrawerOpen(false));
   document.getElementById("btn-pitch")?.addEventListener("click", () => engine.togglePitch?.());
+  document.getElementById("btn-thanks-sim")?.addEventListener("click", () => setDrawerOpen(true));
+  document.getElementById("btn-thanks-replay")?.addEventListener("click", () => { location.href = `${location.pathname}`; });
   document.getElementById("btn-prev-stop")?.addEventListener("click", () => { engine.stopPitch?.(); engine.goToStop?.(engine.getStopIndex() - 1); });
   document.getElementById("btn-next-stop")?.addEventListener("click", () => { engine.stopPitch?.(); engine.goToStop?.(engine.getStopIndex() + 1); });
 

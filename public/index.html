@@ -63,6 +63,11 @@
       <span class="brand-name">CODE OR DIE</span>
       <span class="brand-sub">NASA SPACE APPS 2026</span>
     </div>
+    <div class="glass-pill team-pill" aria-label="Equipo CODE OR DIE">
+      <span><b>JAVIER</b> · Estudiante Ingeniería Informática</span>
+      <span><b>GONZALO</b> · Psicólogo</span>
+      <span><b>CRISTÓBAL</b> · Estudiante</span>
+    </div>
     <div class="glass-pill stop-badge" id="hud-stop-badge" aria-live="polite">
       <span class="stop-index" id="hud-stop-index">PARADA 01 / 06</span>
       <span class="stop-title" id="hud-stop-title">Base NASA Pad 39B (Tierra)</span>
@@ -73,12 +78,12 @@
   <!-- Esquina superior derecha: autopiloto de pitch y cajón del simulador -->
   <div class="hud-corner hud-top-right">
     <div class="top-right-stack">
-      <button id="btn-pitch" class="glass-pill glass-btn pitch-btn" title="Reproduce el pitch de 3 minutos: 30 segundos por parada" aria-pressed="false">
+      <button id="btn-pitch" class="glass-pill glass-btn pitch-btn" title="Reproduce el vuelo automático de 90 segundos: 15 segundos por parada" aria-pressed="false">
         <span class="pitch-dot" aria-hidden="true"></span>
-        <span id="pitch-label">PITCH 3:00</span>
+        <span id="pitch-label">PITCH 1:30</span>
       </button>
-      <button id="btn-toggle-drawer" class="glass-pill glass-btn" aria-controls="sim-drawer" aria-expanded="false" title="Abrir el entrenador de misión de 30 soles">
-        SIMULADOR 30 SOLES
+      <button id="btn-toggle-drawer" class="glass-pill glass-btn" aria-controls="sim-drawer" aria-expanded="false" title="Abrir el simulador 3D de la misión">
+        SIMULADOR 3D
       </button>
     </div>
   </div>
@@ -98,8 +103,19 @@
 
   <!-- Aviso breve de controles (desaparece solo) -->
   <div id="hint-toast" class="glass-pill hint-toast" role="note">
-    Arrastra para orbitar · Rueda o flechas para viajar · <strong>PITCH 3:00</strong> recorre las 6 paradas en 180 s
+    Arrastra para orbitar · <strong>Rueda del ratón</strong> = acelerador del cohete · <strong>PITCH 1:30</strong> recorre las 6 paradas solo
   </div>
+
+  <!-- Cierre de la Parada 06: agradecimientos (aparece al llegar al cráter Jezero) -->
+  <section id="thanks-card" class="glass-pill thanks-card" role="dialog" aria-hidden="true" aria-labelledby="thanks-title">
+    <div class="thanks-kicker">NASA SPACE APPS 2026 · CRÁTER JEZERO</div>
+    <h2 id="thanks-title" class="thanks-title">¡Misión Completada!</h2>
+    <p class="thanks-text">Gracias por acompañarnos — Equipo CODE OR DIE: Javier, Gonzalo y Cristóbal · NASA Space Apps 2026</p>
+    <div class="thanks-actions">
+      <button id="btn-thanks-sim" class="glass-pill glass-btn glass-btn-accent">SIMULADOR 3D</button>
+      <button id="btn-thanks-replay" class="glass-pill glass-btn">REPETIR VUELO</button>
+    </div>
+  </section>
 
   <!-- Cajón lateral Aero Glass: Junior Astronaut Mission Trainer (30 soles) -->
   <aside id="sim-drawer" class="sim-drawer" aria-hidden="true" aria-label="Simulador de misión de 30 soles">

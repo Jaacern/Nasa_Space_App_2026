@@ -709,3 +709,46 @@ body.drawer-open .hud-bottom-right > * { pointer-events: none; }
   .stop-title { font-size: 0.95rem; }
   .hud-top-left { max-width: 60vw; }
 }
+
+/* ============================================================================
+   8. ZONAS SEGURAS DEL HUD, CRÉDITOS DEL EQUIPO Y TARJETA FINAL DE AGRADECIMIENTOS
+   ============================================================================ */
+.hud-top-left { top: max(var(--hud-gap), env(safe-area-inset-top)); }
+.hud-top-right { top: max(var(--hud-gap), env(safe-area-inset-top)); }
+.hud-bottom-left, .hud-bottom-right { bottom: max(var(--hud-gap), env(safe-area-inset-bottom)); }
+.hud-bottom-left .glass-btn, .hud-bottom-right .glass-btn, .hud-top-right .glass-btn { white-space: nowrap; max-width: calc(100vw - 2 * var(--hud-gap) - 2px); }
+.hud-top-right, .hud-bottom-right { max-width: calc(100vw - 2 * var(--hud-gap)); }
+.top-right-stack { flex-wrap: wrap; justify-content: flex-end; }
+.hud-bottom-left .glass-btn, .hud-bottom-right .glass-btn { padding-inline: clamp(0.9em, 1.35vw, 1.35em); }
+
+.team-pill { text-align: left; align-items: flex-start; display: flex; flex-direction: column; gap: 0.2em; letter-spacing: 0.04em; font-family: var(--font-sans); font-size: clamp(0.7rem, 0.86vw, 1rem); text-transform: none; line-height: 1.3; padding: 0.6em 1em; }
+.team-pill b { letter-spacing: 0.1em; color: var(--cyan); }
+@media (max-width: 720px) { .team-pill { display: none; } }
+
+.thanks-card {
+  position: fixed;
+  z-index: 14;
+  left: max(var(--hud-gap), env(safe-area-inset-left));
+  bottom: calc(var(--hud-gap) + 5rem);
+  transform: translateY(24px);
+  width: min(620px, 46vw);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.4rem 1.8rem 1.5rem;
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: normal;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.thanks-card.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.thanks-kicker { font-family: var(--font-display, var(--font-sans)); font-size: clamp(0.66rem, 0.8vw, 0.9rem); letter-spacing: 0.16em; color: var(--cyan); }
+.thanks-title { font-family: var(--font-sans); font-weight: 800; font-size: clamp(1.5rem, 2.4vw, 2.6rem); color: #fff; margin: 0; }
+.thanks-text { margin: 0; font-family: var(--font-sans); font-size: clamp(0.95rem, 1.2vw, 1.4rem); line-height: 1.4; color: #e6f0ff; }
+.thanks-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 0.3rem; }
+body.drawer-open .thanks-card { opacity: 0; pointer-events: none; }
+@media (max-width: 720px) { .thanks-card { width: calc(100vw - 2 * var(--hud-gap)); bottom: calc(var(--hud-gap) + 3.4rem); padding: 1rem 1rem 1.1rem; } }
