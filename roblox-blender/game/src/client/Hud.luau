@@ -401,8 +401,12 @@ local function buildOverlays()
 		label(if touch then "" else "[" .. i .. "]", 18, { FontFace = F.mono, Position = UDim2.fromOffset(226, 18), Size = UDim2.fromOffset(60, 24), TextXAlignment = RIGHT, TextColor3 = T.dim, ZIndex = Z.content }).Parent = card
 		local name = label("", 26, { FontFace = F.bold, Position = UDim2.fromOffset(18, 56), Size = UDim2.fromOffset(268, 66), ZIndex = Z.content, TextYAlignment = TOP })
 		name.Parent = card
-		local desc = label("", 20, { Position = UDim2.fromOffset(18, 130), Size = UDim2.fromOffset(268, 110), ZIndex = Z.content, TextYAlignment = TOP })
+		local desc = label("", 20, { Position = UDim2.fromOffset(18, 126), Size = UDim2.fromOffset(268, 52), ZIndex = Z.content, TextYAlignment = TOP })
 		desc.Parent = card
+		label("DATO REAL", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 182), Size = UDim2.fromOffset(268, 16), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = card
+		local fact = label("", 17, { Position = UDim2.fromOffset(18, 199), Size = UDim2.fromOffset(268, 64), TextColor3 = T.text, TextTransparency = 0.18, ZIndex = Z.content, TextYAlignment = TOP, TextScaled = true })
+		new("UITextSizeConstraint", { MaxTextSize = 17, MinTextSize = 12 }).Parent = fact
+		fact.Parent = card
 		local lvlText = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(18, 268), Size = UDim2.fromOffset(268, 24), TextColor3 = T.dim, ZIndex = Z.content })
 		lvlText.Parent = card
 		local _, lvlFill = Ui.bar(card, UDim2.fromOffset(18, 300), UDim2.fromOffset(268, 10), T.cyanHi, Z.content)
@@ -416,7 +420,7 @@ local function buildOverlays()
 			Hud.pick(i)
 		end)
 		card.Parent = row
-		r.cards[i] = { card = card, name = name, desc = desc, lvl = lvlText, fill = lvlFill, rar = rar, band = band, stroke = stroke }
+		r.cards[i] = { card = card, name = name, desc = desc, fact = fact, lvl = lvlText, fill = lvlFill, rar = rar, band = band, stroke = stroke }
 	end
 
 	local pc = overlay("Piece")
@@ -672,6 +676,7 @@ function Hud.levelUp(level: number, ids: { string }, levels: { number }, rars: {
 			c.stroke.Color = color
 			c.fill.BackgroundColor3 = color
 			c.name.Text = txt.name
+			c.fact.Text = txt.fact or ""
 			if def then
 				local mult = if Balance.UpgradeCount[id] then 1 else Balance.CardRarity.Mult[rar]
 				local after = math.min(def.max, levels[i] + mult)

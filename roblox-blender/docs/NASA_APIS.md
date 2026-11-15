@@ -111,3 +111,22 @@ curl -s "https://ssd-api.jpl.nasa.gov/cad.api?dist-max=0.05&date-min=now&date-ma
 - [NASA Images and Media Guidelines](https://www.nasa.gov/nasa-brand-center/images-and-media)
 - [NASA 3D Resources](https://nasa3d.arc.nasa.gov/)
 - [Repositorio de documentación de APIs de NASA](https://github.com/nasa/api-docs)
+
+## 10. Datos de cartas de mejora (`Content.Upgrades[*].fact`)
+
+Añadidos el 15-11-2026. Son frases generales, casi sin cifras. **Se escribieron desde conocimiento del modelo de IA y no se contrastaron ese día contra la página oficial.** Una persona debe revisarlas antes del pitch.
+
+| Carta | Tema del dato | Dónde verificar |
+|---|---|---|
+| `damage` | SuperCam (láser LIBS) de Perseverance | science.nasa.gov/mission/mars-2020-perseverance (instrumentos) |
+| `rate` | ChemCam de Curiosity | science.nasa.gov/mission/msl-curiosity (instrumentos) |
+| `multishot` | Lunas Fobos y Deimos | science.nasa.gov/mars/moons |
+| `pierce` | Radar RIMFAX de Perseverance | science.nasa.gov/mission/mars-2020-perseverance (instrumentos) |
+| `armor` | Sin campo magnético global; instrumento RAD | science.nasa.gov/mission/msl-curiosity (instrumentos) |
+| `speed` | Velocidad máxima de Perseverance, 152 m/h (**única cifra; revisar**) | science.nasa.gov/mission/mars-2020-perseverance (rover) |
+| `magnet` | Tubos de muestras de Perseverance | science.nasa.gov/mission/mars-2020-perseverance |
+| `drone` | Ingenuity, primer vuelo con motor en otro planeta, 2021 | science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter |
+| `cooldown` | MMRTG y plutonio-238 | science.nasa.gov/planetary-science/programs/radioisotope-power-systems |
+| `crit` | Navegación relativa al terreno en el aterrizaje | science.nasa.gov/mission/mars-2020-perseverance |
+| `aura` | Polvo marciano con carga electrostática | ntrs.nasa.gov (buscar "Mars dust electrostatic") |
+| `heal` | MOXIE produce oxígeno del CO2 | science.nasa.gov/mission/mars-2020-perseverance (MOXIE) |

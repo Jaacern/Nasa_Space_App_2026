@@ -29,3 +29,15 @@ python -B tools/studio/studio_call.py --schema execute_luau
 5. `get_console_output` para leer errores. `save_place` para guardar (el lugar debe haberse guardado a mano una vez).
 
 Las capturas pueden salir con el fondo 3D en blanco si Studio no tiene el foco. No las uses como única prueba.
+
+## Lugar publicado en Roblox
+
+En un lugar guardado en la nube, Studio bloquea las peticiones a `127.0.0.1`. Usa `push.py`, que mete el código dentro de la llamada:
+
+```bash
+STUDIO_ID=<id> python -B tools/studio/push.py push.json client/Hud.luau shared/Content.luau
+```
+
+```bash
+python -B tools/studio/studio_call.py execute_luau @push.json
+```

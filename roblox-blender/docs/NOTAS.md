@@ -139,3 +139,8 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - **Insignia NASA:** su uso requiere permiso de NASA. El equipo declaró tenerlo. Si no hay permiso escrito, pon `Balance.Branding.NasaInsignia = false`.
 - Cómo manejar Studio desde cualquier IA o terminal: `tools/studio/README.md`.
 - Pulido de combate (15-11-2026, segunda tanda): el enemigo golpeado retrocede e inclina un instante (`Balance.Juice.KickTime`, `KickDist`; `Renderer.hit` y `Renderer.update`). Fuente de impacto Bangers (`Ui.Fonts.impact`) en alertas, título de subida de nivel, pausa y resumen. Probado 75 s en demo: consola limpia.
+- Cartas de mejora con «DATO REAL» (15-11-2026, tercera tanda): campo `fact` en `Content.Upgrades`, visible en la carta. Fuentes y aviso de revisión en `docs/NASA_APIS.md` sección 10.
+- **Lugar publicado:** el usuario guardó el lugar en Roblox como «Núcleo de Ares» (placeId `114817072312952`). `save_place` ya funciona. Consecuencias:
+  - La sincronización por HTTP local queda bloqueada. Usar `tools/studio/push.py` (sin HTTP).
+  - **Bloqueante:** las 30 mallas fallan con `EditableMesh is not accessible`. Hay que activar *Allow Mesh / Image APIs* en Experience Settings > Security. Mientras tanto el juego usa modelos básicos de respaldo.
+  - DataStore pide activar *Enable Studio Access to API Services* en la misma pantalla (P de guardado).
