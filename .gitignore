@@ -2,3 +2,5 @@
 node_modules/
 scripts/_*
 *.log
+__pycache__/
+*.pyc
