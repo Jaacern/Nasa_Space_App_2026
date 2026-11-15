@@ -208,7 +208,7 @@ export function stepSol(mission, { cardId = null, powerMode = "normal", useShelt
       (1 + balance.dose.attenuationPerShieldLevel * state.shield);
     const d = raw * shelterMult;
     eventDose += d;
-    notes.push(`Evento DONKI ${ev.type} (${ev.label}): +${d.toFixed(1)} dosis`);
+    notes.push(`Evento DONKI ${ev.type} (${ev.label?.es ?? ev.label}): +${d.toFixed(1)} dosis`);
     const topic = EFFECT_TO_TOPIC[ev.gameEffect?.kind] ?? "radiation";
     const f = pickFact(world, topic, rng);
     if (f && !state.factsUnlocked.some((x) => x.accession === f.accession)) {

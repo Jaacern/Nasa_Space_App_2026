@@ -225,8 +225,12 @@ export function createApp() {
     const base = { "Access-Control-Allow-Origin": "*", "X-Content-Type-Options": "nosniff" };
     try {
       if (req.method !== "GET" && req.method !== "HEAD") throw new ApiError(405, "method_not_allowed", "Solo GET");
-      if (limited(req.socket.remoteAddress ?? "?")) throw new ApiError(429, "rate_limited", "Demasiadas peticiones; espera un minuto");
       const url = new URL(req.url, "http://localhost");
+      // El límite solo aplica a /api/* (protege la clave NASA); los estáticos (17 .glb, texturas,
+      // fuentes) se piden en ráfaga al cargar la escena 3D y no deben recibir 429.
+      if (url.pathname.startsWith("/api") && limited(req.socket.remoteAddress ?? "?")) {
+        throw new ApiError(429, "rate_limited", "Demasiadas peticiones; espera un minuto");
+      }
       if (url.pathname === "/" || url.pathname === "/index.html") {
         if (await serveStatic("/public/index.html", res)) return;
       }

@@ -5,3 +5,4 @@ scripts/_*
 
 # Assets 3D descargados (pesados: no se versionan)
 ASSETS 3D/
+.tmp-shots/

@@ -15,7 +15,8 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
-import { createMission, getSolContext, loadWorldState, stepSol } from "../src/sim/run.mjs";
+import { createMission, getSolContext, stepSol } from "../src/sim/run.mjs";
+import { loadWorldState } from "../src/data/worldState.mjs";
 
 let useLiveMode = false;
 let world = null;
@@ -23,6 +24,7 @@ let balance = null;
 let cardsData = null;
 let glossary = null;
 let flowPlan = null;
+let sourceCatalog = [];
 let currentMission = null;
 
 let selectedCardId = null;
@@ -78,13 +80,14 @@ async function loadAllData() {
 
   const [w, balRes, cardsRes, glosRes, flowRes] = await Promise.all([
     loadWorldState(reader),
-    fetch("/content/game_balance.json").then((r) => r.json()),
+    fetch("/content/balance.json").then((r) => r.json()),
     fetch("/content/cards.json").then((r) => r.json()),
     fetch("/content/glossary.json").then((r) => r.json()),
     fetchApiJson(`/api/flow-plan?credits=1050${useLiveMode ? "&live=1" : ""}`),
   ]);
 
   world = w;
+  sourceCatalog = await fetch("/api/catalog").then((r) => r.json()).then((j) => j.sources || []).catch(() => []);
   balance = balRes;
   cardsData = cardsRes;
   glossary = glosRes;
@@ -117,7 +120,7 @@ function buildFlatPortalsList() {
       flatPortalsList.push({
         globalIdx,
         envId: env.environmentId,
-        envName: env.name,
+        envName: env.environmentName,
         video: v,
         // Posición normalizada a lo largo de la curva vectorial 3D (0.02 a 0.88)
         curveU: 0.025 + (globalIdx / 24) * 0.855,
@@ -163,7 +166,7 @@ const PITCH_STAGE_META = {
     pitchScript:
       "«Tras la inyección translunar pasamos junto al telescopio James Webb, el asteroide real Bennu (1999 RQ36) y la sonda Voyager. No inventamos números: el motor ingiere 386 eventos solares reales de NASA DONKI (como la supertormenta Gannon X8.7 de mayo 2024). Una CME tarda soles en llegar y exige activar el refugio.»",
     kpis: () => [
-      { val: `${world?.scenarios?.reduce((a, s) => a + s.count, 0) || 386} Eventos`, lbl: "NASA DONKI REALES" },
+      { val: `${world?.scenarios?.scenarios?.reduce((a, s) => a + (s.events?.length || 0), 0) || 386} Eventos`, lbl: "NASA DONKI REALES" },
       { val: "Clase X8.7", lbl: "TORMENTA GANNON" },
       { val: "492 m", lbl: "BENNU 1999 RQ36" },
     ],
@@ -1797,7 +1800,7 @@ function renderGameUI() {
     banners.push(`
       <div class="alert-banner">
         <strong>ALERTA TORMENTA SOLAR REAL (NASA DONKI) HOY:</strong>
-        ${ctx.activeEvents.map((e) => `${esc(e.type)} (${esc(e.label)} · amenaza ${e.threat})`).join(" · ")}
+        ${ctx.activeEvents.map((e) => `${esc(e.type)} (${esc(e.label?.es ?? e.label)} · amenaza ${e.threat})`).join(" · ")}
         — <em>Tu blindaje Nv ${state.shield} absorbe un ${Math.round((1 - 1 / (1 + 0.6 * state.shield)) * 100)}% de la radiación.</em>
       </div>
     `);
@@ -1980,7 +1983,7 @@ function renderFlowStudioModal() {
   const items = [];
   for (const env of flowPlan.environments) {
     if (filterEnv !== "all" && env.environmentId !== filterEnv) continue;
-    for (const v of env.videos) items.push({ envName: env.name, ...v });
+    for (const v of env.videos) items.push({ envName: env.environmentName, ...v });
   }
 
   container.innerHTML = items
@@ -2043,15 +2046,15 @@ function renderProvenanceModal() {
     )
     .join("");
 
-  const sourcesHtml = (world.manifest.sources || [])
+  const sourcesHtml = sourceCatalog
     .map(
       (s) => `
       <div style="background:rgba(255,255,255,0.03); border:1px solid var(--glass-border); border-radius:10px; padding:0.75rem;">
         <div style="font-family:var(--font-mono); font-size:0.58rem; color:#6ee7b7;">API OFICIAL NASA / CSA</div>
         <strong style="font-size:0.82rem;">${esc(s.name)}</strong>
-        <p style="font-size:0.7rem; color:var(--text-secondary); margin:0.25rem 0 0.45rem;">${esc(s.gameRole)}</p>
-        <a href="${esc(s.url)}" target="_blank" rel="noopener" style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyan-halo);">
-          ${esc(s.url)} ↗
+        <p style="font-size:0.7rem; color:var(--text-secondary); margin:0.25rem 0 0.45rem;">${esc(s.gameUse)}</p>
+        <a href="${esc(s.officialUrl)}" target="_blank" rel="noopener" style="font-family:var(--font-mono); font-size:0.62rem; color:var(--cyan-halo);">
+          ${esc(s.officialUrl)} ↗
         </a>
       </div>
     `,
@@ -2072,7 +2075,7 @@ function renderProvenanceModal() {
       ${sourcesHtml}
     </div>
     <p style="margin-top:0.9rem; font-family:var(--font-mono); font-size:0.64rem; color:var(--text-dim);">
-      ${esc(world.manifest.disclaimer)}
+      ${esc(world.scenarios?.meta?.note || "")}
     </p>
   `;
 }
