@@ -2,6 +2,7 @@
 -- Cliente: entrada, cámara en tercera persona, interfaz y efectos.
 -- Nunca decide daño: solo dibuja lo que manda el servidor.
 
+local ContextActionService = game:GetService("ContextActionService")
 local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -299,6 +300,14 @@ UserInputService.InputBegan:Connect(function(input, processed)
 	end
 end)
 
+-- Intercepta las flechas para mover al héroe en lugar de girar la cámara clásica de Roblox.
+ContextActionService:BindActionAtPriority("AresArrowKeys", function()
+	if inRun() and not Hud.wantsCursor() and not UserInputService:GetFocusedTextBox() then
+		return Enum.ContextActionResult.Sink
+	end
+	return Enum.ContextActionResult.Pass
+end, false, Enum.ContextActionPriority.High.Value, Enum.KeyCode.Up, Enum.KeyCode.Down, Enum.KeyCode.Left, Enum.KeyCode.Right)
+
 local function rotate(dx: number, dy: number)
 	local s = CAM.Sensitivity * Hud.settings.sens
 	yaw -= dx * s
@@ -333,6 +342,7 @@ local camFocus = Vector3.new(0, CAM.FocusHeight, 34)
 local limit = Balance.Sim.ArenaRadius - 3
 local rayParams = RaycastParams.new()
 rayParams.FilterType = Enum.RaycastFilterType.Include
+local wasArrowMoving = false
 
 RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, function(dt: number)
 	local hrp = rootPart()
@@ -368,6 +378,10 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 	camera.FieldOfView = Hud.settings.fov
 
 	if phase == "menu" then
+		if wasArrowMoving then
+			player:Move(Vector3.zero, true)
+			wasArrowMoving = false
+		end
 		-- Órbita lenta alrededor de la nave; la nave queda a la derecha del menú.
 		menuYaw += dt * 0.06
 		local ship = Scenery.shipPosition()
@@ -377,6 +391,10 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 		return
 	end
 	if phase == "victory" then
+		if wasArrowMoving then
+			player:Move(Vector3.zero, true)
+			wasArrowMoving = false
+		end
 		local ship = Scenery.shipPivot()
 		local eye = Vector3.new(70, 18, 70)
 		camera.CFrame = CFrame.lookAt(eye, ship)
@@ -401,5 +419,24 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 			end
 		end
 		camera.CFrame = CFrame.lookAt(camFocus + offset * d, camFocus) * CFrame.new(Fx.shakeOffset())
+	end
+
+	if hrp and inRun() and not Hud.wantsCursor() and not UserInputService:GetFocusedTextBox() then
+		local arrowUp = UserInputService:IsKeyDown(Enum.KeyCode.Up)
+		local arrowDown = UserInputService:IsKeyDown(Enum.KeyCode.Down)
+		local arrowLeft = UserInputService:IsKeyDown(Enum.KeyCode.Left)
+		local arrowRight = UserInputService:IsKeyDown(Enum.KeyCode.Right)
+		local arrowActive = arrowUp or arrowDown or arrowLeft or arrowRight
+		if arrowActive or wasArrowMoving then
+			local kx = (if UserInputService:IsKeyDown(Enum.KeyCode.D) or arrowRight then 1 else 0)
+				- (if UserInputService:IsKeyDown(Enum.KeyCode.A) or arrowLeft then 1 else 0)
+			local kz = (if UserInputService:IsKeyDown(Enum.KeyCode.S) or arrowDown then 1 else 0)
+				- (if UserInputService:IsKeyDown(Enum.KeyCode.W) or arrowUp then 1 else 0)
+			player:Move(Vector3.new(kx, 0, kz), true)
+			wasArrowMoving = arrowActive
+		end
+	elseif wasArrowMoving then
+		player:Move(Vector3.zero, true)
+		wasArrowMoving = false
 	end
 end)

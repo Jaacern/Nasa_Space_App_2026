@@ -1,13 +1,13 @@
 # Notas técnicas
 
-Bitácora corta. Última actualización: 14-11-2026.
+Bitácora corta. Última actualización: 15-11-2026.
 Regla: borra lo que ya no aplique (prompt maestro, sección 2.7).
 
 ## 1. Estructura del código
 
 | Carpeta en disco | Destino en Studio | Rol |
 |---|---|---|
-| `game/src/shared/` | `ReplicatedStorage/Shared` | Módulos compartidos: `Balance`, `Content`, `NasaData`, `Visuals` y subcarpeta `Meshes/` (28 mallas) |
+| `game/src/shared/` | `ReplicatedStorage/Shared` | Módulos compartidos: `Balance`, `Content`, `NasaData`, `Visuals` y subcarpeta `Meshes/` (30 mallas) |
 | `game/src/server/` | `ServerScriptService/Server` | Autoridad: `Session`, `Combat`, `Enemies`, `Loot`, `SaveService`, `WorldBuilder`, `Main.server` |
 | `game/src/client/` | `StarterPlayer/StarterPlayerScripts/Client` | Dibujo, entrada, cámara, interfaz: `Renderer`, `MeshFactory`, `Scenery`, `Fx`, `Hud`, `Ui`, `Main.client` |
 
@@ -20,7 +20,7 @@ Comunicación: dos `RemoteEvent` en `ReplicatedStorage/Remotes`.
 
 ## 2. Cómo sincronizar disco a Studio
 
-La fuente de verdad es `game/src/`. Studio es una copia.
+La fuente de verdad es `roblox-blender/game/src/`. Studio es una copia. En lugares ya guardados en la nube de Roblox (`placeId: 114817072312952`), la sincronización por HTTP local queda bloqueada: usa `tools/studio/push.py` (sin HTTP) o herramientas MCP de Roblox Studio. Para lugares locales sin publicar sigue disponible el método HTTP:
 
 1. Abre una terminal en la raíz del proyecto.
 2. Arranca el servidor local, solo en localhost:
@@ -46,16 +46,16 @@ Cómo trabaja el sincronizador:
 5. Para la misión completa elige "Iniciar misión" (18 minutos).
 6. Para el tutorial elige "Tutorial y práctica".
 
-Lista de verificación (resultado del 14-11-2026 en Studio):
+Lista de verificación (actualizada al 15-11-2026 en Studio, lugar `114817072312952`):
 
-- [x] Arranque sin errores (incluidas 28/28 mallas de Blender vía `EditableMesh` `FixedSize = true`).
-- [x] Bucle completo en modo demo (`MISIÓN CUMPLIDA`): 4 jefes, 4 piezas, despegue e informe de misión.
-- [x] Subida de nivel con cartas y tutorial (`PRÁCTICA`, `TUTORIAL 1/8`).
-- [x] HUD (con ocultamiento de `Wave`/`Timer`/`Biome` bajo modales).
+- [x] Arranque sin errores (incluidas 30/30 mallas de Blender vía `EditableMesh` `FixedSize = true`, con `Rover` e `Insignia`).
+- [x] Bucle completo en modo demo (`MISIÓN CUMPLIDA`): 4 jefes, 4 piezas con fichas NTRS verificadas (`20150005587`, `20040084278`, `20205007222`, `20240003648`), despegue e informe de misión.
+- [x] Subida de nivel con cartas («DATO REAL» contrastado con NASA), tutorial (`PRÁCTICA`, `TUTORIAL 1/8`) y movimiento con `WASD` + flechas del teclado.
+- [x] HUD y menús mejorados (fuentes `Bangers`/`Michroma`, diseño por color/etapa, «Forma humana» del menú principal, panel de Ajustes y Controles, `TextFits` OK en Studio).
 - [ ] Móvil real.
 - [x] Sondeo en Studio con 92–98 enemigos (`docs/perf/RENDIMIENTO.md`; Studio en segundo plano estuvo capado a 15 FPS; pendiente repetir a 60 FPS en primer plano y móvil).
-- [ ] DataStore en lugar publicado.
-- [ ] Audio definitivo.
+- [ ] DataStore verificado en lugar publicado (acceso a API en Studio ya activado y verificado; falta publicación definitiva cuando el equipo lo pida).
+- [ ] Escucha humana de la mezcla de audio (`P-12`: 3 pistas musicales con licencia y 12 SFX con EQ ya cargados).
 
 ## 4. Comando de depuración (solo Studio)
 
@@ -111,17 +111,18 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 ## 7. Limitaciones conocidas
 
 1. Rendimiento medido en Roblox Studio con 92–98 enemigos (`docs/perf/RENDIMIENTO.md`), pero bajo capado a 15 FPS por ventana en segundo plano; falta medir a 60 FPS en primer plano y en móvil real.
-2. Audio provisional: sonidos integrados de Roblox. La música tiene 3 ranuras vacías (`docs/assets/AUDIO.md`).
-3. Las 28 mallas low-poly de Blender ya están integradas mediante `EditableMesh` (`FixedSize = true`) en cliente, con respaldo automático en `Templates`.
-4. `Lighting.Technology = Future` se pone a mano en Studio.
-5. Los números de daño (`game/src/client/Fx.luau`) usan `GothamBlack`, no el sistema tipográfico.
-6. Los enemigos con contacto (élites y jefes) usan el intervalo de golpe del Remolino (`Balance.Enemies.chaser.hitCd`, 0,8 s). No tienen un valor propio.
-7. El tiempo de aparición de cofres usa reloj real, no tiempo de misión. En la demo rápida no se acelera.
-8. La demo rápida otorga la misma ciencia que la misión completa (riesgo R-07).
-9. `Balance.Debug.LogPerf` existe y ningún sistema lo usa todavía.
-10. El tutorial no tiene límite de 60 s (Q19).
-11. Sin cooperativo: una sesión por jugador. Varios jugadores en el mismo servidor comparten solo la arena, no la simulación.
-12. Hay una clave de NASA expuesta en una sesión anterior. Se debe rotar (P-04). No la guardes en el repositorio.
+2. Audio pendiente de validación humana (`P-12`): `Balance.Audio.Music` ya cuenta con 3 pistas del catálogo con licencia (`calm`, `combat`, `boss`) y `Balance.Audio.Sfx` con 12 claves (`shoot`…`warn`, más `buff`) filtradas por `AresSfx` (`docs/assets/AUDIO.md`). Falta escucha humana en partida y balance de mezcla.
+3. Las 30 mallas low-poly de Blender (`30` FBX en `assets/export/` y `30` previews PNG en `docs/assets/previews/`, incluyendo `Rover.luau` e `Insignia.luau`) están integradas mediante `EditableMesh` (`FixedSize = true`) en cliente, con respaldo automático en `Templates`.
+4. `Lighting.Technology = Future` se pone a mano en Studio (`P-01`). En la inspección MCP del 15-11-2026 sobre `game.Lighting`, Studio reportó `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`, frente a `Future = 4`) con migración Unified Lighting activa: pendiente de confirmar/ajustar a mano en Studio.
+5. Los números de daño (`game/src/client/Fx.luau`) ya usan `Enum.Font.Bangers` (`Ui.Fonts.impact`), alineados con la cabecera de oleada, nivel, menú y superposiciones.
+6. Las 4 piezas recuperables (`Content.Pieces[1..4]`) ya tienen fichas NTRS verificadas (`20150005587`, `20040084278`, `20205007222`, `20240003648`).
+7. Los enemigos con contacto (élites y jefes) usan el intervalo de golpe del Remolino (`Balance.Enemies.chaser.hitCd`, 0,8 s). No tienen un valor propio.
+8. El tiempo de aparición de cofres usa reloj real, no tiempo de misión. En la demo rápida no se acelera.
+9. La demo rápida otorga la misma ciencia que la misión completa (riesgo R-07).
+10. `Balance.Debug.LogPerf` existe y ningún sistema lo usa todavía.
+11. El tutorial no tiene límite de 60 s (Q19).
+12. Sin cooperativo: una sesión por jugador. Varios jugadores en el mismo servidor comparten solo la arena, no la simulación.
+13. Hay una clave de NASA expuesta en una sesión anterior. Se debe rotar (P-04). No la guardes en el repositorio.
 
 ## 8. Archivos relacionados
 
@@ -148,8 +149,14 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - Quinta tanda (15-11-2026): los 12 datos de las cartas se contrastaron con `science.nasa.gov` y se reescribieron para ceñirse a la fuente. Tabla con citas en `docs/NASA_APIS.md` sección 10.
 - Sexta tanda (15-11-2026): retroceso de cámara al disparar (`Fx.kickBack`, `Fx.kickUpdate`; se dispara en `Renderer.shot`). Probado 40 s de demo en Studio: consola limpia; lugar guardado. Encargo a DeepSeek no completado (solo búsquedas, saldo mensual crítico); el cambio se hizo a mano.
 - Séptima tanda (15-11-2026), revisión de interfaz: los subtítulos del menú pasan dentro de cada botón (alineados a la derecha, textos más cortos, contraste oscuro en botones claros); el contador de enfriamiento de habilidades ya no deja ver la tecla debajo. Probado en Studio: menú sin choques, consola limpia, lugar guardado.
+- Octava tanda (15-11-2026), coherencia visual, fuentes y flechas en Studio:
+  - Rescatada en disco (`game/src/client/Hud.luau`) la estética «Forma humana» de los botones del menú que vivía en Studio (esquinas redondeadas de `10` px, chip numérico `01..06` y labio inferior), ampliada con acentos por sección (`gold`, `orange`, `cyanHi`, `violet`, `green`), bordes en botones fantasma y ajuste `TextScaled` en subtítulos para evitar choques.
+  - Sistema visual y tipográfico (`Ui.luau` + `Hud.luau`): `Ui.panel` acepta `TagColor` para teñir cabecera/esquinas/borde y `Ui.button` suma variantes `"violet"` y `"green"`. Aplicada fuente `Ui.Fonts.impact` (`Bangers`) + trazos oscuros legibles y colores por función/bioma (`ETAPA 1..3 · <bioma>`, `OLEADA`, `NIVEL`) en el HUD, subtítulo del menú, Hangar (filas codificadas por color), Ajustes y Controles (recuadro con esquema completo), Créditos, cartas de nivel (título coloreado por rareza + recuadro «DATO REAL»), ficha de pieza recuperada, Pausa e Informe de misión.
+  - Movimiento con flechas del teclado (`game/src/client/Main.client.luau` + `Content.luau`): `ContextActionService:BindActionAtPriority("AresArrowKeys", ...)` intercepta `↑ ↓ ← →` en partida activa para evitar el giro clásico de cámara de Roblox, y el bucle `AresMain` combina `WASD` + flechas mediante `player:Move(Vector3.new(kx, 0, kz), true)` relativo a cámara. Actualizados `Content.Tutorial[1]`, `Content.Controls` y `Content.Credits` (incluye `Bangers`).
+  - Verificado en Roblox Studio (`placeId: 114817072312952`): los `4` scripts sincronizados coinciden byte a byte con disco (`Adler-32`), prueba `Play` con demo lanzada (`ArrowBound = true`, `HudVisible = true`, `TextIssuesCount = 0` en todas las etiquetas de `AresHud` tras ampliar alturas de `PAUSA`/`sumTitle`/`levelTitle`), consola limpia (`0` errores) y lugar guardado en Roblox con `save_place` (versión `14`, sin publicar). `inspect_instance` sobre `game.Lighting` confirmó `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`) con migración Unified Lighting, por lo que `P-01` sigue pendiente de revisión manual.
 
 ## 10. Menú principal: forma humana (15-11-2026)
+
 - Botones con esquinas de 10 px, número de sección (01–06) en una pieza redondeada y un "labio" inferior en INICIAR MISIÓN y TUTORIAL.
 - El texto del botón pasa a una etiqueta propia: un `UIPadding` desplazaba también al número y al labio (verificado en Studio con `AbsolutePosition`).
-- Verificado: captura `menu` en Studio sin choques de texto. Pendiente: revisión humana del tono y paneles secundarios.
+- Verificado: captura `menu` en Studio sin choques de texto; en la octava tanda se aplicaron acentos de color y fuente `Bangers` a todos los paneles secundarios (`TextIssuesCount = 0`). Pendiente: revisión humana del tono final.

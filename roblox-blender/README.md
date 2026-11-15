@@ -10,10 +10,11 @@ Esta carpeta es independiente del prototipo Node de la raíz del repositorio. No
 
 | Ruta | Qué es |
 |---|---|
-| `game/` | Código Luau en `game/src/` (`server/`, `client/`, `shared/`, `shared/Meshes/` con las 28 mallas exportadas) y guía en `game/README.md` |
-| `assets/` | Archivo fuente `assets/blend/ares_assets.blend` y los 28 `.fbx` en `assets/export/` |
-| `tools/blender/` | Generación y exportación reproducible de los 28 assets (`ares_lib.py`, `build_assets.py`, `export_assets.py`) |
-| `tools/sync/` | Sincronizador recursivo disco → Studio (`sync_studio.luau`, servido vía `game/src/sync_studio.lua`) |
+| `game/` | Código Luau en `game/src/` (`server/`, `client/`, `shared/`, `shared/Meshes/` con las 30 mallas exportadas) y guía en `game/README.md` |
+| `assets/` | Archivo fuente `assets/blend/ares_assets.blend` y los 30 `.fbx` en `assets/export/` |
+| `tools/blender/` | Generación y exportación reproducible de los 30 assets (`ares_lib.py`, `build_assets.py`, `export_assets.py`) |
+| `tools/studio/` | Cliente CLI sin servidor HTTP para enviar cambios desde `game/src/` a Studio (`push.py`, `studio_call.py`) |
+| `tools/sync/` | Sincronizador recursivo disco → Studio para lugares locales (`sync_studio.luau`, servido vía `game/src/sync_studio.lua`) |
 | `tools/blender_mcp/` | Puente propio con Blender: servidor MCP, add-on, pruebas y configuración |
 | `docs/` | Documentación técnica, diseño (`BRIEF_PRODUCCION.md`, `DECISIONES.md`, `BALANCE_V0.md`, `NOTAS.md`), guiones (`DEMO_GUION.md`, `TRAILER.md`, `PITCH.md`), rendimiento (`docs/perf/RENDIMIENTO.md`), catálogo 3D (`docs/assets/CATALOGO_BLENDER.md`, previews 512×512), audio (`docs/assets/AUDIO.md`) y catálogo NASA |
 | `.claude/skills/` | 21 skills para assets 3D (de blender-skills, MIT) y la skill `roblox-export` |
@@ -24,11 +25,11 @@ Esta carpeta es independiente del prototipo Node de la raíz del repositorio. No
 
 ## Arranque rápido en Studio
 
-1. Levanta el servidor local desde `roblox-blender/`:
+1. **Opción recomendada (lugar en la nube «Núcleo de Ares», `placeId: 114817072312952`, versión `14`):** ábrelo desde Roblox Studio con una cuenta colaboradora (ya incluye la sincronización más reciente y permisos de API). Para empujar cambios nuevos desde `game/src/` sin servidor HTTP local (bloqueado en lugares de nube), activa *Enable Studio as MCP server* y usa `tools/studio/push.py` + `tools/studio/studio_call.py` (ver [`tools/studio/README.md`](tools/studio/README.md)) o las herramientas MCP de Studio.
+2. **Opción local (lugar sin subir a la nube):** levanta el servidor HTTP desde `roblox-blender/` y ejecuta el cargador en modo **Edit**:
    ```bash
    python -m http.server 8765 --bind 127.0.0.1 --directory game/src
    ```
-2. En Roblox Studio (modo **Edit**), ejecuta en la barra de comandos:
    ```lua
    local H = game:GetService("HttpService")
    return loadstring(H:GetAsync("http://127.0.0.1:8765/sync_studio.lua", true))()

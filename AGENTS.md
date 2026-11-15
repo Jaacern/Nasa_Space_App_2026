@@ -13,7 +13,7 @@ Este archivo sirve a cualquier modelo (Claude, GPT, Gemini, DeepSeek u otro). No
 0. Si estás en un equipo nuevo: `docs/CONTINUAR-EN-OTRO-EQUIPO.md`.
 
 1. `CLAUDE.md` (reglas del repositorio; valen para cualquier IA).
-2. `roblox-blender/docs/NOTAS.md` sección 9 (estado más reciente y cosas sin verificar).
+2. `roblox-blender/docs/NOTAS.md` secciones 9 y 10 (estado más reciente y cosas sin verificar).
 3. `roblox-blender/docs/DECISIONES.md` (pendientes `P-01` a `P-17`).
 4. `roblox-blender/docs/ASSETS.md` y `docs/assets/AUDIO.md`.
 5. `roblox-blender/docs/TRAILER_BRIEF_FABLE.md` (tráiler; se produce al final).
@@ -42,11 +42,11 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 ## Siguiente trabajo (15-11-2026)
 
-1. Una persona escucha la mezcla de audio (el menú ya se verificó por captura).
-2. El lugar está en Roblox como «Núcleo de Ares»; guardar con `save_place` tras cada avance. No publicar sin pedirlo.
-3. Pulido pendiente: ninguno de código. Lista: audio por una persona, tráiler al final. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
-4. Pendientes `P-01` a `P-15` que dependen del equipo.
-5. Tráiler, al final.
+1. Una persona escucha la mezcla de audio (`P-12`) y confirma visualmente en Studio el menú «Forma humana», fuentes `Bangers`/`Michroma`, colores por sección/etapa y movimiento con `WASD / Flechas (↑ ↓ ← →)` (ya verificados en modo `Play`: `0` errores, `TextIssuesCount = 0`).
+2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `14`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
+3. Pulido pendiente de código: ninguno inmediato tras la octava tanda (retroceso de enemigos, fuente de impacto, destello de boca, menú «Forma humana», tipografía/colores y flechas `↑ ↓ ← →` ya hechos y sincronizados). Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
+4. Pendientes `P-01` a `P-15` que dependen del equipo (`roblox-blender/docs/DECISIONES.md`).
+5. Tráiler, al final (`roblox-blender/docs/TRAILER_BRIEF_FABLE.md`).
 
 ## Agente DeepSeek (opcional, con tope de gasto)
 

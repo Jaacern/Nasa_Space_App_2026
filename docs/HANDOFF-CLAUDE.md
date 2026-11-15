@@ -1,6 +1,6 @@
 # Handoff completo para continuar en Claude Code
 
-Última actualización: `14-11-2026` · Rama activa: `audit/actualizacion-completa` (origin: `https://github.com/Jaacern/Nasa_Space_App_2026.git`).
+Última actualización: `15-11-2026` · Rama activa de juego y auditoría: `audit/actualizacion-completa` (origin: `https://github.com/Jaacern/Nasa_Space_App_2026.git`). Repo Git restaurado y sincronizado sobre `origin/audit/actualizacion-completa`.
 
 Este documento resume el estado real auditado, todos los cambios ya aplicados y verificados, el mapa técnico de ambos subproyectos y la lista exacta de tareas pendientes para continuar sin perder contexto.
 
@@ -8,14 +8,18 @@ Este documento resume el estado real auditado, todos los cambios ya aplicados y 
 
 ## 1. Estado de Git y estructura actual
 
-- **Base remota original:** `origin/main` en `c203130` (*"Add files via upload"*).
-- **Rama de trabajo creada y subida:** `audit/actualizacion-completa`, que mantiene la historia intacta e incluye:
-  - **`ffa4b7e`** — Limpieza de los `8` archivos añadidos en raíz por `c203130` (`.mcp.json` y `BLENDER_PIPELINE.md` con rutas `C:\Users\black\...`, `MEGA_CONTEXTO_MIS_SKILLS.md` de `85 651` líneas y `5` copias duplicadas de `roblox-blender/`) + `__pycache__/` y `*.pyc` agregados a [`.gitignore`](../.gitignore).
-  - **`84cb466`** — Arreglos técnicos puntuales: exportación de `APOD_SCHEMA` en [`src/api/sources.mjs`](../src/api/sources.mjs) y validación en [`scripts/check.mjs`](../scripts/check.mjs); normalización de [`data/curated/apod.json`](../data/curated/apod.json) (`hdUrl`, `explanation`, `reusable: false` sobre el placeholder del logo de NASA); purga de entradas vencidas en el `Map` `hits` de [`server/api.mjs`](../server/api.mjs); escape HTML + manejo de errores en [`public/index.html`](../public/index.html); corrección `docs/IA.md` -> `docs/ia/PROMPTS.md` en [`scripts/ingest.mjs`](../scripts/ingest.mjs); ajuste de subtítulo en [`roblox-blender/game/src/client/Hud.luau`](../roblox-blender/game/src/client/Hud.luau) (`"7 pasos · recomendado"`).
-  - **`e6828bd`** — Sincronización completa de [`README.md`](../README.md), [`docs/API-LOCAL.md`](API-LOCAL.md), [`docs/PENDIENTES-MANUALES.md`](PENDIENTES-MANUALES.md), [`docs/PLAN-JUEGO-Y-DATOS.md`](PLAN-JUEGO-Y-DATOS.md), [`content/cards.json`](../content/cards.json), [`roblox-blender/docs/NASA_APIS.md`](../roblox-blender/docs/NASA_APIS.md) y [`roblox-blender/docs/DECISIONES.md`](../roblox-blender/docs/DECISIONES.md) + creación de [`docs/ia/REGISTRO.md`](ia/REGISTRO.md).
-  - **Commit documental para Claude:** agrega [`CLAUDE.md`](../CLAUDE.md), [`roblox-blender/CLAUDE.md`](../roblox-blender/CLAUDE.md) y este traspaso (`docs/HANDOFF-CLAUDE.md`).
-- **Pendiente de Git:** revisar y fusionar `audit/actualizacion-completa` en `main` mediante PR en GitHub (<https://github.com/Jaacern/Nasa_Space_App_2026/pull/new/audit/actualizacion-completa>), o seguir trabajando directamente en esta rama.
-- **Nota de plataforma:** `.env` NO existe ni debe subirse al repo. La configuración local de usuario Git no se modificó (`git config user.name/email` globales vacíos en esta máquina; si hace falta, configurar identidad local/global).
+- **Relación de ramas en `origin` (`https://github.com/Jaacern/Nasa_Space_App_2026.git`):**
+  - **`main` (`fe0e2fa`):** divergió desde `c203130` con `4` commits del colaborador `@jaacern` (`08d3ece`, `e5414fb`, `1ba9836`, `fe0e2fa`) dedicados al pitch web 3D (`public/`, `ui-ux/`, `landing-template-itom/`). No reescribir ni hacer force-push sobre `main`.
+  - **`audit/actualizacion-completa`:** concentra toda la consolidación técnica de **ARES FORGE** (`roblox-blender/`), el cierre de seguridad sin secretos/rutas locales y las pruebas de la capa NASA de `Outpost Run`.
+- **Commits clave en `audit/actualizacion-completa`:**
+  - **`ffa4b7e`** — Limpieza de los `8` archivos/carpetas duplicados añadidos en raíz por `c203130` (`.mcp.json` y `BLENDER_PIPELINE.md` con rutas locales, `MEGA_CONTEXTO_MIS_SKILLS.md` y copias duplicadas de `roblox-blender/`) + `__pycache__/` y `*.pyc` en [`.gitignore`](../.gitignore).
+  - **`84cb466`** — Exportación de `APOD_SCHEMA`, validación en `scripts/check.mjs`, normalización de `apod.json` (`reusable: false`), purga del `Map` de rate-limit en `server/api.mjs` y escape HTML en `public/index.html`.
+  - **`e6828bd` .. `3d59475` .. `554a91e`** — Sincronización de documentación, traspaso `CLAUDE.md`/`HANDOFF-CLAUDE.md`, `Rover` + `Insignia` (`30` mallas), fichas NTRS verificadas, lugar en la nube «Núcleo de Ares» (`placeId: 114817072312952`), retroceso de cámara y revisión inicial de menú.
+  - **`2fea3be`** — Documentación del agente opcional DeepSeek en `AGENTS.md`.
+  - **`5388d5c`** — Menú principal «Forma humana» en `Hud.luau` y sección `10` de `NOTAS.md`.
+  - **Actualización `15-11-2026` (commit actual):** restauración del repo `.git` en esta máquina sobre `audit/actualizacion-completa`, limpieza de duplicados residuales en raíz, octava tanda en `Content.luau`/`Ui.luau`/`Hud.luau`/`Main.client.luau` (tipografía `Bangers`/`Michroma`, paleta por sección/bioma, movimiento con flechas `↑ ↓ ← →`, `TextIssuesCount = 0`, versión `14` guardada en Studio) y unificación de documentación para colaboradores.
+- **Pendiente de Git:** mantener el desarrollo de `ARES FORGE` e interfaz Roblox sobre `audit/actualizacion-completa` y coordinar en equipo cuándo integrar `audit/actualizacion-completa` y `main`.
+- **Nota de seguridad:** `.env` NO existe ni debe subirse al repo. La identidad local del repo quedó configurada para `audit/actualizacion-completa`; cualquier marcador `<RUTA_...>` de MCP se rellena solo en local sin commitear.
 
 ---
 
@@ -37,15 +41,20 @@ Este documento resume el estado real auditado, todos los cambios ya aplicados y 
 
 ### 2.2 Subproyecto `roblox-blender/`: `ARES FORGE` (Roblox Studio + Blender 4.5)
 
-- **Código Luau (`game/src/`):**
-  - `shared/`: `Balance.luau`, `Content.luau`, `NasaData.luau` (verificado contra `data/curated/space_weather.json`: conteos `CME: 88, FLR: 13, GST: 1, SEP: 0, IPS: 2` y `7` eventos coinciden), `Visuals.luau` y `Meshes/` (`28` mallas exportadas desde Blender).
+> La fuente de verdad del juego vive exclusivamente en `roblox-blender/game/src/` (las copias duplicadas heredadas en raíz se eliminaron para evitar divergencias).
+
+- **Código Luau (`roblox-blender/game/src/`):**
+  - `shared/`: `Balance.luau`, `Content.luau` (`4/4` piezas con NTRS verificadas: `20150005587`, `20040084278`, `20205007222`, `20240003648`; tutorial/controles actualizados con `WASD / Flechas`), `NasaData.luau`, `Visuals.luau` y `Meshes/` (`30` mallas exportadas desde Blender, incluidas `Rover.luau` e `Insignia.luau`).
   - `server/`: `Main.server.luau`, `Session.luau`, `Combat.luau`, `Enemies.luau`, `Loot.luau`, `SaveService.luau` (`DataStore` `AresForgeMeta_v1`), `WorldBuilder.luau`.
-  - `client/`: `Main.client.luau`, `Renderer.luau` (pooling), `MeshFactory.luau` (`EditableMesh` con `FixedSize = true` para evitar el límite de memoria a partir de la 9.ª submalla), `Scenery.luau`, `Fx.luau`, `Hud.luau` (subtítulo corregido a `"7 pasos · recomendado"`), `Ui.luau`.
-- **Herramientas (`tools/`):**
-  - `tools/blender/` (`ares_lib.py`, `build_assets.py`, `export_assets.py`) -> generan `.blend`, `28` `.fbx` en `assets/export/`, `28` previews `512x512` en `docs/assets/previews/` y `28` módulos en `game/src/shared/Meshes/`.
-  - `tools/blender_mcp/` (`server.py`, `bridge_addon.py`, `selftest.py`, `config.json`) -> puente MCP local con token de 256 bits.
-  - `tools/sync/sync_studio.luau` == `game/src/sync_studio.lua` (verificado por hash idéntico).
-- **Observación del entorno Claude/MCP:** `roblox-blender/.mcp.json` y `tools/blender_mcp/config.json` contienen marcadores `<RUTA_...>`. El archivo `.claude/settings.json` mencionado en `BLENDER_PIPELINE.md` y `SEGURIDAD_MCP.md` **no está en Git**; si se crea en local, seguir el JSON de `docs/SEGURIDAD_MCP.md` sección 6a. El binario `assets/blend/ares_assets.blend` conserva internamente la ruta histórica de Blender `C:\Users\black\...` (propia del archivo binario).
+  - `client/`: `Main.client.luau` (cámara orbital + `ContextActionService` `AresArrowKeys` para movimiento 8-direccional con flechas), `Renderer.luau` (pooling, retroceso e inclinación de enemigos y destello de boca), `MeshFactory.luau` (`EditableMesh` `FixedSize = true`), `Scenery.luau` (Fobos/Deimos, Rover e Insignia), `Fx.luau` (`Enum.Font.Bangers`, `AresSfx`, `AresMusic` y retroceso de cámara), `Hud.luau` (estética «Forma humana», fuente `Bangers` + colores por bioma/función, recuadro de controles, `TextFits` OK), `Ui.luau` (`TagColor` en paneles y variantes `violet`/`green` en botones).
+- **Audio (`Balance.Audio`):** `3` pistas con licencia del catálogo de Roblox (`calm`, `combat`, `boss`) y `12` claves SFX con EQ (`AresSfx`); pendiente de validación por escucha humana (`P-12`).
+- **Herramientas (`roblox-blender/tools/`):**
+  - `tools/blender/` (`ares_lib.py`, `build_assets.py`, `export_assets.py`) -> generan `.blend`, `30` `.fbx` en `assets/export/`, `30` previews `512x512` en `docs/assets/previews/` y `30` módulos en `game/src/shared/Meshes/`.
+  - `tools/studio/` (`push.py` y `README.md`) -> sincronización directa hacia el lugar guardado en la nube (`placeId: 114817072312952`) sin servidor HTTP local.
+  - `tools/blender_mcp/` (`server.py`, `bridge_addon.py`, `selftest.py`, `config.json`) -> puente MCP local con marcadores `<RUTA_...>`.
+  - `tools/sync/sync_studio.luau` == `game/src/sync_studio.lua` (reservado a lugares locales sin nube).
+- **Estado en Roblox Studio (`15-11-2026`):** lugar guardado en nube como «Núcleo de Ares» (`placeId: 114817072312952`, `universeId: 10776867729`, versión `14` sin publicar), con *Allow Mesh / Image APIs* y *Enable Studio Access to API Services* activos. Verificado en `Play`: `30` mallas cargan, `AresArrowKeys` enlazado, `0` recortes `TextFits` y consola limpia. `inspect_instance` sobre `game.Lighting` mostró `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`) con migración Unified Lighting, quedando `P-01` (`Future`) para revisión manual.
+- **Observación del entorno MCP:** `roblox-blender/.mcp.json` y `tools/blender_mcp/config.json` contienen marcadores `<RUTA_...>`. El archivo `.claude/settings.json` mencionado en `BLENDER_PIPELINE.md` y `SEGURIDAD_MCP.md` no está en Git; si se crea en local, seguir `docs/SEGURIDAD_MCP.md` sección 6a.
 
 ---
 
@@ -57,9 +66,14 @@ Comprobado sobre el último estado de código:
 - `node --check`: **OK** en todos los `.mjs` (`src/`, `server/`, `scripts/`, `test/`).
 - `python -B -m py_compile`: **OK** en los `6` archivos `.py` bajo `roblox-blender/tools/` (`Python 3.13.14`).
 
-**No probado en esta sesión (requiere entorno local/vivo):**
+**Verificado en Roblox Studio (`15-11-2026`, `placeId: 114817072312952`):**
+- Sincronización exacta (misma longitud LF y `Adler-32`) entre `roblox-blender/game/src/` y Studio para `Content`, `Ui`, `Hud` y `Main`.
+- Arranque y demo lanzada en `Play`: `30/30` mallas, acción `AresArrowKeys` activa, `0` recortes `TextFits`, consola limpia y lugar guardado con `save_place` (versión `14`, sin publicar).
+
+**No probado / pendiente:**
 - `npm run check:live` / `npm run ingest` (sin `.env` ni `NASA_API_KEY` rotada).
-- Sincronización y ejecución en **Roblox Studio** tras editar `roblox-blender/game/src/client/Hud.luau:291`.
+- Móvil real y prueba a 60 FPS en primer plano sin capado en segundo plano.
+- Escucha humana del audio definitivo (`P-12`) y revisión manual de `Lighting.Technology = Future` (`P-01`).
 
 ---
 
@@ -69,7 +83,7 @@ Comprobado sobre el último estado de código:
 1. **Git:** revisar/fusionar `audit/actualizacion-completa` -> `main` (o continuar commiteando sobre `audit/actualizacion-completa`).
 2. **Clave NASA (`P-04`):** rotar la clave expuesta anteriormente, crear `.env` a partir de `.env.example` y correr `npm run check:live` + `npm run ingest -- --only=apod`.
 3. **Licencia:** crear `LICENSE` en raíz tras acuerdo del equipo.
-4. **Si vas a usar MCPs en `ARES FORGE`:** abrir Claude Code dentro de `roblox-blender/`, activar *Enable Studio as MCP server* en Roblox Studio, completar rutas locales en `roblox-blender/.mcp.json` y `tools/blender_mcp/config.json` **sin subirlas a Git**, y re-sincronizar Studio con `http://127.0.0.1:8765/sync_studio.lua` para aplicar el ajuste de `Hud.luau`.
+4. **Si vas a trabajar con `ARES FORGE`:** abrir el lugar guardado en la nube («Núcleo de Ares», `placeId: 114817072312952`), usar herramientas MCP de Roblox Studio o `roblox-blender/tools/studio/push.py` tras editar en `roblox-blender/game/src/` (sin rutas locales en archivos versionados) y guardar con `save_place` sin publicar salvo pedido explícito del equipo.
 
 ### Prioridad `P1` — Completar `Outpost Run` (Node/Web)
 1. Construir `src/sim/` (bucle de 30 soles usando `scheduleEvents`, `siteProfile`, `commDelaySec` y `content/cards.json`) y `src/ui/` reemplazando el stub `public/index.html`.
@@ -78,8 +92,8 @@ Comprobado sobre el último estado de código:
 4. Elegir sitio marciano y capas WMTS en Mars Trek (`scripts/ingest.mjs` -> `MARS_LAYERS`), validar física de `content/balance.json`, completar `content/glossary.json`, revisar términos de licencia CSA, probar en navegador real y testear con niños de 7–12 años.
 
 ### Prioridad `P2` — Cerrar `ARES FORGE` (`roblox-blender/`)
-Lista completa con dueños en [`roblox-blender/docs/DECISIONES.md`](../roblox-blender/docs/DECISIONES.md#L131-L153):
-1. **Studio y publicación:** `P-01` fijar `Lighting.Technology = Future`; `P-02` guardar y publicar lugar; `P-03` comprobar `DataStore` (`AresForgeMeta_v1`) en lugar publicado.
-2. **Rendimiento y UX:** `P-05` medir FPS reales en primer plano (sin capado de 15 FPS en segundo plano, usando `Balance.Debug.LogPerf` si conviene); `P-11` probar en móvil real (`30 FPS`, botones >= `44 px`); `P-10` medir sacudida de cámara vs límite `4 px`; evaluar tipografía de daño en `Fx.luau` (`GothamBlack`).
-3. **Balance y contenido:** `F5` correr y registrar `5` partidas de prueba (`0/5` en `BALANCE_V0.md`); `P-08` definir alcance `Q10`; `P-06` verificar fichas NTRS para antena y generador de oxígeno; `P-07` decidir proxy en vivo vs snapshot; `P-15` alinear nombres de biomas en prompts; agregar consejo de "kitear" a `Content.Tutorial`.
-4. **Audio, demo y concurso:** `P-12` producir `3` pistas musicales (`Balance.Audio.Music`) + SFX propios; `P-14` confirmar reglas y fecha oficiales del concurso; `P-13` lograr `3` ensayos seguidos sin fallos (`DEMO_GUION.md`) y grabar video respaldo + tráiler (`TRAILER.md`).
+Lista completa con dueños en [`roblox-blender/docs/DECISIONES.md`](../roblox-blender/docs/DECISIONES.md):
+1. **Studio y publicación:** `P-01` revisar y fijar manualmente `Lighting.Technology = Future` (en inspección MCP figura `ShadowMap = 3` con Unified Lighting); `P-02` publicar el lugar cuando el equipo lo pida (ya guardado en nube `placeId: 114817072312952` v14); `P-03` comprobar `DataStore` (`AresForgeMeta_v1`) en servidor publicado.
+2. **Rendimiento y UX:** `P-05` medir FPS reales en primer plano (sin capado de 15 FPS en segundo plano); `P-11` probar en móvil real (`30 FPS`, botones >= `44 px`); `P-10` medir sacudida de cámara vs límite `4 px`.
+3. **Balance y contenido:** `F5` correr y registrar `5` partidas de prueba (`0/5` en `BALANCE_V0.md`); `P-08` definir alcance `Q10`; `P-07` decidir proxy en vivo vs snapshot; `P-15` alinear nombres de biomas en prompts; agregar consejo de "kitear" a `Content.Tutorial`. (`P-06` de 4 fichas NTRS y unificación de `Bangers` en `Fx.luau` + HUD/menús ya completos.)
+4. **Audio, demo y concurso:** `P-12` validar por escucha humana las `3` pistas con licencia (`Balance.Audio.Music`) y los `12` SFX con EQ en `AresSfx`; `P-14` confirmar reglas y fecha oficiales del concurso; `P-13` lograr `3` ensayos seguidos sin fallos (`DEMO_GUION.md`) y grabar video respaldo + tráiler (`TRAILER_BRIEF_FABLE.md`).

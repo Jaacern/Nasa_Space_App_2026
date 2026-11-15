@@ -21,6 +21,18 @@ local CENTER = Enum.TextXAlignment.Center
 local RIGHT = Enum.TextXAlignment.Right
 local TOP = Enum.TextYAlignment.Top
 
+local BIOME_COLORS = { T.orange, T.cyanHi, T.gold }
+local META_COLORS: { [string]: Color3 } = {
+	dmg = T.orange,
+	hp = T.green,
+	armor = T.green,
+	revive = T.green,
+	speed = T.cyanHi,
+	magnet = T.cyanHi,
+	xp = T.violet,
+	luck = T.violet,
+}
+
 Hud.settings = { fov = Balance.Camera.Fov, sens = 1, lowFx = false }
 
 local send: (...any) -> () = function() end
@@ -55,8 +67,8 @@ local function overlay(name: string, dim: number?): Frame
 	return f
 end
 
-local function centerPanel(parent: Instance, w: number, h: number, tag: string?): Frame
-	local p = panel({ AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(w, h), ZIndex = Z.panel, BackgroundTransparency = 0.04 }, tag)
+local function centerPanel(parent: Instance, w: number, h: number, tag: string?, tagColor: Color3?): Frame
+	local p = panel({ AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(w, h), ZIndex = Z.panel, BackgroundTransparency = 0.04, TagColor = tagColor }, tag)
 	p.Name = "Panel"
 	p.Parent = parent
 	table.insert(fitPanels, { p = p, w = w, h = h })
@@ -81,12 +93,12 @@ local function buildHud()
 
 	local _, xpFill = Ui.bar(h, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 10), T.cyanHi, Z.hud)
 	r.xpFill = xpFill
-	local lvlChip = panel({ Position = UDim2.fromOffset(16, 18), Size = UDim2.fromOffset(120, 34), ZIndex = Z.hud })
+	local lvlChip = panel({ Position = UDim2.fromOffset(16, 18), Size = UDim2.fromOffset(136, 36), ZIndex = Z.hud, TagColor = T.gold })
 	lvlChip.Parent = h
-	r.lvl = label("NIVEL 1", 20, { FontFace = F.monoBold, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.hudTop })
+	r.lvl = label("NIVEL 1", 24, { FontFace = F.impact, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.hudTop })
 	r.lvl.Parent = lvlChip
 
-	local suit = panel({ Position = UDim2.fromOffset(16, 60), Size = UDim2.fromOffset(340, 100), ZIndex = Z.hud }, "ESTADO DEL TRAJE")
+	local suit = panel({ Position = UDim2.fromOffset(16, 62), Size = UDim2.fromOffset(340, 100), ZIndex = Z.hud }, "ESTADO DEL TRAJE")
 	suit.Parent = h
 	local hpBack, hpFill = Ui.bar(suit, UDim2.fromOffset(12, 36), UDim2.fromOffset(316, 26), T.green, Z.hud)
 	r.hpFill = hpFill
@@ -98,11 +110,11 @@ local function buildHud()
 	r.kills.Parent = suit
 	label("SOPORTE VITAL", 18, { FontFace = F.mono, Position = UDim2.fromOffset(164, 68), Size = UDim2.fromOffset(164, 24), TextXAlignment = RIGHT, TextColor3 = T.green, ZIndex = Z.hudTop }).Parent = suit
 
-	r.wave = label("OLEADA 01/18", 28, { Name = "Wave", FontFace = F.title, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 20), Size = UDim2.fromOffset(420, 36), TextXAlignment = CENTER, TextStrokeTransparency = 0.4, ZIndex = Z.hud })
+	r.wave = label("OLEADA 01/18", 34, { Name = "Wave", FontFace = F.impact, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(420, 40), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.15, ZIndex = Z.hud })
 	r.wave.Parent = h
-	r.timer = label("T+ 00:00", 22, { Name = "Timer", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 56), Size = UDim2.fromOffset(240, 28), TextXAlignment = CENTER, TextColor3 = T.cyanHi, TextStrokeTransparency = 0.4, ZIndex = Z.hud })
+	r.timer = label("T+ 00:00", 22, { Name = "Timer", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 54), Size = UDim2.fromOffset(240, 26), TextXAlignment = CENTER, TextColor3 = T.cyanHi, TextStrokeTransparency = 0.3, ZIndex = Z.hud })
 	r.timer.Parent = h
-	r.biome = label(Content.Biomes[1].name, 18, { Name = "Biome", FontFace = F.semi, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 82), Size = UDim2.fromOffset(460, 24), TextXAlignment = CENTER, TextColor3 = T.dim, TextStrokeTransparency = 0.4, ZIndex = Z.hud })
+	r.biome = label("ETAPA 1 · " .. Content.Biomes[1].name, 18, { Name = "Biome", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 82), Size = UDim2.fromOffset(480, 24), TextXAlignment = CENTER, TextColor3 = BIOME_COLORS[1], TextStrokeTransparency = 0.25, ZIndex = Z.hud })
 	r.biome.Parent = h
 
 	local bossWrap = new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), Size = UDim2.new(0.42, 0, 0, 52), BackgroundTransparency = 1, Visible = false })
@@ -203,19 +215,19 @@ end
 
 -- ---------------------------------------------------------------- Menú principal
 local function stepper(parent: Instance, y: number, title: string, get: () -> string, dec: () -> (), inc: () -> ())
-	label(title, 20, { FontFace = F.semi, Position = UDim2.fromOffset(24, y), Size = UDim2.fromOffset(300, 46), ZIndex = Z.content }).Parent = parent
-	local value = label(get(), 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(392, y), Size = UDim2.fromOffset(120, 46), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
+	label(title, 20, { FontFace = F.semi, Position = UDim2.fromOffset(24, y), Size = UDim2.fromOffset(320, 46), ZIndex = Z.content }).Parent = parent
+	local value = label(get(), 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(422, y), Size = UDim2.fromOffset(118, 46), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	value.Parent = parent
 	button("−", click(function()
 		dec()
 		value.Text = get()
 		onSettings()
-	end), { Position = UDim2.fromOffset(336, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
+	end), { Position = UDim2.fromOffset(362, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
 	button("+", click(function()
 		inc()
 		value.Text = get()
 		onSettings()
-	end), { Position = UDim2.fromOffset(516, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
+	end), { Position = UDim2.fromOffset(548, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
 end
 
 local function virtualSize(): Vector2
@@ -248,49 +260,76 @@ local function buildMainMenu(compact: boolean)
 	local X = 48
 	local y: number
 	if compact then
-		label(Content.Title, 46, { FontFace = F.title, Position = UDim2.fromOffset(X - 3, 14), Size = UDim2.fromOffset(640, 56), ZIndex = Z.content }).Parent = m
-		new("Frame", { Position = UDim2.fromOffset(X, 72), Size = UDim2.fromOffset(120, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
-		label(Content.Subtitle .. " · " .. Content.Tagline, 18, { FontFace = F.semi, Position = UDim2.fromOffset(X, 80), Size = UDim2.fromOffset(700, 26), TextColor3 = T.orange, ZIndex = Z.content, TextWrapped = false }).Parent = m
-		y = 116
+		label(Content.Title, 44, { FontFace = F.title, Position = UDim2.fromOffset(X - 3, 12), Size = UDim2.fromOffset(340, 48), TextStrokeTransparency = 0.25, ZIndex = Z.content }).Parent = m
+		label(Content.Subtitle, 24, { FontFace = F.impact, Position = UDim2.fromOffset(X + 350, 20), Size = UDim2.fromOffset(360, 32), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
+		new("Frame", { Position = UDim2.fromOffset(X, 62), Size = UDim2.fromOffset(120, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
+		label("ETAPA 1 · LLANURA DE REGOLITO · MARTE", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 70), Size = UDim2.fromOffset(700, 22), TextColor3 = T.orange, ZIndex = Z.content, TextWrapped = false }).Parent = m
+		y = 100
 	else
-		label("MISIÓN DE SUPERFICIE · EXPEDIENTE AF-2026", 18, { FontFace = F.mono, Position = UDim2.fromOffset(X, 40), Size = UDim2.fromOffset(560, 24), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = m
-		label(Content.Title, 68, { FontFace = F.title, Position = UDim2.fromOffset(X - 4, 64), Size = UDim2.fromOffset(640, 84), ZIndex = Z.content }).Parent = m
-		new("Frame", { Position = UDim2.fromOffset(X, 152), Size = UDim2.fromOffset(120, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
-		label(Content.Subtitle, 22, { FontFace = F.bold, Position = UDim2.fromOffset(X, 164), Size = UDim2.fromOffset(560, 28), TextColor3 = T.orange, ZIndex = Z.content }).Parent = m
-		label(Content.Tagline, 20, { Position = UDim2.fromOffset(X, 194), Size = UDim2.fromOffset(560, 28), ZIndex = Z.content }).Parent = m
+		label("MISIÓN DE SUPERFICIE · EXPEDIENTE AF-2026", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 28), Size = UDim2.fromOffset(580, 24), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = m
+		label(Content.Title, 68, { FontFace = F.title, Position = UDim2.fromOffset(X - 4, 52), Size = UDim2.fromOffset(640, 82), TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
+		new("Frame", { Position = UDim2.fromOffset(X, 138), Size = UDim2.fromOffset(140, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
+		label(Content.Subtitle, 32, { FontFace = F.impact, Position = UDim2.fromOffset(X, 146), Size = UDim2.fromOffset(620, 38), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
+		label("ETAPA 1 · LLANURA DE REGOLITO · MARTE", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 186), Size = UDim2.fromOffset(620, 22), TextColor3 = T.orange, ZIndex = Z.content, TextWrapped = false }).Parent = m
+		label(Content.Tagline, 18, { FontFace = F.semi, Position = UDim2.fromOffset(X, 208), Size = UDim2.fromOffset(620, 24), TextColor3 = T.text, ZIndex = Z.content }).Parent = m
 		y = 240
 	end
 
 	local n = 0
-	local bw, bh, gap = if compact then 330 else 400, if compact then 50 else 54, if compact then 8 else 8
-	local function mb(text: string, fn: () -> (), kind: string?, sub: string?): TextButton
+	local bw, bh, gap = if compact then 340 else 440, if compact then 48 else 52, if compact then 6 else 7
+	local function mb(text: string, fn: () -> (), kind: string?, sub: string?, accent: Color3?): TextButton
 		local col, row = 0, n
 		if compact then
 			col, row = n % 2, n // 2
 		end
 		local bx, by = X + col * (bw + 10), y + row * (bh + gap)
 		local b = button(text, click(fn), { Position = UDim2.fromOffset(bx, by), Size = UDim2.fromOffset(bw, bh), ZIndex = Z.content, TextXAlignment = Enum.TextXAlignment.Left }, kind)
+		local ac = accent or (if kind == "primary" or kind == "gold" then T.gold else T.cyanHi)
 		-- El texto va en una etiqueta propia: un UIPadding desplazaría también al número y al labio.
-			b.Text = ""
-			label(text, 20, { FontFace = F.bold, Position = UDim2.fromOffset(64, 0), Size = UDim2.new(1, -80, 1, 0), TextXAlignment = Enum.TextXAlignment.Left, TextColor3 = if kind == "ghost" then T.text else T.bg, ZIndex = Z.content + 1 }).Parent = b
-			-- Forma humana: esquinas redondeadas, número de sección y "labio" inferior en los botones de acción.
-			local corner = b:FindFirstChildOfClass("UICorner")
-			if corner then
-				corner.CornerRadius = UDim.new(0, 10)
-			end
-			local chip = new("Frame", { Position = UDim2.fromOffset(8, 8), Size = UDim2.fromOffset(40, bh - 16), BackgroundColor3 = T.bg, BackgroundTransparency = if kind == "ghost" then 0.2 else 0.35, BorderSizePixel = 0, ZIndex = Z.content + 1 })
-			new("UICorner", { CornerRadius = UDim.new(0, 7) }).Parent = chip
-			label(string.format("%02d", n + 1), 16, { FontFace = F.monoBold, TextXAlignment = CENTER, Size = UDim2.fromScale(1, 1), TextColor3 = if kind == "primary" or kind == "gold" then T.gold else T.cyanHi, ZIndex = Z.content + 2 }).Parent = chip
-			chip.Parent = b
-			if kind == "primary" or kind == "gold" then
-				local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 5), BackgroundColor3 = if kind == "gold" then Color3.fromHex("#B07F0E") else Color3.fromHex("#0086A6"), BorderSizePixel = 0, ZIndex = Z.content })
-				new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
-				lip.Parent = b
-			end
+		b.Text = ""
+		label(text, 19, {
+			FontFace = F.bold,
+			Position = UDim2.fromOffset(58, 0),
+			Size = UDim2.new(1, if sub and not compact then -195 else -76, 1, 0),
+			TextXAlignment = Enum.TextXAlignment.Left,
+			TextColor3 = if kind == "ghost" then T.text else T.bg,
+			TextWrapped = false,
+			TextTruncate = Enum.TextTruncate.AtEnd,
+			ZIndex = Z.content + 1,
+		}).Parent = b
+		-- Forma humana: esquinas redondeadas, chip numérico 01..06, acento y labio inferior.
+		local corner = b:FindFirstChildOfClass("UICorner")
+		if corner then
+			corner.CornerRadius = UDim.new(0, 10)
+		end
+		local stroke = b:FindFirstChildOfClass("UIStroke")
+		if stroke and kind == "ghost" then
+			stroke.Color = ac
+			stroke.Transparency = 0.25
+			stroke.Thickness = 1.4
+		end
+		local chip = new("Frame", { Position = UDim2.fromOffset(8, 8), Size = UDim2.fromOffset(40, bh - 16), BackgroundColor3 = T.bg, BackgroundTransparency = if kind == "ghost" then 0.2 else 0.35, BorderSizePixel = 0, ZIndex = Z.content + 1 })
+		new("UICorner", { CornerRadius = UDim.new(0, 7) }).Parent = chip
+		if kind == "ghost" then
+			Ui.stroke(ac, 1, 0.45).Parent = chip
+		end
+		label(string.format("%02d", n + 1), 16, { FontFace = F.monoBold, TextXAlignment = CENTER, Size = UDim2.fromScale(1, 1), TextColor3 = ac, ZIndex = Z.content + 2 }).Parent = chip
+		chip.Parent = b
+		if kind == "primary" or kind == "gold" then
+			local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 5), BackgroundColor3 = if kind == "gold" then Color3.fromHex("#B07F0E") else Color3.fromHex("#0086A6"), BorderSizePixel = 0, ZIndex = Z.content })
+			new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
+			lip.Parent = b
+		else
+			local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 3), BackgroundColor3 = ac, BackgroundTransparency = 0.35, BorderSizePixel = 0, ZIndex = Z.content })
+			new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
+			lip.Parent = b
+		end
 		b.Parent = m
 		if sub and not compact then
-			-- el subtitulo vive dentro del boton, a la derecha: no choca con el paisaje ni con el boton vecino
-			label(sub, 14, { FontFace = F.mono, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -16, 0.5, 0), Size = UDim2.new(0.5, 0, 0, 20), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = if kind == "primary" or kind == "gold" then T.bg else T.dim, ZIndex = Z.content + 1 }).Parent = b
+			-- el subtítulo vive dentro del botón, a la derecha y acotado para no chocar con el título
+			local subLbl = label(sub, 14, { FontFace = F.monoBold, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(124, 20), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = if kind == "primary" or kind == "gold" then T.bg else ac, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+			new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 14 }).Parent = subLbl
+			subLbl.Parent = b
 		end
 		n += 1
 		return b
@@ -298,29 +337,29 @@ local function buildMainMenu(compact: boolean)
 	mb("INICIAR MISIÓN", function()
 		lastMode = "full"
 		send("start", "full")
-	end, "primary", "18 oleadas · 17 min")
+	end, "primary", "18 oleadas · 17 min", T.gold)
 	mb("DEMO RÁPIDA", function()
 		lastMode = "demo"
 		send("start", "demo")
-	end, "ghost", "4 min · comprimida")
+	end, "ghost", "4 min · comprimida", T.orange)
 	mb("TUTORIAL Y PRÁCTICA", function()
 		send("tutorial")
-	end, "gold", "7 pasos")
+	end, "gold", "7 pasos guiados", T.cyanHi)
 	mb("HANGAR · MEJORAS", function()
 		show(r.shop, true)
-	end, "ghost", "permanentes")
-	mb("AJUSTES", function()
+	end, "ghost", "8 mejoras", T.violet)
+	mb("AJUSTES Y CONTROLES", function()
 		show(r.settings, true)
-	end, "ghost")
+	end, "ghost", "WASD · Flechas", T.green)
 	mb("CRÉDITOS Y FUENTES", function()
 		show(r.credits, true)
-	end, "ghost")
+	end, "ghost", "NASA · NTRS", T.cyanHi)
 
 	local rows = if compact then 3 else 6
 	local iy = y + rows * (bh + gap) + 6
-	local info = panel({ Position = UDim2.fromOffset(X, iy), Size = UDim2.fromOffset(if compact then 670 else 560, 90), ZIndex = Z.panel }, "REGISTRO DEL PILOTO")
+	local info = panel({ Position = UDim2.fromOffset(X, iy), Size = UDim2.fromOffset(if compact then 690 else 580, 84), ZIndex = Z.panel, TagColor = T.gold }, "REGISTRO DEL PILOTO")
 	info.Parent = m
-	r.menuInfo = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(14, 30), Size = UDim2.new(1, -28, 0, 56), TextYAlignment = TOP, ZIndex = Z.content, TextScaled = true })
+	r.menuInfo = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(14, 32), Size = UDim2.new(1, -28, 0, 48), TextYAlignment = TOP, TextColor3 = T.text, ZIndex = Z.content, TextScaled = true })
 	new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 18 }).Parent = r.menuInfo
 	r.menuInfo.Parent = info
 	label("Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto.", 18, { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -8), Size = UDim2.fromOffset(780, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false, TextXAlignment = Enum.TextXAlignment.Right }).Parent = m
@@ -330,22 +369,26 @@ local function buildMenu()
 	-- Hangar
 	local s = overlay("Shop")
 	r.shop = s
-	local sp = centerPanel(s, 780, 676, "HANGAR · MEJORAS PERMANENTES")
-	r.shopScience = label("", 22, { FontFace = F.monoBold, Position = UDim2.fromOffset(24, 36), Size = UDim2.new(1, -48, 0, 30), TextColor3 = T.gold, ZIndex = Z.content })
+	local sp = centerPanel(s, 790, 704, "HANGAR · MEJORAS PERMANENTES", T.violet)
+	label("HANGAR DE MEJORAS", 30, { FontFace = F.impact, Position = UDim2.fromOffset(24, 34), Size = UDim2.fromOffset(320, 34), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = sp
+	r.shopScience = label("", 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(348, 38), Size = UDim2.fromOffset(418, 28), TextXAlignment = RIGHT, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	r.shopScience.Parent = sp
 	r.shopRows = {}
 	for i, id in Balance.Meta.Order do
 		local txt = (Content.Meta :: any)[id]
-		local row = new("Frame", { Position = UDim2.fromOffset(24, 74 + (i - 1) * 64), Size = UDim2.new(1, -48, 0, 58), BackgroundColor3 = T.bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, ZIndex = Z.panel })
-		Ui.corner(2).Parent = row
+		local col = META_COLORS[id] or T.cyanHi
+		local row = new("Frame", { Position = UDim2.fromOffset(24, 74 + (i - 1) * 66), Size = UDim2.new(1, -48, 0, 60), BackgroundColor3 = T.bg, BackgroundTransparency = 0.28, BorderSizePixel = 0, ZIndex = Z.panel })
+		Ui.corner(4).Parent = row
+		Ui.stroke(col, 1, 0.72).Parent = row
+		new("Frame", { Size = UDim2.new(0, 4, 1, 0), BackgroundColor3 = col, BorderSizePixel = 0, ZIndex = Z.content }).Parent = row
 		row.Parent = sp
-		label(txt.name, 20, { FontFace = F.bold, Position = UDim2.fromOffset(12, 4), Size = UDim2.fromOffset(440, 26), ZIndex = Z.content }).Parent = row
-		label(txt.desc, 18, { Position = UDim2.fromOffset(12, 29), Size = UDim2.fromOffset(440, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false }).Parent = row
-		local lvl = label("0/5", 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(456, 6), Size = UDim2.fromOffset(70, 46), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
+		label(txt.name, 20, { FontFace = F.bold, Position = UDim2.fromOffset(16, 5), Size = UDim2.fromOffset(436, 26), TextColor3 = col, ZIndex = Z.content }).Parent = row
+		label(txt.desc, 18, { Position = UDim2.fromOffset(16, 31), Size = UDim2.fromOffset(436, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false }).Parent = row
+		local lvl = label("0/5", 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(460, 7), Size = UDim2.fromOffset(70, 46), TextXAlignment = CENTER, TextColor3 = col, ZIndex = Z.content })
 		lvl.Parent = row
 		local b = button("", click(function()
 			send("buy", id)
-		end), { Position = UDim2.fromOffset(536, 6), Size = UDim2.fromOffset(186, 46), ZIndex = Z.content, TextSize = 18 }, "gold")
+		end), { Position = UDim2.fromOffset(540, 7), Size = UDim2.fromOffset(188, 46), ZIndex = Z.content, TextSize = 18 }, "gold")
 		b.Parent = row
 		r.shopRows[id] = { lvl = lvl, btn = b }
 	end
@@ -353,32 +396,49 @@ local function buildMenu()
 		show(r.shop, false)
 	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = sp
 
-	-- Ajustes
+	-- Ajustes y Controles
 	local st = overlay("Settings")
 	r.settings = st
-	local stp = centerPanel(st, 600, 330, "AJUSTES")
+	local stp = centerPanel(st, 640, 468, "AJUSTES Y CONTROLES", T.green)
+	label("AJUSTES DEL TRAJE", 28, { FontFace = F.impact, Position = UDim2.fromOffset(24, 34), Size = UDim2.fromOffset(420, 32), TextColor3 = T.green, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = stp
 	local S = Hud.settings
-	stepper(stp, 48, "CAMPO DE VISIÓN", function()
+	stepper(stp, 74, "CAMPO DE VISIÓN", function()
 		return tostring(S.fov) .. "°"
 	end, function()
 		S.fov = math.max(60, S.fov - 5)
 	end, function()
 		S.fov = math.min(100, S.fov + 5)
 	end)
-	stepper(stp, 104, "SENSIBILIDAD DE CÁMARA", function()
+	stepper(stp, 126, "SENSIBILIDAD DE CÁMARA", function()
 		return string.format("%.1f", S.sens)
 	end, function()
 		S.sens = math.max(0.4, S.sens - 0.2)
 	end, function()
 		S.sens = math.min(2.6, S.sens + 0.2)
 	end)
-	stepper(stp, 160, "EFECTOS VISUALES", function()
+	stepper(stp, 178, "EFECTOS VISUALES", function()
 		return if S.lowFx then "BAJOS" else "ALTOS"
 	end, function()
 		S.lowFx = true
 	end, function()
 		S.lowFx = false
 	end)
+	local ctrlBox = new("Frame", { Position = UDim2.fromOffset(24, 236), Size = UDim2.new(1, -48, 0, 150), BackgroundColor3 = T.bg, BackgroundTransparency = 0.3, BorderSizePixel = 0, ZIndex = Z.panel })
+	Ui.corner(4).Parent = ctrlBox
+	Ui.stroke(T.green, 1, 0.55).Parent = ctrlBox
+	ctrlBox.Parent = stp
+	label("CONTROLES DE MANDO", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 8), Size = UDim2.new(1, -28, 0, 22), TextColor3 = T.green, ZIndex = Z.content }).Parent = ctrlBox
+	local ctrlLines = {
+		{ k = "WASD / FLECHAS ↑↓←→", d = "Moverse en 8 direcciones", c = T.cyanHi },
+		{ k = "RATÓN / ARRASTRAR", d = "Girar cámara  ·  RUEDA : Zoom", c = T.gold },
+		{ k = "ESPACIO", d = "Saltar  ·  Q : Impulso RCS  ·  E : Pulso", c = T.green },
+		{ k = "1 · 2 · 3", d = "Elegir carta de mejora  ·  P : Pausa", c = T.orange },
+	}
+	for idx, cl in ctrlLines do
+		local ly = 34 + (idx - 1) * 27
+		label(cl.k, 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, ly), Size = UDim2.fromOffset(218, 24), TextColor3 = cl.c, ZIndex = Z.content, TextWrapped = false }).Parent = ctrlBox
+		label(cl.d, 16, { FontFace = F.semi, Position = UDim2.fromOffset(238, ly), Size = UDim2.new(1, -252, 0, 24), TextColor3 = T.text, ZIndex = Z.content, TextWrapped = false }).Parent = ctrlBox
+	end
 	button("VOLVER", click(function()
 		show(r.settings, false)
 	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = stp
@@ -386,8 +446,9 @@ local function buildMenu()
 	-- Créditos
 	local c = overlay("Credits")
 	r.credits = c
-	local cp = centerPanel(c, 800, 600, "CRÉDITOS Y FUENTES")
-	label(table.concat(Content.Credits, "\n"), 18, { Position = UDim2.fromOffset(24, 44), Size = UDim2.new(1, -48, 1, -124), TextYAlignment = TOP, ZIndex = Z.content }).Parent = cp
+	local cp = centerPanel(c, 800, 620, "CRÉDITOS Y FUENTES", T.cyanHi)
+	label("ARCHIVO DE FUENTES Y CRÉDITOS", 28, { FontFace = F.impact, Position = UDim2.fromOffset(24, 34), Size = UDim2.new(1, -48, 0, 32), TextColor3 = T.cyanHi, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = cp
+	label(table.concat(Content.Credits, "\n"), 18, { Position = UDim2.fromOffset(24, 72), Size = UDim2.new(1, -48, 1, -150), TextYAlignment = TOP, TextColor3 = T.text, LineHeight = 1.12, ZIndex = Z.content }).Parent = cp
 	button("VOLVER", click(function()
 		show(r.credits, false)
 	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = cp
@@ -399,7 +460,7 @@ local function buildOverlays()
 	r.level = lv
 	r.levelTag = label("SUBIDA DE NIVEL", 18, { FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.1), Size = UDim2.new(0.9, 0, 0, 24), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	r.levelTag.Parent = lv
-	r.levelTitle = label("", 46, { FontFace = F.impact, TextColor3 = T.gold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 28), Size = UDim2.new(0.9, 0, 0, 44), TextXAlignment = CENTER, ZIndex = Z.content })
+	r.levelTitle = label("", 46, { FontFace = F.impact, TextColor3 = T.gold, TextStrokeTransparency = 0.2, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 26), Size = UDim2.new(0.9, 0, 0, 52), TextXAlignment = CENTER, ZIndex = Z.content })
 	r.levelTitle.Parent = lv
 	local row = new("Frame", { Name = "Panel", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.56), Size = UDim2.fromOffset(960, 340), BackgroundTransparency = 1, ZIndex = Z.panel })
 	Ui.list(22, true).Parent = row
@@ -416,15 +477,19 @@ local function buildOverlays()
 		local rar = label("", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 18), Size = UDim2.fromOffset(200, 24), ZIndex = Z.content })
 		rar.Parent = card
 		label(if touch then "" else "[" .. i .. "]", 18, { FontFace = F.mono, Position = UDim2.fromOffset(226, 18), Size = UDim2.fromOffset(60, 24), TextXAlignment = RIGHT, TextColor3 = T.dim, ZIndex = Z.content }).Parent = card
-		local name = label("", 26, { FontFace = F.bold, Position = UDim2.fromOffset(18, 56), Size = UDim2.fromOffset(268, 66), ZIndex = Z.content, TextYAlignment = TOP })
+		local name = label("", 28, { FontFace = F.impact, Position = UDim2.fromOffset(18, 52), Size = UDim2.fromOffset(268, 66), TextStrokeTransparency = 0.25, ZIndex = Z.content, TextYAlignment = TOP })
 		name.Parent = card
-		local desc = label("", 20, { Position = UDim2.fromOffset(18, 126), Size = UDim2.fromOffset(268, 52), ZIndex = Z.content, TextYAlignment = TOP })
+		local desc = label("", 20, { Position = UDim2.fromOffset(18, 120), Size = UDim2.fromOffset(268, 52), ZIndex = Z.content, TextYAlignment = TOP })
 		desc.Parent = card
-		label("DATO REAL", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 182), Size = UDim2.fromOffset(268, 16), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = card
-		local fact = label("", 17, { Position = UDim2.fromOffset(18, 199), Size = UDim2.fromOffset(268, 64), TextColor3 = T.text, TextTransparency = 0.18, ZIndex = Z.content, TextYAlignment = TOP, TextScaled = true })
-		new("UITextSizeConstraint", { MaxTextSize = 21, MinTextSize = 14 }).Parent = fact
-		fact.Parent = card
-		local lvlText = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(18, 268), Size = UDim2.fromOffset(268, 24), TextColor3 = T.dim, ZIndex = Z.content })
+		local factBox = new("Frame", { Position = UDim2.fromOffset(14, 178), Size = UDim2.fromOffset(276, 86), BackgroundColor3 = T.bg, BackgroundTransparency = 0.35, BorderSizePixel = 0, ZIndex = Z.content })
+		Ui.corner(4).Parent = factBox
+		Ui.stroke(T.cyanHi, 1, 0.65).Parent = factBox
+		factBox.Parent = card
+		label("DATO REAL", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(8, 4), Size = UDim2.fromOffset(260, 16), TextColor3 = T.cyanHi, ZIndex = Z.content + 1 }).Parent = factBox
+		local fact = label("", 17, { Position = UDim2.fromOffset(8, 21), Size = UDim2.fromOffset(260, 61), TextColor3 = T.text, TextTransparency = 0.12, ZIndex = Z.content + 1, TextYAlignment = TOP, TextScaled = true })
+		new("UITextSizeConstraint", { MaxTextSize = 20, MinTextSize = 13 }).Parent = fact
+		fact.Parent = factBox
+		local lvlText = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(18, 270), Size = UDim2.fromOffset(268, 24), TextColor3 = T.dim, ZIndex = Z.content })
 		lvlText.Parent = card
 		local _, lvlFill = Ui.bar(card, UDim2.fromOffset(18, 300), UDim2.fromOffset(268, 10), T.cyanHi, Z.content)
 		card.MouseEnter:Connect(function()
@@ -442,13 +507,13 @@ local function buildOverlays()
 
 	local pc = overlay("Piece")
 	r.piece = pc
-	local pp = centerPanel(pc, 760, 500, "PIEZA RECUPERADA")
+	local pp = centerPanel(pc, 760, 500, "PIEZA RECUPERADA", T.gold)
 	r.pieceHead = label("", 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(24, 38), Size = UDim2.new(1, -48, 0, 26), TextColor3 = T.gold, ZIndex = Z.content })
 	r.pieceHead.Parent = pp
-	r.pieceName = label("", 30, { FontFace = F.title, Position = UDim2.fromOffset(24, 66), Size = UDim2.new(1, -48, 0, 42), ZIndex = Z.content, TextScaled = true })
-	new("UITextSizeConstraint", { MinTextSize = 20, MaxTextSize = 30 }).Parent = r.pieceName
+	r.pieceName = label("", 36, { FontFace = F.impact, Position = UDim2.fromOffset(24, 66), Size = UDim2.new(1, -48, 0, 46), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content, TextScaled = true })
+	new("UITextSizeConstraint", { MinTextSize = 22, MaxTextSize = 36 }).Parent = r.pieceName
 	r.pieceName.Parent = pp
-	r.pieceBonus = label("", 20, { FontFace = F.bold, Position = UDim2.fromOffset(24, 114), Size = UDim2.new(1, -48, 0, 52), TextColor3 = T.gold, ZIndex = Z.content, TextYAlignment = TOP })
+	r.pieceBonus = label("", 20, { FontFace = F.bold, Position = UDim2.fromOffset(24, 118), Size = UDim2.new(1, -48, 0, 48), TextColor3 = T.gold, ZIndex = Z.content, TextYAlignment = TOP })
 	r.pieceBonus.Parent = pp
 	label("EN LA REALIDAD", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(24, 170), Size = UDim2.new(1, -48, 0, 22), TextColor3 = T.dim, ZIndex = Z.content }).Parent = pp
 	r.pieceReal = label("", 20, { Position = UDim2.fromOffset(24, 194), Size = UDim2.new(1, -48, 0, 110), ZIndex = Z.content, TextYAlignment = TOP })
@@ -465,8 +530,8 @@ local function buildOverlays()
 
 	local pa = overlay("Pause")
 	r.pause = pa
-	local pap = centerPanel(pa, 440, 300, "MISIÓN EN PAUSA")
-	label("PAUSA", 50, { FontFace = F.impact, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 44), Size = UDim2.new(1, 0, 0, 48), ZIndex = Z.content }).Parent = pap
+	local pap = centerPanel(pa, 440, 300, "MISIÓN EN PAUSA", T.orange)
+	label("PAUSA", 50, { FontFace = F.impact, TextColor3 = T.orange, TextStrokeTransparency = 0.2, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 0, 56), ZIndex = Z.content }).Parent = pap
 	button("CONTINUAR", click(function()
 		send("pause")
 	end), { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), ZIndex = Z.content }).Parent = pap
@@ -477,8 +542,8 @@ local function buildOverlays()
 
 	local su = overlay("Summary", 0.2)
 	r.summary = su
-	local sp = centerPanel(su, 760, 640, "INFORME DE MISIÓN")
-	r.sumTitle = label("", 54, { FontFace = F.impact, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 0, 50), ZIndex = Z.content })
+	local sp = centerPanel(su, 760, 640, "INFORME DE MISIÓN", T.cyanHi)
+	r.sumTitle = label("", 54, { FontFace = F.impact, TextStrokeTransparency = 0.2, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 36), Size = UDim2.new(1, 0, 0, 58), ZIndex = Z.content })
 	r.sumTitle.Parent = sp
 	r.sumSub = label("", 20, { TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 92), Size = UDim2.new(1, 0, 0, 28), TextColor3 = T.dim, ZIndex = Z.content })
 	r.sumSub.Parent = sp
@@ -593,7 +658,8 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 		r.pauseBtn.Visible = phase == "run"
 		r.bossWrap.Visible = false
 		r.toast.Visible = false
-		r.biome.Text = if phase == "tutorial" then "ARENA DE PRÁCTICA" else Content.Biomes[1].name
+		r.biome.Text = if phase == "tutorial" then "ARENA DE PRÁCTICA" else ("ETAPA 1 · " .. Content.Biomes[1].name)
+		r.biome.TextColor3 = if phase == "tutorial" then T.cyanHi else BIOME_COLORS[1]
 		r.wave.Text = if phase == "tutorial" then "PRÁCTICA" else "OLEADA 01/" .. Balance.Run.TotalWaves
 		for i = 1, 4 do
 			r.pieces[i].BackgroundColor3 = T.bg
@@ -693,6 +759,7 @@ function Hud.levelUp(level: number, ids: { string }, levels: { number }, rars: {
 			c.stroke.Color = color
 			c.fill.BackgroundColor3 = color
 			c.name.Text = txt.name
+			c.name.TextColor3 = color
 			c.fact.Text = txt.fact or ""
 			if def then
 				local mult = if Balance.UpgradeCount[id] then 1 else Balance.CardRarity.Mult[rar]
@@ -768,8 +835,10 @@ end
 
 function Hud.biome(i: number)
 	local b = Content.Biomes[i]
-	r.biome.Text = b.name
-	Hud.alert("NUEVA ZONA: " .. b.name, "good", b.desc)
+	local col = BIOME_COLORS[i] or T.cyanHi
+	r.biome.Text = string.format("ETAPA %d · %s", i, b.name)
+	r.biome.TextColor3 = col
+	Hud.alert(string.format("ETAPA %d · %s", i, b.name), "good", b.desc)
 end
 
 function Hud.boss(idx: number)

@@ -120,7 +120,7 @@ Content.Meta = {
 }
 
 Content.Tutorial = {
-	"Muévete con WASD o con el joystick. Gira la cámara con el ratón o arrastrando la pantalla.",
+	"Muévete con WASD, las flechas o el joystick. Gira la cámara con el ratón o arrastrando la pantalla.",
 	"Tu láser dispara solo. Aléjate de los remolinos mientras dispara y destruye 3.",
 	"Recoge las muestras doradas hasta subir de nivel.",
 	"Zona naranja = peligro. Sal antes de que se llene.",
@@ -130,7 +130,7 @@ Content.Tutorial = {
 	"Práctica libre. Pulsa SALIR cuando quieras.",
 }
 
-Content.Controls = "WASD mover · Ratón girar cámara · Espacio saltar · Q impulso · E pulso · P pausa · 1-2-3 elegir carta"
+Content.Controls = "WASD / Flechas mover · Ratón girar cámara · Espacio saltar · Q impulso · E pulso · P pausa · 1-2-3 elegir carta"
 
 Content.Credits = {
 	"ARES FORGE. Proyecto del equipo para NASA International Space Apps Challenge 2026.",
@@ -144,7 +144,7 @@ Content.Credits = {
 	"",
 	"HERRAMIENTAS",
 	"Roblox Studio (Luau) y Blender 4.5 LTS. Flujo de assets con skills de arjun988/blender-skills (licencia MIT).",
-	"Tipografías: Michroma, Titillium Web y Roboto Mono (incluidas en Roblox).",
+	"Tipografías: Michroma, Bangers, Titillium Web y Roboto Mono (incluidas en Roblox).",
 	"",
 	"El juego no usa el logotipo de NASA ni assets de otros juegos.",
 }

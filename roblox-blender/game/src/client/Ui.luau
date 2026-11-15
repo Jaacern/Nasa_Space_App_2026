@@ -102,38 +102,49 @@ local function brackets(parent: Instance, color: Color3, z: number)
 	end
 end
 
--- Panel base. tag = etiqueta técnica opcional en la cabecera.
+-- Panel base. tag = etiqueta técnica opcional en la cabecera; TagColor en props tiñe acento y cabecera.
 function Ui.panel(props: { [string]: any }?, tag: string?): Frame
-	local f = Ui.new("Frame", { BackgroundColor3 = Ui.Theme.panel, BackgroundTransparency = 0.14, BorderSizePixel = 0 })
-	Ui.corner(3).Parent = f
-	Ui.stroke(Ui.Theme.cyan, 1, 0.6).Parent = f
+	local tagColor: Color3? = if props and props.TagColor then props.TagColor :: Color3 else nil
+	local accent = tagColor or Ui.Theme.cyanHi
+	local f = Ui.new("Frame", { BackgroundColor3 = Ui.Theme.panel, BackgroundTransparency = 0.12, BorderSizePixel = 0 })
+	Ui.corner(4).Parent = f
+	Ui.stroke(tagColor or Ui.Theme.cyan, 1.2, 0.5).Parent = f
 	if props then
 		for k, v in props do
-			(f :: any)[k] = v
+			if k ~= "TagColor" then
+				(f :: any)[k] = v
+			end
 		end
 	end
-	brackets(f, Ui.Theme.cyanHi, f.ZIndex + 1)
+	brackets(f, accent, f.ZIndex + 1)
 	if tag then
-		local bar = Ui.new("Frame", { Position = UDim2.fromOffset(12, 10), Size = UDim2.fromOffset(3, 16), BackgroundColor3 = Ui.Theme.cyanHi, BorderSizePixel = 0, ZIndex = f.ZIndex + 1 })
+		local bar = Ui.new("Frame", { Position = UDim2.fromOffset(12, 10), Size = UDim2.fromOffset(4, 16), BackgroundColor3 = accent, BorderSizePixel = 0, ZIndex = f.ZIndex + 1 })
 		bar.Parent = f
-		Ui.label(tag, 18, { FontFace = Ui.Fonts.monoBold, TextColor3 = Ui.Theme.dim, Position = UDim2.fromOffset(22, 6), Size = UDim2.new(1, -34, 0, 24), ZIndex = f.ZIndex + 1, TextWrapped = false, TextTruncate = Enum.TextTruncate.AtEnd }).Parent = f
+		Ui.label(tag, 18, { FontFace = Ui.Fonts.monoBold, TextColor3 = accent, TextStrokeTransparency = 0.55, Position = UDim2.fromOffset(22, 6), Size = UDim2.new(1, -34, 0, 24), ZIndex = f.ZIndex + 1, TextWrapped = false, TextTruncate = Enum.TextTruncate.AtEnd }).Parent = f
 	end
 	return f
 end
 
--- Botón >= 44 px. kind: "primary" | "ghost" | "danger" | "gold".
+-- Botón >= 44 px. kind: "primary" | "ghost" | "danger" | "gold" | "violet" | "green".
 function Ui.button(text: string, onClick: () -> (), props: { [string]: any }?, kind: string?): TextButton
 	local T = Ui.Theme
 	local k = kind or "primary"
-	local base = if k == "primary" then T.cyanHi elseif k == "danger" then T.orange elseif k == "gold" then T.gold else T.panelHi
+	local base = if k == "primary" then T.cyanHi
+		elseif k == "danger" then T.orange
+		elseif k == "gold" then T.gold
+		elseif k == "violet" then T.violet
+		elseif k == "green" then T.green
+		else T.panelHi
 	local hover = if k == "ghost" then T.line else base:Lerp(Color3.new(1, 1, 1), 0.25)
 	local b = Ui.new("TextButton", {
 		Text = text, TextSize = 20, FontFace = Ui.Fonts.bold, TextColor3 = if k == "ghost" then T.text else T.bg, AutoButtonColor = false,
 		BackgroundColor3 = base, BorderSizePixel = 0, Size = UDim2.fromOffset(300, 54), TextWrapped = true,
 	})
-	Ui.corner(3).Parent = b
+	Ui.corner(6).Parent = b
 	if k == "ghost" then
-		Ui.stroke(T.cyan, 1, 0.3).Parent = b
+		Ui.stroke(T.cyan, 1.2, 0.25).Parent = b
+	else
+		Ui.stroke(Color3.new(1, 1, 1), 1, 0.72).Parent = b
 	end
 	if props then
 		for key, v in props do
