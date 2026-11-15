@@ -1,0 +1,56 @@
+# Publica el pitch 3D en GitHub Pages en cada push a main.
+# El sitio es 100 % estático: public/ (página, motor WebGL y assets) más los módulos y datos
+# que la página importa con rutas relativas (src/, content/ y data/curated/).
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Armar el sitio estático
+        run: |
+          mkdir -p _site/data
+          cp -r public src content _site/
+          cp -r data/curated _site/data/
+          touch _site/.nojekyll
+          cat > _site/index.html <<'HTML'
+          <!doctype html>
+          <html lang="es">
+          <head>
+            <meta charset="utf-8">
+            <title>CODE OR DIE · Entrenador Espacial Junior</title>
+            <meta http-equiv="refresh" content="0; url=public/index.html">
+            <script>location.replace("public/index.html" + location.search + location.hash);</script>
+          </head>
+          <body><a href="public/index.html">Abrir CODE OR DIE</a></body>
+          </html>
+          HTML
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

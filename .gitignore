@@ -6,3 +6,7 @@ scripts/_*
 # Assets 3D descargados (pesados: no se versionan)
 ASSETS 3D/
 .tmp-shots/
+
+# Blender local (binario de 300MB+: nunca versionar)
+blender-5.3.0-linux-x64/
+blender-5.3.0-linux-x64.tar.xz

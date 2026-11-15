@@ -2,12 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
+  <script>
+    // Las rutas del sitio son relativas (GitHub Pages): si se entra por la raíz, se pasa a public/index.html.
+    if (!/\/public\/(index\.html)?$/.test(location.pathname)) location.replace("public/index.html" + location.search + location.hash);
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>OUTPOST RUN · NASA 3D Vector Pitch Deck (3 Min) &amp; Junior Astronaut Mission Trainer</title>
-  <link rel="preload" href="/public/assets/fonts/PublicSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/public/assets/fonts/IBMPlexMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/public/assets/fonts/InstrumentSerif-Italic.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/public/styles.css">
+  <title>CODE OR DIE · Entrenador Espacial Junior (NASA Space Apps 2026)</title>
+  <meta name="description" content="CODE OR DIE: viaje cinematográfico WebGL2 desde el Pad 39B hasta el cráter Jezero. Ciencia real de NASA convertida en un entrenador de misión para exploradores de 7 a 12 años.">
+  <meta name="theme-color" content="#030509">
+  <link rel="preload" href="assets/fonts/NasalizationRg.otf" as="font" type="font/otf" crossorigin>
+  <link rel="preload" href="assets/fonts/Michroma-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/fonts/Inter-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="assets/branding/NASA-Logo-Large.png" as="image">
+  <link rel="preload" href="assets/branding/Space_Apps_Motif_Logo_-_2-Color_White.png" as="image">
+  <link rel="stylesheet" href="styles.css">
   <script type="importmap">
     {
       "imports": {
@@ -18,206 +26,136 @@
   </script>
 </head>
 <body>
-  <!-- Escenario 3D WebGL Vectorial: Órbita Curva alrededor del Planeta Tierra 3D + 17 Modelos NASA .GLB + Portales + Grilla Vectorial Blender -->
-  <div id="loader-overlay" role="status" aria-live="polite">
-    <div class="loader-box">
-      <div class="loader-title">OUTPOST RUN</div>
-      <div class="loader-sub">Cargando 17 modelos NASA 3D Resources y texturas de misi&oacute;n</div>
-      <div class="loader-track"><div id="loader-bar"></div></div>
-      <div id="loader-label" class="loader-label">Iniciando&hellip;</div>
+  <!-- Preloader cinematográfico: logos oficiales + progreso real del LoadingManager -->
+  <div id="cinema-loader" role="status" aria-live="polite" aria-label="Cargando CODE OR DIE">
+    <div class="cinema-loader-grid" aria-hidden="true"></div>
+    <div class="cinema-loader-inner">
+      <div class="cinema-logos">
+        <img class="cinema-logo cinema-logo-nasa" src="assets/branding/NASA-Logo-Large.png" alt="Logotipo oficial de NASA">
+        <span class="cinema-logo-rule" aria-hidden="true"></span>
+        <img class="cinema-logo cinema-logo-spaceapps" src="assets/branding/Space_Apps_Motif_Logo_-_2-Color_White.png" alt="NASA International Space Apps Challenge">
+      </div>
+      <div class="cinema-kicker">NASA SPACE APPS CHALLENGE 2026 · EQUIPO CHILE</div>
+      <div class="cinema-title">CODE OR DIE</div>
+      <div class="cinema-subtitle">Build a Junior Astronaut Mission Trainer</div>
+      <div class="cinema-track"><div id="loader-bar"></div></div>
+      <div id="loader-label" class="cinema-label">Iniciando motor WebGL2&hellip;</div>
+      <div class="cinema-foot">Ciencia real NASA · Roblox · 7–12 años</div>
     </div>
   </div>
-  <div id="webgl-container" aria-label="Viewport 3D Vectorial con trayectoria orbital alrededor del Planeta Tierra y 17 modelos oficiales NASA .GLB">
+
+  <!-- Viewport cinematográfico sin obstrucciones -->
+  <div id="webgl-container" aria-label="Simulador espacial 3D: despegue desde el Pad 39B, órbita baja, Bennu, base lunar, Marte y cráter Jezero">
     <canvas id="webgl-canvas"></canvas>
   </div>
 
-  <!-- Retícula de Cursor 3D Vectorial -->
-  <div id="halo-reticle" class="halo-reticle"></div>
-
-  <!-- HUD de Ejes Vectoriales y Telemetría de Curva Spline (Estilo Blender 4.5 Viewport) -->
-  <div id="blender-viewport-hud" class="blender-viewport-hud" title="Arrastra con el ratón sobre el espacio 3D para orbitar la cámara como en Blender, o pulsa X / Y / Z para alinear ejes">
-    <div class="blender-axes-pill">
-      <button class="axis-badge x" data-cam-preset="x" title="Vista Lateral Eje X (Blender)">X</button>
-      <button class="axis-badge y" data-cam-preset="y" title="Vista Cenital Eclíptica Eje Y (Blender)">Y</button>
-      <button class="axis-badge z" data-cam-preset="z" title="Vista Persecución Orbital Eje Z (Reset)">Z</button>
-    </div>
-    <div class="blender-vec-data">
-      <div id="hud-vec-pos" style="color: #f8fafc; font-weight: 600;">VEC POS [X: +1.50  Y: -5.80  Z: -12.50]</div>
-      <div id="hud-vec-tan" style="color: #94a3b8;">SPLINE TAN (0.62, 0.34, -0.71) · ÓRBITA TIERRA LEO</div>
-    </div>
-    <button id="btn-toggle-blender-grid" class="btn" style="padding: 0.22rem 0.5rem; font-size: 0.58rem;">
-      GRID 3D: ON
-    </button>
-  </div>
-
-  <!-- Barra Superior Técnica (NASA Graphics Standards Manual NHB 1430.2 / WDS) -->
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-dot"></span>
-      <span>OUTPOST RUN</span>
-      <span class="brand-tag" id="pitch-timer-badge">PITCH 03:00 · SLIDE 01/06</span>
-    </div>
-
-    <nav class="room-nav" aria-label="Diapositivas Planetarias del Pitch (3 Minutos)">
-      <button class="room-pill active" data-room="0">01 TIERRA (0:00)</button>
-      <button class="room-pill" data-room="1">02 ÓRBITA LEO (0:30)</button>
-      <button class="room-pill" data-room="2">03 ESPACIO (1:00)</button>
-      <button class="room-pill" data-room="3">04 LUNA (1:30)</button>
-      <button class="room-pill" data-room="4">05 MARTE (2:00)</button>
-      <button class="room-pill" data-room="5">06 SIMULADOR (2:30)</button>
-    </nav>
-
-    <div class="top-actions">
-      <button id="btn-auto-flight" class="btn btn-halo" title="Ejecutar el Pitch de 3 minutos bordeando la Tierra 3D y recorriendo el sistema solar">
-        ▶ INICIAR PITCH 3 MIN
-      </button>
-      <button id="btn-open-challenge" class="btn" title="Cumplimiento del desafío Build a Junior Astronaut Mission Trainer">
-        DESAFÍO NASA
-      </button>
-      <button id="btn-open-flow" class="btn" title="Estudio Google Flow Veo 3.1 (1050 créditos · 25 portales)">
-        FLOW 1050C
-      </button>
-      <button id="btn-open-provenance" class="btn" title="17 Modelos NASA 3D Resources (.glb) validados por MCP + 8 APIs NASA/CSA">
-        17 GLB &amp; APIS
-      </button>
-      <a class="btn" href="/ui-ux/demo/index.html" target="_blank" rel="noopener" title="ORBITAL UI: kit de diseño NASA (paleta, tipografías, componentes)">
-        UI KIT
-      </a>
-      <button id="btn-data-mode" class="mode-chip snapshot" title="Alternar entre copia curada y datos en vivo (?live=1)">
-        ● <span id="data-mode-label">SNAPSHOT</span>
-      </button>
-    </div>
+  <!-- Título héroe de la marca, solo en la parada inicial -->
+  <header id="hero-brand" class="hero-brand">
+    <div class="hero-kicker">NASA SPACE APPS 2026 · CHILE</div>
+    <h1 class="hero-title">CODE OR DIE</h1>
+    <div class="hero-subtitle">Build a Junior Astronaut Mission Trainer</div>
   </header>
 
-  <!-- Barra Inferior de Cabina y Teleprompter de Diapositiva Planetaria -->
-  <aside class="cockpit-bar">
-    <button id="btn-prev-slide" class="btn" style="padding: 0.28rem 0.65rem;" title="Diapositiva anterior (Tecla ←)">◀ ANTERIOR</button>
-    <div class="cockpit-readout">
-      <span id="hud-portal-idx" style="color: #93c5fd; font-weight: 600;">TIERRA LEO · PORTAL 01/25</span>
-      <span class="cockpit-portal-name" id="hud-portal-title">Despegue Orbital Saturn V / SLS en Cabo Cañaveral</span>
-      <span id="hud-z-coord" style="color: var(--text-dim);">SPLINE: 0%</span>
+  <!-- Esquina superior izquierda: marca + insignia compacta de parada -->
+  <div class="hud-corner hud-top-left">
+    <div class="glass-pill brand-pill">
+      <span class="brand-dot" aria-hidden="true"></span>
+      <span class="brand-name">CODE OR DIE</span>
+      <span class="brand-sub">NASA SPACE APPS 2026</span>
     </div>
-    <button id="btn-next-slide" class="btn" style="padding: 0.28rem 0.65rem;" title="Siguiente diapositiva planetaria (Tecla →)">SIGUIENTE ▶</button>
-    <button id="btn-toggle-reveal" class="btn" style="padding: 0.28rem 0.65rem;" title="Alternar revelación completa del shader en los portales">
-      PORTAL: VIVO
-    </button>
+    <div class="glass-pill stop-badge" id="hud-stop-badge" aria-live="polite">
+      <span class="stop-index" id="hud-stop-index">PARADA 01 / 06</span>
+      <span class="stop-title" id="hud-stop-title">Base NASA Pad 39B (Tierra)</span>
+      <span class="stop-telemetry" id="hud-stop-telemetry">CODE OR DIE · Entrenador Espacial</span>
+    </div>
+  </div>
+
+  <!-- Esquina superior derecha: autopiloto de pitch y cajón del simulador -->
+  <div class="hud-corner hud-top-right">
+    <div class="top-right-stack">
+      <button id="btn-pitch" class="glass-pill glass-btn pitch-btn" title="Reproduce el pitch de 3 minutos: 30 segundos por parada" aria-pressed="false">
+        <span class="pitch-dot" aria-hidden="true"></span>
+        <span id="pitch-label">PITCH 3:00</span>
+      </button>
+      <button id="btn-toggle-drawer" class="glass-pill glass-btn" aria-controls="sim-drawer" aria-expanded="false" title="Abrir el entrenador de misión de 30 soles">
+        SIMULADOR 30 SOLES
+      </button>
+    </div>
+  </div>
+
+  <!-- Esquinas inferiores: navegación entre paradas -->
+  <div class="hud-corner hud-bottom-left">
+    <button id="btn-prev-stop" class="glass-pill glass-btn" title="Parada anterior (tecla ←)">◀ ANTERIOR</button>
+  </div>
+  <div class="hud-corner hud-bottom-right">
+    <button id="btn-next-stop" class="glass-pill glass-btn" title="Siguiente parada (tecla →)">SIGUIENTE ▶</button>
+  </div>
+
+  <!-- Indicador de progreso de ruta (6 puntos) -->
+  <div class="hud-corner hud-bottom-center" aria-hidden="true">
+    <div class="route-dots" id="route-dots"></div>
+  </div>
+
+  <!-- Aviso breve de controles (desaparece solo) -->
+  <div id="hint-toast" class="glass-pill hint-toast" role="note">
+    Arrastra para orbitar · Rueda o flechas para viajar · <strong>PITCH 3:00</strong> recorre las 6 paradas en 180 s
+  </div>
+
+  <!-- Cajón lateral Aero Glass: Junior Astronaut Mission Trainer (30 soles) -->
+  <aside id="sim-drawer" class="sim-drawer" aria-hidden="true" aria-label="Simulador de misión de 30 soles">
+    <div class="drawer-header">
+      <div>
+        <div class="drawer-eyebrow">JUNIOR ASTRONAUT MISSION TRAINER · 7–12 AÑOS</div>
+        <h2 class="drawer-title">Misión de 30 soles</h2>
+      </div>
+      <button id="btn-close-drawer" class="glass-pill glass-btn glass-btn-sm" title="Cerrar (Esc)">CERRAR ✕</button>
+    </div>
+
+    <p class="drawer-lead">
+      Ninguna decisión es gratis: ahorrar <strong>energía</strong> hoy puede costar <strong>aire</strong> mañana.
+      Cada carta instala un módulo 3D real en la base del islote lunar o marciano.
+    </p>
+
+    <div class="drawer-controls">
+      <select id="select-site" class="glass-select" aria-label="Sitio de misión">
+        <option value="mars">MARTE · Cráter Jezero (3,63× dosis ISS)</option>
+        <option value="moon">LUNA · Polo Sur (3,03× dosis ISS)</option>
+      </select>
+      <select id="select-scenario" class="glass-select" aria-label="Escenario de clima espacial DONKI">
+        <option value="gannon-2024-05">DONKI · Tormenta Gannon, mayo 2024</option>
+        <option value="oct-2024-x9">DONKI · Erupción X9, octubre 2024</option>
+        <option value="sep-2017-storms">DONKI · Tormentas de septiembre 2017</option>
+        <option value="quiet-recent">DONKI · Semana tranquila</option>
+        <option value="live">DONKI · Telemetría reciente</option>
+      </select>
+      <button id="btn-new-run" class="glass-pill glass-btn glass-btn-accent">REINICIAR MISIÓN</button>
+    </div>
+
+    <div id="sol-timeline" class="sol-timeline" aria-label="Línea de tiempo de 30 soles"></div>
+    <div id="game-stats-grid" class="stats-grid"></div>
+    <div id="game-alerts-area"></div>
+    <div id="game-decision-area" class="decision-area"></div>
+    <div id="game-report-area" class="report-area" style="display:none"></div>
+
+    <div class="drawer-section">
+      <div class="drawer-eyebrow">GLOSARIO EN CONTEXTO</div>
+      <div id="kid-glossary-strip" class="glossary-strip"></div>
+    </div>
+
+    <div class="drawer-section drawer-footer">
+      <div class="drawer-eyebrow">FUENTES NASA / CSA · MODO DE DATOS</div>
+      <div class="sources-row">
+        <button id="btn-data-mode" class="glass-pill glass-btn glass-btn-sm mode-chip snapshot" title="Alternar entre copia curada y datos en vivo (?live=1)">
+          ● <span id="data-mode-label">SNAPSHOT</span>
+        </button>
+        <div id="sources-list" class="sources-list"></div>
+      </div>
+      <p class="credits-note">
+        Modelos: NASA 3D Resources (dominio público). Texturas: NASA Visible Earth, SVS y USGS. Este proyecto no está patrocinado ni respaldado por NASA ni por la CSA.
+      </p>
+    </div>
   </aside>
 
-  <!-- Las 6 Diapositivas Planetarias desplazadas a lo largo de la curva vectorial 3D -->
-  <main class="scroll-story">
-    <div id="rooms-container"></div>
-
-    <!-- DIAPOSITIVA 06 (2:30 - 3:00): Demo Jugable en Vivo sobre el Cráter Jezero (HDU + Perseverance + Ingenuity) -->
-    <section id="outpost-game" class="pitch-sim-section" data-room-index="5">
-      <div class="pitch-sim-shell">
-        <div class="pitch-sim-top">
-          <div>
-            <div class="pitch-eyebrow">SLIDE 06 (02:30 – 03:00) · SIMULADOR EN VIVO · EDADES 7–12 AÑOS</div>
-            <h2 class="pitch-title" style="margin-bottom: 0.2rem;">Junior Astronaut <em>Mission Trainer</em> · 30 Soles</h2>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); max-width: 680px;">
-              <strong>Mecánica central de ingeniería NASA:</strong> ninguna decisión es gratis. Ahorrar <strong>Energía</strong> hoy puede costar <strong>Aire o Comida</strong> mañana. Al instalar cartas, se ensamblan módulos 3D junto al hábitat <strong>NASA HDU</strong>, el rover <strong>Perseverance</strong> y el dron <strong>Ingenuity</strong>.
-            </p>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 0.45rem; flex-wrap: wrap;">
-            <select id="select-site" class="select-pill" aria-label="Sitio de misión">
-              <option value="mars">MARTE · Cráter Jezero (Delay 3-22m · 3.63× ISS)</option>
-              <option value="moon">LUNA · Polo Sur (Delay 1.3s · Noche 14d · 3.03× ISS)</option>
-            </select>
-            <select id="select-scenario" class="select-pill" aria-label="Escenario climático DONKI">
-              <option value="gannon-2024-05">DONKI: Tormenta Gannon May 2024 (163 ev)</option>
-              <option value="oct-2024-x9">DONKI: Llamarada X9 Oct 2024 (125 ev)</option>
-              <option value="sep-2017-storms">DONKI: Tormentas Sep 2017 (69 ev)</option>
-              <option value="quiet-recent">DONKI: Clima Tranquilo (29 ev)</option>
-              <option value="live">DONKI: Telemetría en Vivo</option>
-            </select>
-            <button id="btn-new-run" class="btn btn-halo">REINICIAR MISIÓN</button>
-          </div>
-        </div>
-
-        <!-- Píldoras de Glosario Infantil en Contexto -->
-        <div id="kid-glossary-strip" style="display:flex; gap:0.35rem; flex-wrap:wrap; margin-top:0.65rem; align-items:center;"></div>
-
-        <!-- Línea de tiempo de 30 Soles -->
-        <div id="sol-timeline" class="sol-timeline"></div>
-
-        <!-- 3 Recursos Centrales + Telemetría -->
-        <div id="game-stats-grid" class="stats-grid"></div>
-        <div id="game-alerts-area"></div>
-        <div id="game-decision-area" class="decision-grid"></div>
-        <div id="game-report-area" style="display: none; margin-top: 0.9rem;"></div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal 1: Google Flow Studio (1050 créditos · 25 Portales en Video) -->
-  <div id="flow-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="flow-modal-title">
-    <div class="modal-panel">
-      <div class="modal-header">
-        <div>
-          <div class="pitch-eyebrow" style="margin-bottom:0.2rem;">GOOGLE FLOW (VEO 3.1) · ARQUITECTURA DE PRESUPUESTO</div>
-          <h3 id="flow-modal-title" style="font-family: var(--font-display); font-size: 1.15rem;">
-            25 Portales en Video (5 Sectores × 5 Portales) · Presupuesto 1,050 Créditos
-          </h3>
-        </div>
-        <button id="btn-close-flow" class="btn">CERRAR ✕</button>
-      </div>
-      <div class="modal-body">
-        <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 0.75rem 1rem; border-radius: 10px; border: 1px solid var(--glass-border);">
-          <div style="display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap;">
-            <label style="font-size: 0.76rem; color: var(--text-secondary);">
-              Créditos Flow:
-              <input id="input-flow-credits" type="number" min="250" max="5000" step="50" value="1050" class="select-pill" style="width: 90px;">
-            </label>
-            <button id="btn-recalc-flow" class="btn btn-halo">OPTIMIZAR</button>
-            <select id="filter-flow-env" class="select-pill">
-              <option value="all">Todos los portales (25)</option>
-              <option value="tierra">01 Tierra (5)</option>
-              <option value="despegue">02 Órbita LEO (5)</option>
-              <option value="universo">03 Espacio Profundo (5)</option>
-              <option value="luna">04 Luna (5)</option>
-              <option value="marte">05 Marte (5)</option>
-            </select>
-          </div>
-          <div id="flow-budget-summary" style="font-family: var(--font-mono); font-size: 0.72rem; color: #6ee7b7;"></div>
-        </div>
-        <div id="flow-cards-container" class="flow-grid"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal 2: Catálogo de 17 Modelos NASA 3D Resources (.glb) validados por MCP + 8 APIs NASA & CSA -->
-  <div id="provenance-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="prov-modal-title">
-    <div class="modal-panel">
-      <div class="modal-header">
-        <div>
-          <div class="pitch-eyebrow" style="margin-bottom:0.2rem;">SCIENCE.NASA.GOV/3D-RESOURCES · BLENDER MCP BRIDGE (PORT 9877)</div>
-          <h3 id="prov-modal-title" style="font-family: var(--font-display); font-size: 1.15rem;">
-            17 Modelos Oficiales NASA 3D (.glb descomprimidos) + 8 APIs Científicas NASA/CSA
-          </h3>
-        </div>
-        <button id="btn-close-provenance" class="btn">CERRAR ✕</button>
-      </div>
-      <div class="modal-body" id="provenance-modal-body"></div>
-    </div>
-  </div>
-
-  <!-- Modal 3: Matriz de Cumplimiento del Desafío Oficial -->
-  <div id="challenge-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="challenge-modal-title">
-    <div class="modal-panel">
-      <div class="modal-header">
-        <div>
-          <div class="pitch-eyebrow" style="margin-bottom:0.2rem;">2026 NASA SPACE APPS CHALLENGE · MATRIZ DE EVALUACIÓN</div>
-          <h3 id="challenge-modal-title" style="font-family: var(--font-display); font-size: 1.15rem;">
-            Build a Junior Astronaut Mission Trainer (7–12 años)
-          </h3>
-        </div>
-        <button id="btn-close-challenge" class="btn">CERRAR ✕</button>
-      </div>
-      <div class="modal-body" id="challenge-modal-body"></div>
-    </div>
-  </div>
-
-  <script type="module" src="/public/app.mjs"></script>
+  <script type="module" src="app.mjs"></script>
 </body>
 </html>
