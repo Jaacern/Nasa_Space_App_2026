@@ -1,13 +1,13 @@
 # Notas técnicas
 
-Bitácora corta. Última actualización: 14-11-2026.
+Bitácora corta. Última actualización: 15-11-2026.
 Regla: borra lo que ya no aplique (prompt maestro, sección 2.7).
 
 ## 1. Estructura del código
 
 | Carpeta en disco | Destino en Studio | Rol |
 |---|---|---|
-| `game/src/shared/` | `ReplicatedStorage/Shared` | Módulos compartidos: `Balance`, `Content`, `NasaData`, `Visuals` y subcarpeta `Meshes/` (28 mallas) |
+| `game/src/shared/` | `ReplicatedStorage/Shared` | Módulos compartidos: `Balance`, `Content`, `NasaData`, `Visuals` y subcarpeta `Meshes/` (30 mallas) |
 | `game/src/server/` | `ServerScriptService/Server` | Autoridad: `Session`, `Combat`, `Enemies`, `Loot`, `SaveService`, `WorldBuilder`, `Main.server` |
 | `game/src/client/` | `StarterPlayer/StarterPlayerScripts/Client` | Dibujo, entrada, cámara, interfaz: `Renderer`, `MeshFactory`, `Scenery`, `Fx`, `Hud`, `Ui`, `Main.client` |
 
@@ -20,7 +20,7 @@ Comunicación: dos `RemoteEvent` en `ReplicatedStorage/Remotes`.
 
 ## 2. Cómo sincronizar disco a Studio
 
-La fuente de verdad es `game/src/`. Studio es una copia.
+La fuente de verdad es `roblox-blender/game/src/`. Studio es una copia. En lugares ya guardados en la nube de Roblox (`placeId: 114817072312952`), la sincronización por HTTP local queda bloqueada: usa `tools/studio/push.py` (sin HTTP) o herramientas MCP de Roblox Studio. Para lugares locales sin publicar sigue disponible el método HTTP:
 
 1. Abre una terminal en la raíz del proyecto.
 2. Arranca el servidor local, solo en localhost:
@@ -41,21 +41,21 @@ Cómo trabaja el sincronizador:
 
 1. Sincroniza (sección 2).
 2. Pulsa Play. Revisa la Salida: no debe haber errores rojos.
-3. En el menú elige "Demo rápida". Dura unos 3,6 minutos de reloj real.
-4. Comprueba, en orden: oleadas numeradas, cambio de bioma a los 72 s y a los 144 s (reloj real de la demo), minijefes a los 48, 108 y 168 s, jefe final a los 204 s, pieza recuperada tras cada jefe, despegue e informe de misión.
+3. En el menú elige "Demo rápida". Dura unos 2 minutos de juego (victoria en 95 s medidos con bot el 15-11-2026).
+4. Comprueba, en orden: oleadas numeradas, cambio de bioma a los 30 s y a los 60 s (tiempo de juego de la demo), minijefes a los 20, 45 y 70 s, jefe final a los 85 s, pieza recuperada tras cada jefe, despegue e informe de misión.
 5. Para la misión completa elige "Iniciar misión" (18 minutos).
 6. Para el tutorial elige "Tutorial y práctica".
 
-Lista de verificación (resultado del 14-11-2026 en Studio):
+Lista de verificación (actualizada al 15-11-2026 en Studio, lugar `114817072312952`):
 
-- [x] Arranque sin errores (incluidas 28/28 mallas de Blender vía `EditableMesh` `FixedSize = true`).
-- [x] Bucle completo en modo demo (`MISIÓN CUMPLIDA`): 4 jefes, 4 piezas, despegue e informe de misión.
-- [x] Subida de nivel con cartas y tutorial (`PRÁCTICA`, `TUTORIAL 1/8`).
-- [x] HUD (con ocultamiento de `Wave`/`Timer`/`Biome` bajo modales).
+- [x] Arranque sin errores (incluidas 30/30 mallas de Blender vía `EditableMesh` `FixedSize = true`, con `Rover` e `Insignia`).
+- [x] Bucle completo en modo demo (`MISIÓN CUMPLIDA`): 4 jefes, 4 piezas con fichas NTRS verificadas (`20150005587`, `20040084278`, `20205007222`, `20240003648`), despegue e informe de misión.
+- [x] Subida de nivel con cartas («DATO REAL» contrastado con NASA), tutorial (`PRÁCTICA`, `TUTORIAL 1/8`) y movimiento con `WASD` + flechas del teclado.
+- [x] HUD y menús mejorados (fuentes `Bangers`/`Michroma`, diseño por color/etapa, «Forma humana» del menú principal, panel de Ajustes y Controles, `TextFits` OK en Studio).
 - [ ] Móvil real.
 - [x] Sondeo en Studio con 92–98 enemigos (`docs/perf/RENDIMIENTO.md`; Studio en segundo plano estuvo capado a 15 FPS; pendiente repetir a 60 FPS en primer plano y móvil).
-- [ ] DataStore en lugar publicado.
-- [ ] Audio definitivo.
+- [ ] DataStore verificado en lugar publicado (acceso a API en Studio ya activado y verificado; falta publicación definitiva cuando el equipo lo pida).
+- [ ] Escucha humana de la mezcla de audio (`P-12`: 3 pistas musicales con licencia y 12 SFX con EQ ya cargados).
 
 ## 4. Comando de depuración (solo Studio)
 
@@ -111,17 +111,18 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 ## 7. Limitaciones conocidas
 
 1. Rendimiento medido en Roblox Studio con 92–98 enemigos (`docs/perf/RENDIMIENTO.md`), pero bajo capado a 15 FPS por ventana en segundo plano; falta medir a 60 FPS en primer plano y en móvil real.
-2. Audio provisional: sonidos integrados de Roblox. La música tiene 3 ranuras vacías (`docs/assets/AUDIO.md`).
-3. Las 28 mallas low-poly de Blender ya están integradas mediante `EditableMesh` (`FixedSize = true`) en cliente, con respaldo automático en `Templates`.
-4. `Lighting.Technology = Future` se pone a mano en Studio.
-5. Los números de daño (`game/src/client/Fx.luau`) usan `GothamBlack`, no el sistema tipográfico.
-6. Los enemigos con contacto (élites y jefes) usan el intervalo de golpe del Remolino (`Balance.Enemies.chaser.hitCd`, 0,8 s). No tienen un valor propio.
-7. El tiempo de aparición de cofres usa reloj real, no tiempo de misión. En la demo rápida no se acelera.
-8. La demo rápida otorga la misma ciencia que la misión completa (riesgo R-07).
-9. `Balance.Debug.LogPerf` existe y ningún sistema lo usa todavía.
-10. El tutorial no tiene límite de 60 s (Q19).
-11. Sin cooperativo: una sesión por jugador. Varios jugadores en el mismo servidor comparten solo la arena, no la simulación.
-12. Hay una clave de NASA expuesta en una sesión anterior. Se debe rotar (P-04). No la guardes en el repositorio.
+2. Audio pendiente de validación humana (`P-12`): `Balance.Audio.Music` ya cuenta con 3 pistas del catálogo con licencia (`calm`, `combat`, `boss`) y `Balance.Audio.Sfx` con 12 claves (`shoot`…`warn`, más `buff`) filtradas por `AresSfx` (`docs/assets/AUDIO.md`). Falta escucha humana en partida y balance de mezcla.
+3. Las 30 mallas low-poly de Blender (`30` FBX en `assets/export/` y `30` previews PNG en `docs/assets/previews/`, incluyendo `Rover.luau` e `Insignia.luau`) están integradas mediante `EditableMesh` (`FixedSize = true`) en cliente, con respaldo automático en `Templates`.
+4. `Lighting.Technology = Future` se pone a mano en Studio (`P-01`). En la inspección MCP del 15-11-2026 sobre `game.Lighting`, Studio reportó `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`, frente a `Future = 4`) con migración Unified Lighting activa: pendiente de confirmar/ajustar a mano en Studio.
+5. Los números de daño (`game/src/client/Fx.luau`) ya usan `Enum.Font.Bangers` (`Ui.Fonts.impact`), alineados con la cabecera de oleada, nivel, menú y superposiciones.
+6. Las 4 piezas recuperables (`Content.Pieces[1..4]`) ya tienen fichas NTRS verificadas (`20150005587`, `20040084278`, `20205007222`, `20240003648`).
+7. Los enemigos con contacto (élites y jefes) usan el intervalo de golpe del Remolino (`Balance.Enemies.chaser.hitCd`, 0,8 s). No tienen un valor propio.
+8. El tiempo de aparición de cofres usa reloj real, no tiempo de misión. En la demo rápida no se acelera.
+9. La demo rápida otorga la misma ciencia que la misión completa (riesgo R-07).
+10. `Balance.Debug.LogPerf` existe y ningún sistema lo usa todavía.
+11. El tutorial no tiene límite de 60 s (Q19).
+12. Sin cooperativo: una sesión por jugador. Varios jugadores en el mismo servidor comparten solo la arena, no la simulación.
+13. Hay una clave de NASA expuesta en una sesión anterior. Se debe rotar (P-04). No la guardes en el repositorio.
 
 ## 8. Archivos relacionados
 
@@ -148,13 +149,58 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - Quinta tanda (15-11-2026): los 12 datos de las cartas se contrastaron con `science.nasa.gov` y se reescribieron para ceñirse a la fuente. Tabla con citas en `docs/NASA_APIS.md` sección 10.
 - Sexta tanda (15-11-2026): retroceso de cámara al disparar (`Fx.kickBack`, `Fx.kickUpdate`; se dispara en `Renderer.shot`). Probado 40 s de demo en Studio: consola limpia; lugar guardado. Encargo a DeepSeek no completado (solo búsquedas, saldo mensual crítico); el cambio se hizo a mano.
 - Séptima tanda (15-11-2026), revisión de interfaz: los subtítulos del menú pasan dentro de cada botón (alineados a la derecha, textos más cortos, contraste oscuro en botones claros); el contador de enfriamiento de habilidades ya no deja ver la tecla debajo. Probado en Studio: menú sin choques, consola limpia, lugar guardado.
+- Octava tanda (15-11-2026), coherencia visual, fuentes y flechas en Studio:
+  - Rescatada en disco (`game/src/client/Hud.luau`) la estética «Forma humana» de los botones del menú que vivía en Studio (esquinas redondeadas de `10` px, chip numérico `01..06` y labio inferior), ampliada con acentos por sección (`gold`, `orange`, `cyanHi`, `violet`, `green`), bordes en botones fantasma y ajuste `TextScaled` en subtítulos para evitar choques.
+  - Sistema visual y tipográfico (`Ui.luau` + `Hud.luau`): `Ui.panel` acepta `TagColor` para teñir cabecera/esquinas/borde y `Ui.button` suma variantes `"violet"` y `"green"`. Aplicada fuente `Ui.Fonts.impact` (`Bangers`) + trazos oscuros legibles y colores por función/bioma (`ETAPA 1..3 · <bioma>`, `OLEADA`, `NIVEL`) en el HUD, subtítulo del menú, Hangar (filas codificadas por color), Ajustes y Controles (recuadro con esquema completo), Créditos, cartas de nivel (título coloreado por rareza + recuadro «DATO REAL»), ficha de pieza recuperada, Pausa e Informe de misión.
+  - Movimiento con flechas del teclado (`game/src/client/Main.client.luau` + `Content.luau`): `ContextActionService:BindActionAtPriority("AresArrowKeys", ...)` intercepta `↑ ↓ ← →` en partida activa para evitar el giro clásico de cámara de Roblox, y el bucle `AresMain` combina `WASD` + flechas mediante `player:Move(Vector3.new(kx, 0, kz), true)` relativo a cámara. Actualizados `Content.Tutorial[1]`, `Content.Controls` y `Content.Credits` (incluye `Bangers`).
+  - Verificado en Roblox Studio (`placeId: 114817072312952`): los `4` scripts sincronizados coinciden byte a byte con disco (`Adler-32`), prueba `Play` con demo lanzada (`ArrowBound = true`, `HudVisible = true`, `TextIssuesCount = 0` en todas las etiquetas de `AresHud` tras ampliar alturas de `PAUSA`/`sumTitle`/`levelTitle`), consola limpia (`0` errores) y lugar guardado en Roblox con `save_place` (versión `14`, sin publicar). `inspect_instance` sobre `game.Lighting` confirmó `RBX_OriginalTechnologyOnFileLoad = 3` (`ShadowMap`) con migración Unified Lighting, por lo que `P-01` sigue pendiente de revisión manual.
 
 ## 10. Menú principal: forma humana (15-11-2026)
 - Botones con esquinas de 10 px, número de sección (01–06) en una pieza redondeada y un "labio" inferior en INICIAR MISIÓN y TUTORIAL.
 - El texto del botón pasa a una etiqueta propia: un `UIPadding` desplazaba también al número y al labio (verificado en Studio con `AbsolutePosition`).
 - Verificado: captura `menu` en Studio sin choques de texto. Pendiente: revisión humana del tono y paneles secundarios.
 
-## 11. Sesión del 15-11-2026 (tarde): sincronización, inglés, móvil, visuales y tráiler
+## 10. Menú principal: columna izquierda humanizada (15-11-2026)
+
+- **Diseño anterior superado:** la cuadrícula de 2 columnas con chips `01..06` chocaba con la barra superior de Roblox (`CoreGui`) en ventanas bajas y cubría el cohete y el logo de NASA.
+- **Nuevo diseño (`game/src/client/Hud.luau`):** columna única a la izquierda (`MenuColumn`, `368 × 504 px`) con degradado lateral acotado (`36 %` del ancho), auto-escala bajo `topSafe` (`64 px` reales) y ancho máximo del `35 %` para dejar el `65 %` derecho despejado.
+- **Jerarquía de juego real:** cabecera limpia (`CRÁTER JEZERO · SOL 01`, `ARES FORGE`, `SUPERVIVENCIA EN MARTE`), botón principal destacado `INICIAR MISIÓN`, fila doble `DEMO RÁPIDA` + `TUTORIAL`, tarjeta `HANGAR DEL TRAJE` con pastilla viva de ciencia, fila compacta `AJUSTES Y MANDOS` + `CRÉDITOS Y FUENTES` y `HOJA DE SERVICIO` en 3 columnas.
+- **Cámara del menú (`game/src/client/Main.client.luau`):** enfoque elevado a `ship + Vector3.new(0, 11, 0)` con desplazamiento `-14` para encuadrar nítidamente la nave, el astronauta y `InsigniaVisual` en el lado derecho.
+- **Verificación en Studio (`placeId: 114817072312952`, versión `15`):** `Hud` (`55497 B`, Adler-32 `13246b79`) y `Main` (`14207 B`, Adler-32 `9cfbcece`) verificados en `Play` (`812 × 473`): `ScreenTopY = 66` (`>= 58` de `TopInsetY`), `MenuRightFrac = 0.378` (`< 0.42`), `InsigniaLeftX = 464` (separación libre de `157 px` respecto al menú), `InsigniaTopY = 140`, `MenuTextIssuesCount = 0`, consola vacía (`0` errores), captura visual correcta y guardado en nube con `save_place` (versión `15`, sin publicar).
+
+## 11. Compatibilidad multiplataforma, controles y calidad gráfica adaptativa (15-11-2026)
+
+- **Calidad gráfica adaptativa por especificaciones e FPS (`Fx.luau`, `Renderer.luau`, `Main.client.luau`, `Hud.luau`):** modo por defecto `AUTO` (`qualityMode = "auto" | "high" | "med" | "low"`). Lee `SavedQualityLevel` / perfil táctil en el arranque y vigila FPS reales con EMA e histéresis (`2,5 s` bajo `42 FPS` baja nivel; `7,0 s` sobre `57 FPS` recupera), escalando densidad de partículas (`100 % / 65 % / 35 %`), sacudida de cámara (`1 / 0,85 / 0,55`), límite de rótulos de daño flotantes en nivel `low`, decimación alterna para enemigos lejanos (`> 70` studs en `low`, `> 100` en `med`), `BloomEffect` e iluminación `GlobalShadows`. Control manual en `AJUSTES Y CONTROLES` (`CALIDAD GRÁFICA`).
+- **Maquetación responsive sin choques (`Hud.luau`):** lectura real de `GuiService:GetGuiInset()` (`topSafe >= 60 px` reales), escalado adaptativo (`uiScale` `0.48..1.8` + `cornerScale`), modo estrecho/vertical (`v.X < 1080` y `v.X < v.Y` con menú inferior centrado y degradado vertical en móvil retrato), modales (`Shop`, `Settings`, `Credits`, `LevelUp`, `Piece`, `Pause`, `Summary`) ajustados al área segura y reposicionamiento automático del ticker y botones de habilidad en modo táctil lejos del joystick virtual y del botón de salto.
+- **Controles adaptados en tiempo real (`Main.client.luau`, `Hud.luau`, `Content.luau`):** detección viva por `UserInputService.LastInputTypeChanged` entre `"kb"`, `"gamepad"` y `"touch"`, actualizando etiquetas de habilidades/cartas, guía inferior, insignia `MODO ACTIVO` y tabla de `AJUSTES Y CONTROLES`. Consola/Mando añade foco automático `GuiService.SelectedObject`, navegación con `B` atrás, `X/L1` (RCS), `B/R1` (Pulso), cruceta `◀/▲/▶` para cartas, `R3` zoom cíclico y `Start` pausa; Móvil/Táctil excluye la zona inferior izquierda del joystick al girar cámara y soporta pellizco (`TouchPinch`) para zoom.
+- **Panel web de telemetría (`public/index.html`):** rediseño responsive (*Dark Telemetry*) compatible con escritorio, móvil y consola/TV con guía de controles por plataforma y soporte `prefers-reduced-motion: reduce`, manteniendo `#mode`, `#list` y `/api/scenarios`.
+- **Verificación en Studio (`placeId: 114817072312952`, versión `17`):** sincronizados y verificados por byte y `Adler-32` (`Content.luau` `10744 B / 526ce712`, `Fx.luau` `7889 B / c2a0dd51`, `Renderer.luau` `15689 B / 1414b53d`, `Main.client.luau` `18953 B / 6d52e8ac`, `Hud.luau` `67601 B / f3294c0a`). En `Play` (`812 × 473`, `topInsetY = 58`, `uiScale = 0.657`): menú (`menuScreenTopY = 97.2`, `textIssuesCount = 0`), ajustes (`panelScreenTopY = 97.9`, `CALIDAD GRÁFICA = AUTO (ALTA)`, `MODO ACTIVO: PC / WEB`, `textIssuesCount = 0`) y HUD en partida probado en `"kb"`, `"gamepad"` y `"touch"` (`11` paneles visibles, `0` solapamientos, `0` violaciones de `topSafe`, `textIssuesCount = 0` en los 3 modos, `Fx.setQuality("low"/"med"/"high")` validado). Consola limpia (`0` errores), capturas visuales correctas de menú, ajustes y HUD, y lugar guardado en Roblox con `save_place` (versión `17`, sin publicar).
+
+## 12. Perfiles de guardado, zonas, eventos cósmicos, escudo y pulido integral (15-11-2026)
+
+- **Nave, muros y trajes en miniatura (`Visuals.luau`, `WorldBuilder.luau`, `Scenery.luau`, `Renderer.luau`, `Main.client.luau`):** colisión de nave simplificada a un único cilindro `ShipCollider` (`CanCollide = false` en patas/casco decorativos y crestas exteriores), `64` tramos de muro solapados en el perímetro y acotamiento continuo en servidor + guardia radial en `Impulso RCS` / cliente para evitar traspasos o atascos al borde de la nave o arena. `WorldBuilder.dress`, `Scenery.dress` y `Renderer` (`heroRadius` / cúpula / anillo) escalan casco, mochila, visor y equipo proporcionalmente en avatares pequeños.
+- **Guardado con 3 perfiles y checkpoint en partida (`SaveService.luau`, `Session.luau`, `Main.server.luau`, `Hud.luau`):** esquema `v = 2` con 3 perfiles independientes por jugador (`Piloto 1..3`, con migración automática de `v = 1` a la ranura 1), respaldo en memoria cuando Studio no tiene DataStore activo, auto-guardado al cambiar de oleada o derrotar minijefes, guardado manual desde Pausa y botón `REANUDAR CHECKPOINT` en el menú principal.
+- **Menús sin choques, tipografía artística e iconos 3D (`Ui.luau`, `Hud.luau`, `Fx.luau`, `Content.luau`):** separación estricta de submenús (`syncMenuSurface` oculta `MenuColumn` y hermanos al abrir Perfiles, Hangar, Ajustes o Créditos), opacidad de paneles subida (`0,04–0,06`) para contraste en zonas oscuras, jerarquía tipográfica (`Michroma`, `Sarpanch`, `Jura`, `BuilderSans`, `RobotoMono`, `Bangers`) con contornos de contraste, briefing táctica inicial de habilidades, ranuras de habilidades con modelos 3D (`ViewportFrame` para Auto-Láser, RCS y Pulso), menú completo de Pausa (Continuar, Guardar Checkpoint, Habilidades y Zonas, Ajustes, Sonido mutear/reactivar en vivo sobre `AresSfx`/`AresMusic`, Reiniciar, Volver al Menú con autoguardado) e iconos geométricos vectoriales (`Ui.navGlyph`).
+- **Escudo con indicador visual y 20 s de recarga (`Balance.luau`, `Combat.luau`, `Renderer.luau`, `Hud.luau`):** `Pulse.Cooldown = 20`, barra cian dedicada en el panel `TRAJE` (`shield / shieldMax` y cuenta atrás), cúpula translúcida `ForceField` + anillo orbital inclinado escalados al personaje y destellos `shieldHit`/`shieldBreak`.
+- **Escala de rarezas, 4 niveles de cofres y visibilidad de enemigos (`Balance.luau`, `Loot.luau`, `Visuals.luau`, `Renderer.luau`, `Main.client.luau`):** rarezas de cartas escaladas por nivel (Épicas a partir de nivel 4, Legendarias a nivel 7+, cartas enteras desde nivel 3), `4` niveles de cofre ponderados por oleada con haz/aro/brújula por color de rareza, tonos más claros e iluminación `Highlight` (`EnemyRim`) + ambiente reforzado en biomas 2–3.
+- **5 zonas en Marte, meteoros y agujeros negros NASA (`Balance.luau`, `NasaData.luau`, `Enemies.luau`, `Session.luau`, `Scenery.luau`, `Hud.luau`):** `5` sectores geográficos delimitados visualmente en la arena (`36` piezas en `ArenaZones`: anillo central, 4 líneas diagonales y 4 balizas) con bonificaciones activas (`+1.5 vida/s`, `+15 % XP`, `+20 % Datos`, `+10 % Velocidad`, `-15 % Cooldown`) y distintivo `ZoneBadge`; meteoros destructivos a partir de nivel `5` u oleada `4` (rocas 3D descendiendo + onda expansiva); evento cósmico 3D esporádico `BlackHoleEvent` (horizonte de sucesos, doble disco de acreción y chorros relativistas con `Sagittarius A*`, `M87*`, `Cygnus X-1`).
+- **Verificación en Studio (`placeId: 114817072312952`, versión `20`):** en modo `Play` en servidor y cliente: `0` errores en consola tras las pruebas finales, `0` `TextFits` fallos en las `8` vistas de `AresHud` (`Menu`, `Profiles`, `Shop`, `Settings`, `Credits`, `Briefing`, `Pause`, `LevelUp`), clics/transiciones de perfil 1–3, briefing, zonas (`ZoneBadge`), escudo (`35/35`, `cd = 20`), acotamiento en nave (`r >= 8,8`) y muro/impulso (`r <= 206,5`), escalado de armadura a `0,5x`, rarezas por nivel (`0` épicas/legendarias en nvl 1, presentes en nvl 4 y 7+), cofre clamps (`r >= 22`, `r <= 196`), meteoro en oleada 5 y `BlackHoleEvent` vivo de 5 piezas. Lugar guardado en Roblox con `save_place` en versión `20` (sin publicar).
+
+## 13. Variedad de ataques en área, multiproyectil y modos de arma (15-11-2026)
+
+- **3 modos de arma principal alternables desde el segundo 1 (`Balance.luau`, `Content.luau`, `Combat.luau`, `Session.luau`, `SaveService.luau`, `Ui.luau`, `Hud.luau`, `Main.client.luau`):**
+  1. `laser` (**Haz Láser**): alcance `48`, alta cadencia y `+8 %` de probabilidad crítica.
+  2. `spread` (**Abanico Plasma**): dispara `3+` proyectiles simultáneos en abanico amplio (`0,24 rad`, alcance `38`).
+  3. `mortar` (**Mortero Sísmico**): proyectil explosivo lento con detonación en área (`radio 10,5`, empuje `10`) incluso al alcanzar el punto objetivo.
+  - Alternable en partida con `[F]`, `[R]`, `[ButtonY]` o tocando la ranura 3D interactiva del HUD, y seleccionable antes de desplegar desde los 3 botones de Briefing; estado guardado en checkpoints (`weaponMode`).
+- **3 nuevas armas automáticas en cartas desde nivel 1 + retroalimentación visual (`Loot.luau`, `Visuals.luau`, `Renderer.luau`, `Scenery.luau`):**
+  - `nova` (**Onda Sísmica 360°**): anillo expansivo completo con empuje y daño radial cada `~3,2 s` (`waveRing` naranja-oro; ficha NASA InSight SEIS).
+  - `missiles` (**Salva de Micromisiles**): lanza `2+` misiles violetas hacia distintos enemigos cercanos con microexplosión en área (`5,2` studs; ficha NASA Perseverance SHERLOC).
+  - `arc` (**Arco Electrostático**): rayo 3D zigzagueante encadenado entre `2+` enemigos cercanos (descarga electrostática en polvo marciano).
+  - `aura` y `Pulso [E]` emiten anillos expansivos cian (`waveRing`) al impactar, `UpgradeCountMinLevel` baja a `2` manteniendo rarezas escaladas y `Loot.makeOptions` garantiza variedad de ataque en los primeros niveles. Modelos 3D dedicados en `Ui.skillIcon3D` y piezas visibles en el traje (`Scenery.buildGear`).
+- **Verificación en Studio (`placeId: 114817072312952`, versión `22`):** sincronizados los `12` scripts en Roblox Studio (`push.py`), comprobación en servidor (`shot:mortar`, `shot:missile=2`, `waveRing:2`, `waveRing:3`, `arc:pts=6`) y en cliente `Play` (`0` fallos `TextFits` en `Menu`, `Settings`, `Credits`, `Shop`, `Profiles`, `Briefing` en sus 3 modos, `HUD` y `Pause`; longitud verificada en tarjetas `nova`/`missiles`/`arc`; `ClientFx` con `spread=3`, `mortar=1`, `shot=1`; `0` errores en consola). Lugar guardado en Roblox con `save_place` en versión `22` (sin publicar).
+
+## 14. Sesión del 15-11-2026 (tarde): sincronización, inglés, móvil, visuales y tráiler
 - **Studio iba por delante del repositorio** (~3.850 líneas: modos de arma, cofres por rareza, briefing, mando/táctil, eventos astrofísicos). Se trajo a Git desde la versión 34 del lugar (commit `c895198`). Regla: antes de empujar código a Studio, comparar Studio contra disco; Studio está en Team Create y lo que se empuja queda guardado en la nube.
 - **Idioma:** inglés por defecto, botón ESPAÑOL/ENGLISH arriba a la derecha del menú. `shared/Locale.luau` traduce en vivo todo texto de la interfaz (el código sigue escribiendo en español); traducciones en `shared/LocaleEN.luau` (exactas + formatos con números). Texto nuevo en el juego = añadir su traducción ahí.
 - **Móvil:** probado en el Device Simulator (iPhone XR, 801×413). En táctil con pantalla baja la interfaz escala a un lienzo de ~1090×560 (texto ~13 pt). Atributo `EmuInput` ("touch" | "gamepad" | "kb") fuerza el modo de interfaz en Studio.

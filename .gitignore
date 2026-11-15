@@ -12,3 +12,8 @@ trailer/build/
 trailer/*.mp4
 trailer/*.jpg
 trailer/refs/
+logs/
+.claude/settings*.json
+*.token
+cap*.png
+push.json

@@ -68,7 +68,7 @@ Para Roblox Studio, las herramientas oficiales incluyen `list_roblox_studios`, `
 
 - **Herramientas Blender (7):** `blender_ping`, `blender_scene_info`, `blender_budget_report`, `blender_run_script`, `blender_save_blend`, `blender_export_fbx`, `blender_open`.
 - **Herramientas Roblox Studio (38 en la prueba del 14-11-2026):** la lista completa, con su propuesta de permiso, está en [SEGURIDAD_MCP.md](SEGURIDAD_MCP.md), sección 2b. La documentación oficial (`create.roblox.com/docs/studio/mcp`) describe 30. El servidor real expone 38.
-- **Reglas del proyecto:** `PROMPT_MAESTRO_FABLE_5.2_v1.md` (y la versión 2 cuando exista), `BLENDER_PIPELINE.md`, `docs/SEGURIDAD_MCP.md` y el skill `roblox-export`.
+- **Reglas del proyecto:** `PROMPT_MAESTRO_FABLE_5.2_v3.md`, `BLENDER_PIPELINE.md`, `docs/SEGURIDAD_MCP.md` y el skill `roblox-export`.
 - **Límites conocidos:** salida de scripts de 20 000 caracteres. `script_search` de Roblox devuelve 10 resultados como máximo. `script_grep` devuelve 50 coincidencias como máximo.
 
 ## 6. Solución de problemas

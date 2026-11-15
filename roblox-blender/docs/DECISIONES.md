@@ -1,12 +1,12 @@
 # Decisiones de ARES FORGE
 
-Última actualización: 14-11-2026.
+Última actualización: 15-11-2026.
 Fuente de las decisiones Q1 a Q20: `PROMPT_FABLE_PARA_PEGAR_v3.md`, sección 3.
 Fuente de los números: `game/src/shared/Balance.luau`.
 
 ## 1. Decisiones Q1 a Q20 (prompt maestro v3)
 
-La columna "Estado en el código" compara cada decisión con el juego real del 14-11-2026. Las desviaciones se explican en la sección 2.
+La columna "Estado en el código" compara cada decisión con el juego real del 15-11-2026. Las desviaciones se explican en la sección 2.
 
 | # | Tema | Decisión (tal como figura en el prompt maestro) | Estado en el código |
 |---|---|---|---|
@@ -20,12 +20,12 @@ La columna "Estado en el código" compara cada decisión con el juego real del 1
 | Q8 | Jefes | Un mini-jefe cada 5 minutos y un jefe final | **Desviación (ver sección 3):** minijefes a los 4, 9 y 14 minutos de misión; jefe final a los 17 |
 | Q9 | Escenarios en la v1 | 3 biomas | Cumple. 3 biomas que cambian en 6:00 y 12:00 |
 | Q10 | Meta-progresión | Héroes y objetos que se desbloquean entre partidas | **Desviación (ver P-08):** hay 1 héroe y 8 mejoras permanentes; no hay desbloqueo de héroes ni de objetos |
-| Q11 | Tema | Espacio NASA, con referencias NTRS verificadas (sección 12) | Cumple. Dos fichas NTRS verificadas en uso. Ver `docs/NASA_APIS.md` |
-| Q12 | Estilo visual | 3D estilizado tipo Risk of Rain 2 | 28 mallas Blender integradas en Studio mediante `EditableMesh` (`FixedSize = true`, ver D-11 y D-13) |
+| Q11 | Tema | Espacio NASA, con referencias NTRS verificadas (sección 12) | Cumple. Cuatro fichas NTRS verificadas en uso (`Content.Pieces[1..4]`: `20150005587`, `20040084278`, `20205007222`, `20240003648`). Ver `docs/NASA_APIS.md` |
+| Q12 | Estilo visual | 3D estilizado tipo Risk of Rain 2 | 30 mallas Blender integradas en Studio mediante `EditableMesh` (`FixedSize = true`, ver D-11 y D-13) |
 | Q13 | Paleta | Oscura con acentos saturados por función | Cumple. Jugador cian, enemigos rojo o magenta, recompensas doradas, peligro naranja (`game/src/shared/Visuals.luau`) |
-| Q14 | Reparto Blender / Roblox | Blender: personajes, jefes y props. Roblox: escenario, luz, interfaz y efectos | Cumple. 28 modelos Blender exportados e integrados en cliente (`docs/ASSETS.md`, D-11) |
-| Q15 | Rendimiento | 60 FPS en PC, 30 FPS en móvil | **Sin medir.** Ver `[PENDIENTE]` P-05 |
-| Q16 | Audio | Música por intensidad con 3 capas | Hay 3 ranuras (calma, combate, jefe). No hay pistas |
+| Q14 | Reparto Blender / Roblox | Blender: personajes, jefes y props. Roblox: escenario, luz, interfaz y efectos | Cumple. 30 modelos Blender exportados e integrados en cliente (`docs/ASSETS.md`, D-11) |
+| Q15 | Rendimiento | 60 FPS en PC, 30 FPS en móvil | **Sin medir a 60 FPS.** Sondeo inicial en `docs/perf/RENDIMIENTO.md` capado a 15 FPS en segundo plano (P-05) |
+| Q16 | Audio | Música por intensidad con 3 capas | `Balance.Audio.Music` tiene 3 pistas del catálogo con licencia (`calm`, `combat`, `boss`) y `Balance.Audio.Sfx` 12 claves en `AresSfx`; falta escucha humana (P-12) |
 | Q17 | Interfaz | Estilo telemetría NASA, con iconos grandes | Cumple. Sistema "Dark Telemetry" (D-09) |
 | Q18 | Impacto visual y sonoro (juice) | Alto | Hitstop, sacudida, números de daño, destello y pausa de nivel en `Balance.Juice` |
 | Q19 | Tutorial | 60 segundos guiados y arena de práctica | 7 pasos guiados y una práctica libre. No hay límite de 60 s |
@@ -67,7 +67,7 @@ Cada decisión tiene un identificador `D-nn`, un motivo y una consecuencia.
 
 ### D-06. Modo "Demo rápida"
 
-- **Decisión.** Modo `demo` con `TimeScale = 5` y `XpMult = 3.2` (`Balance.Modes`). La misión completa dura unos 3,6 minutos de reloj real (1080 s ÷ 5 = 216 s). El jefe final aparece a los 204 s.
+- **Decisión.** Modo `demo` con `TimeScale = 12` y `XpMult = 2.6` (`Balance.Modes`), jefes con 22 % de vida, sin briefing ni checkpoints y un «Protocolo de emergencia» gratis. La demo dura unos 2 minutos de juego (victoria en 95 s medidos con bot el 15-11-2026). El jefe final aparece a los 85 s.
 - **Motivo.** El pitch dura 3 minutos. Una partida de 18 minutos no cabe.
 - **Consecuencia.** La demo rápida otorga la misma ciencia que la misión completa (la fórmula usa tiempo de misión, no reloj real). Ver riesgo R-07 en `docs/BRIEF_PRODUCCION.md`.
 
@@ -77,41 +77,41 @@ Cada decisión tiene un identificador `D-nn`, un motivo y una consecuencia.
 - **Motivo.** Regla 13.5 del prompt maestro: "snapshot primero" y "NASA nunca se llama desde el cliente". Roblox no alcanza el servidor local del equipo.
 - **Consecuencia.** Los datos son de una ventana de 30 días (15-10-2026 a 14-11-2026). Los efectos (daño, velocidad) son de diseño. El texto dice "evento real del [fecha]". Llamada en vivo: `[PENDIENTE]` P-07.
 
-### D-08. Fichas NTRS verificadas y piezas sin ficha
+### D-08. Fichas NTRS verificadas de las 4 piezas
 
-- **Decisión.** Fichas verificadas: 20150005587 (MMRTG) y 20240003648 (propulsión del módulo de servicio de Orion). La antena de alta ganancia y el generador de oxígeno quedan con referencia NTRS `[PENDIENTE]`. Frase obligatoria de créditos: "Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto." (`Content.Credits`).
-- **Motivo.** Sección 13 del prompt maestro: no se presenta como hecho lo que no tiene referencia verificada.
-- **Consecuencia.** El texto "EN LA REALIDAD" de esas dos piezas es general y no lleva cifras. Verificación: P-06.
+- **Decisión.** Las 4 piezas recuperables de `Content.Pieces` tienen ficha NTRS verificada en `ntrs.nasa.gov`: `20150005587` (MMRTG), `20040084278` (antena de alta ganancia del programa MER), `20205007222` (generador de oxígeno MOXIE) y `20240003648` (propulsión del módulo de servicio de Orion). Además, los 12 «DATO REAL» de las cartas se contrastaron con `science.nasa.gov` (`docs/NASA_APIS.md` sección 10). Frase obligatoria de créditos: "Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto." (`Content.Credits`).
+- **Motivo.** Sección 13 del prompt maestro: todo dato técnico presentado al jugador debe tener fuente verificable.
+- **Consecuencia.** Queda resuelto el pendiente P-06 para todas las piezas recuperables.
 
-### D-09. Interfaz "Dark Telemetry" y tipografías incluidas en Roblox
+### D-09. Interfaz "Dark Telemetry", tipografía Bangers y controles duales
 
-- **Decisión.** Colores `#070B14`, `#0B132B`, `#00B4D8`, `#00D2FF`, `#FF6B35`. Tipografías Michroma (títulos), Titillium Web (texto) y Roboto Mono (datos), todas incluidas en Roblox (`game/src/client/Ui.luau`).
-- **Motivo.** El dossier pedía Bahnschrift, Satoshi y Space Mono. Roblox no los incluye y no se verificó una forma de cargar fuentes propias.
-- **Consecuencia.** Sustitución registrada. Los números de daño en `game/src/client/Fx.luau` usan `Enum.Font.GothamBlack`; no siguen el sistema tipográfico (ver `docs/NOTAS.md`).
+- **Decisión.** Colores `#070B14`, `#0B132B`, `#00B4D8`, `#00D2FF`, `#FF6B35`, acentos por bioma (`ETAPA 1..3`) y función (`gold`, `orange`, `cyanHi`, `violet`, `green`). Tipografías Michroma (título principal), Bangers (`Ui.Fonts.impact` en subtítulos, oleada, nivel, alertas, cartas, pieza, pausa, resumen y números de daño en `Fx.luau`), Titillium Web (texto) y Roboto Mono (datos y etiquetas técnicas), todas incluidas en Roblox (`game/src/client/Ui.luau`). En teclado, el jugador se mueve indistintamente con `WASD` o con las flechas `↑ ↓ ← →` (`ContextActionService:BindActionAtPriority("AresArrowKeys", ...)` en `Main.client.luau` + `player:Move(..., true)`).
+- **Motivo.** El dossier pedía Bahnschrift, Satoshi y Space Mono (ausentes en Roblox). La combinación con `Bangers`, acentos por sección y botones «Forma humana» mejora legibilidad e identidad de arcade espacial; las flechas amplían accesibilidad sin interferir con la cámara.
+- **Consecuencia.** Sustitución registrada y unificada en todo el cliente (sin dependencias residuales de `GothamBlack` en `Fx.luau`). `Content.Tutorial[1]`, `Content.Controls` y `Ajustes y Controles` documentan `WASD` y flechas.
 
 ### D-10. Flujo de código: `game/src/` es la fuente de verdad
 
-- **Decisión.** El código vive en disco en `game/src/`. Se sincroniza a Studio con `tools/sync/sync_studio.luau`, que lee de un servidor local `python -m http.server 8765 --bind 127.0.0.1 --directory game/src`. Solo localhost. No se cambia ningún ajuste de Studio.
-- **Motivo.** Permite versionar el código y trabajar en equipo. La sección 14 del prompt maestro pide no abrir superficies de red.
-- **Consecuencia.** Studio es una copia. Un cambio hecho solo en Studio se pierde en la próxima sincronización. Limitación del sincronizador: solo lee archivos del primer nivel de cada carpeta (ver D-11).
+- **Decisión.** El código vive en disco en `roblox-blender/game/src/`. Para lugares en la nube de Roblox (`placeId: 114817072312952`) el servidor HTTP local queda bloqueado por permisos de red en lugar publicado/Team Create, así que se sincroniza sin HTTP con `tools/studio/push.py` o herramientas MCP de Roblox Studio (`multi_edit` / `execute_luau`). Para lugares locales sin nube sigue disponible `tools/sync/sync_studio.luau` sobre `127.0.0.1:8765`.
+- **Motivo.** Permite versionar el código y trabajar en equipo respetando la restricción sin red local en el lugar guardado en la nube.
+- **Consecuencia.** Studio es una copia. Si alguien edita una mejora visual directamente en Studio (como la «Forma humana» del menú el 15-11-2026), debe trasladarse de inmediato a `game/src/` para no perderla en sincronizaciones futuras.
 
 ### D-11. Assets 3D como mallas generadas en el cliente
 
-- **Decisión.** Los 28 modelos se construyen con `tools/blender/` y se integran en Roblox como mallas generadas en el cliente mediante `game/src/client/MeshFactory.luau` a partir de módulos de datos en `game/src/shared/Meshes/`. No se suben assets a Roblox. También se exportan FBX a `assets/export/` y renders 512×512 a `docs/assets/previews/`. El catálogo está en `docs/assets/CATALOGO_BLENDER.md`.
+- **Decisión.** Los 30 modelos (incluyendo `Rover.luau` e `Insignia.luau`) se construyen con `tools/blender/` y se integran en Roblox como mallas generadas en el cliente mediante `game/src/client/MeshFactory.luau` a partir de módulos de datos en `game/src/shared/Meshes/`. No se suben assets FBX a Roblox. También se exportan 30 FBX a `assets/export/` y 30 renders 512×512 a `docs/assets/previews/`. El catálogo está en `docs/assets/CATALOGO_BLENDER.md`.
 - **Motivo.** Subir assets exige permiso, créditos y moderación. Las mallas en código se versionan con el repositorio.
-- **Consecuencia.** Para evitar el límite de memoria de `EditableMesh` dinámicos (que fallaba a partir de la novena submalla), `MeshFactory.luau` convierte cada `EditableMesh` a `FixedSize = true` con `CreateEditableMeshAsync` y destruye el temporal inmediatamente (`em:Destroy()`). El sincronizador ya recorre subcarpetas (`shared/Meshes/`).
+- **Consecuencia.** Para evitar el límite de memoria de `EditableMesh` dinámicos (que fallaba a partir de la novena submalla), `MeshFactory.luau` convierte cada `EditableMesh` a `FixedSize = true` con `CreateEditableMeshAsync` y destruye el temporal inmediatamente (`em:Destroy()`). En el lugar en la nube se activó *Allow Mesh / Image APIs* en Experience Settings > Security.
 
 ### D-12. Guardado de la meta-progresión
 
 - **Decisión.** DataStore `AresForgeMeta_v1`, con `pcall`, hasta 4 intentos (1 en Studio) y espera creciente (1, 2, 4 s). Si la carga falla, la sesión se juega en memoria y no se guarda, para no pisar datos reales (`game/src/server/SaveService.luau`).
 - **Motivo.** Sección 7.2 del prompt maestro.
-- **Consecuencia.** En Studio sin publicar el lugar no hay DataStore. Verificación en un lugar publicado: P-03.
+- **Consecuencia.** Con *Enable Studio Access to API Services* activado en Experience Settings, el guardado ya responde en Studio en el lugar `114817072312952`; queda por verificar en un servidor publicado definitivo (P-03).
 
 ### D-13. Pruebas hechas y no hechas
 
-- **Hecho en Studio el 14-11-2026.** Sincronización completa (28 mallas + código). Construcción de las 28 mallas en cliente sin errores (resuelto límite de memoria con `FixedSize = true`). Bucle completo en modo demo (`MISIÓN CUMPLIDA`, 4 jefes, 4 piezas, despegue e informe de misión), tutorial guiado (`PRÁCTICA`, `TUTORIAL 1/8`), ocultamiento de `Wave`/`Timer`/`Biome` bajo modales y ensayo de carga en Studio con 92→98 enemigos (`docs/perf/RENDIMIENTO.md`).
-- **No verificado.** Móvil real. PC en primer plano a 60 FPS sin capado en segundo plano (el viewport de Studio en segundo plano estuvo capado a 15 FPS). DataStore en lugar publicado. Audio definitivo.
-- **Audio.** La música de 3 capas tiene las ranuras (`Balance.Audio.Music`) y no tiene pistas. Los efectos usan sonidos integrados de Roblox como provisional. Contrato en `docs/assets/AUDIO.md`.
+- **Hecho en Studio al 15-11-2026 (`placeId: 114817072312952`, versión guardada `14`).** Construcción de las 30 mallas Blender en cliente sin errores (con `Rover` e `Insignia`), bucle completo en modo demo (`MISIÓN CUMPLIDA`, 4 jefes, 4 piezas con fichas NTRS, despegue e informe de misión), tutorial guiado (`PRÁCTICA`, `TUTORIAL 1/8`), retroceso/inclinación de enemigos, destello de boca y retroceso de cámara, acceso a APIs y DataStore en Studio, enlace de flechas `AresArrowKeys`, auditoría `TextFits` (`0` textos recortados en `AresHud`) y ensayo de carga en Studio con 92→98 enemigos (`docs/perf/RENDIMIENTO.md`).
+- **No verificado.** Móvil real. PC en primer plano a 60 FPS sin capado en segundo plano (el viewport de Studio en segundo plano estuvo capado a 15 FPS). DataStore en servidor publicado definitivo. Escucha humana del audio definitivo (`P-12`). Revisión manual de `Lighting.Technology = Future` (`P-01`).
+- **Audio.** `Balance.Audio.Music` tiene 3 pistas del catálogo con licencia de Roblox (`calm`, `combat`, `boss`) y `Balance.Audio.Sfx` 12 claves con ecualizador en `AresSfx`. Contrato en `docs/assets/AUDIO.md`. Falta validación por escucha humana (`P-12`).
 
 ## 3. Contradicciones entre el prompt maestro y el código
 
@@ -130,22 +130,22 @@ El prompt maestro es la intención. El código es la realidad. Estas son las dif
 
 ## 4. Pendientes
 
-Los dueños son roles. Las fechas objetivo son una propuesta del 14-11-2026 y el equipo debe confirmarlas. La fecha del evento es `[PENDIENTE]`.
+Los dueños son roles. Las fechas objetivo son una propuesta revisada al 15-11-2026 y el equipo debe confirmarlas. La fecha del evento es `[PENDIENTE]`.
 
 | Id | Pendiente | Dueño (rol) | Fecha objetivo |
 |---|---|---|---|
-| P-01 | Poner `Lighting.Technology = Future` a mano en Studio (un script no puede) | Programación Roblox | 15-11-2026 |
-| P-02 | Guardar y publicar el lugar en Roblox | Programación Roblox | 15-11-2026 |
-| P-03 | Verificar DataStore en el lugar publicado (guardar, reiniciar, cargar) | Programación Roblox | 16-11-2026 |
+| P-01 | Poner `Lighting.Technology = Future` a mano en Studio (un script no puede; al 15-11-2026 `game.Lighting` figura con `RBX_OriginalTechnologyOnFileLoad = 3` = `ShadowMap` y migración Unified Lighting) | Programación Roblox | 15-11-2026 |
+| P-02 | Publicar el lugar en Roblox cuando el equipo lo pida (lugar ya guardado en nube «Núcleo de Ares», `placeId: 114817072312952`, versión `29`) | Programación Roblox | 15-11-2026 |
+| P-03 | Verificar DataStore en el lugar publicado (en Studio ya responde con *Enable Studio Access to API Services*; falta validar en servidor publicado) | Programación Roblox | 16-11-2026 |
 | P-04 | Rotar la clave de NASA expuesta en una sesión anterior y crear una clave propia en el entorno del servidor | Arquitectura web | 15-11-2026 |
 | P-05 | Medir rendimiento con 100 enemigos en PC y móvil; guardar en `docs/perf/` | Programación Roblox | En progreso (`docs/perf/RENDIMIENTO.md` creado en Studio PC con 92–98 enemigos; falta medición sin capado 15 FPS y móvil real) |
-| P-06 | Referencia NTRS de la antena de alta ganancia y del generador de oxígeno | Arquitectura web | **Hecho** el 14-11-2026: antena `20040084278` (*High Gain Antenna Gimbal for the 2003-2004 Mars Exploration Rover Program*) y oxígeno `20205007222` (*MOXIE*, Hecht y Mellstrom), verificadas en la API de `ntrs.nasa.gov` |
+| P-06 | Referencia NTRS de la antena de alta ganancia y del generador de oxígeno | Arquitectura web | **Hecho** (`20040084278` y `20205007222` integradas en `Content.Pieces[2..3]`; 4/4 piezas con NTRS) |
 | P-07 | Llamada en vivo a NASA: activar HttpService y montar un proxy del equipo (o dejar solo snapshot) | Arquitectura web | 19-11-2026 |
 | P-08 | Decidir el alcance de la meta-progresión (Q10): héroes y objetos desbloqueables o solo mejoras | Diseño y arte, con dirección | 16-11-2026 |
-| P-09 | Hacer que el sincronizador entre en subcarpetas (`shared/Meshes/`) y crear `tools/blender/`, `assets/export/` y las mallas | Programación Roblox y diseño y arte | **Hecho** el 14-11-2026 (28/28 mallas integradas en Studio) |
+| P-09 | Hacer que el sincronizador entre en subcarpetas (`shared/Meshes/`) y crear `tools/blender/`, `assets/export/` y las mallas | Programación Roblox y diseño y arte | **Hecho** (30/30 mallas integradas en Studio, incluye `Rover` e `Insignia`) |
 | P-10 | Medir la sacudida de cámara frente al límite de 4 px del prompt | Diseño y arte | 19-11-2026 |
 | P-11 | Probar en móvil real: controles táctiles, tamaños de botón (44 px o más), 30 FPS | Programación Roblox | 18-11-2026 |
-| P-12 | Audio definitivo: 3 pistas de música y sonidos propios; reemplazar los sonidos integrados | Diseño y arte | 20-11-2026 |
+| P-12 | Audio definitivo: validar por escucha humana las 3 pistas con licencia (`Balance.Audio.Music`) y los 12 SFX con EQ (`AresSfx`) | Diseño y arte | 20-11-2026 |
 | P-13 | Ensayar la demo 3 veces seguidas sin fallos (criterio F6) | Todo el equipo | 21-11-2026 |
 | P-14 | Fecha y reglas del concurso (prompt maestro, sección 1) | Dirección | `[PENDIENTE]` |
 | P-15 | Nombre y tema definitivos de cada bioma en el prompt (el juego usa los de `Content.Biomes`) | Diseño y arte | 16-11-2026 |

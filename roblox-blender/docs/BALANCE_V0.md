@@ -21,9 +21,9 @@ Unidades: studs, segundos y puntos de vida. Las cifras marcadas "derivado" se ca
 | Modo | Escala de tiempo | Multiplicador de XP | Etiqueta | Duración real (derivado) |
 |---|---|---|---|---|
 | `full` | ×1 | ×1 | Misión completa | 18 min (1080 s). Jefe final a los 17 min |
-| `demo` | ×5 | ×3,2 | Demo rápida | 3,6 min (216 s). Jefe final a los 204 s |
+| `demo` | ×12 | ×2,6 | Demo rápida | ~2 min de juego (victoria en 95 s medidos con bot el 15-11-2026). Jefe final a los 85 s |
 
-Línea de tiempo de la demo en reloj real (derivado: segundo de misión ÷ 5):
+Línea de tiempo de la demo en reloj real (derivado: segundo de misión ÷ 10):
 
 | Evento | Misión (s) | Demo (s) |
 |---|---|---|
@@ -119,7 +119,7 @@ Experiencia necesaria para subir (`Balance.xpNeeded`): `floor(5 + 4·nivel + 0,6
 | 15 | 200 |
 | 20 | 325 |
 
-La XP recibida se multiplica por el modo (×1 o ×3,2) y por los bonos de objetos, meta y pieza 2.
+La XP recibida se multiplica por el modo (×1 o ×2,6) y por los bonos de objetos, meta y pieza 2.
 
 ## 7. Director de oleadas
 

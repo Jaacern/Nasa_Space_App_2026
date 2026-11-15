@@ -2,14 +2,14 @@
 
 Repositorio unificado con **dos subproyectos independientes**:
 1. **Raíz (`Outpost Run`)**: API local Node `>=22.9` sin dependencias, ingesta NASA/CSA, saneado y capa de datos (`src/`, `server/`, `scripts/`, `data/curated/`, `content/`, `public/`, `test/`). El bucle jugable (`src/sim/`, `src/ui/`) aún no está implementado.
-2. **`roblox-blender/` (`ARES FORGE`)**: roguelite 3D en Roblox Studio (`Luau --!strict`) con `28` mallas low-poly generadas en Blender y puente MCP local propio.
+2. **`roblox-blender/` (`ARES FORGE`)**: roguelite 3D en Roblox Studio (`Luau --!strict`) con `30` mallas low-poly generadas en Blender y puente MCP local propio.
 
 > Este proyecto usa datos públicos de NASA y recursos de la CSA. NASA y CSA no patrocinan ni respaldan este producto.
 
 ## Continuar desde el último estado (traspaso)
 
-- **Leer primero al retomar trabajo:** [`docs/HANDOFF-CLAUDE.md`](docs/HANDOFF-CLAUDE.md) (estado Git, resumen completo de auditoría, inventario verificado y cola de tareas `P0`–`P2`).
-- **Rama actual:** `audit/actualizacion-completa` (PR pendiente hacia `main`).
+- **Leer primero al retomar trabajo:** [`docs/HANDOFF-CLAUDE.md`](docs/HANDOFF-CLAUDE.md) (estado Git, resumen completo de auditoría, inventario verificado y cola de tareas `P0`–`P2`) y [`docs/CONTINUAR-EN-OTRO-EQUIPO.md`](docs/CONTINUAR-EN-OTRO-EQUIPO.md).
+- **Rama actual:** `audit/actualizacion-completa` (lugar de Roblox guardado en la nube: «Núcleo de Ares», `placeId: 114817072312952`, versión `29`).
 
 ## Guardrails transversales
 
@@ -27,7 +27,7 @@ Repositorio unificado con **dos subproyectos independientes**:
   - Prompts y registro de IA: [`docs/ia/PROMPTS.md`](docs/ia/PROMPTS.md), [`docs/ia/REGISTRO.md`](docs/ia/REGISTRO.md)
 - **Si trabajas en `ARES FORGE` (Roblox Studio / Blender / MCP):**
   - Para cargar los servidores MCP (`blender` y `Roblox_Studio`), inicia Claude Code dentro de [`roblox-blender/`](roblox-blender/CLAUDE.md).
-  - Fuente de verdad Luau: `roblox-blender/game/src/` (sincronizar hacia Studio vía `http://127.0.0.1:8765/sync_studio.lua`). Mantén `roblox-blender/tools/sync/sync_studio.luau` y `roblox-blender/game/src/sync_studio.lua` idénticos.
-  - Mallas 3D: regenerar `game/src/shared/Meshes/` desde `tools/blender/` en lugar de editar geometría a mano.
+  - Fuente de verdad Luau: `roblox-blender/game/src/` (controles `WASD / Flechas ↑ ↓ ← →`). En el lugar guardado en la nube («Núcleo de Ares», `placeId: 114817072312952`), sincroniza sin HTTP mediante `roblox-blender/tools/studio/push.py` + `tools/studio/studio_call.py` (o MCP `execute_luau`); en lugares locales sin nube sigue disponible `http://127.0.0.1:8765/sync_studio.lua` (mantén `roblox-blender/tools/sync/sync_studio.luau` y `roblox-blender/game/src/sync_studio.lua` idénticos).
+  - Mallas 3D: regenerar `game/src/shared/Meshes/` (`30` mallas) desde `tools/blender/` en lugar de editar geometría a mano.
   - Verificación Python sin ensuciar `.pyc`: `python -B -m py_compile <archivo.py>`.
   - Decisiones y pendientes `P-01`–`P-17`: [`roblox-blender/docs/DECISIONES.md`](roblox-blender/docs/DECISIONES.md), [`roblox-blender/docs/NOTAS.md`](roblox-blender/docs/NOTAS.md), [`roblox-blender/BLENDER_PIPELINE.md`](roblox-blender/BLENDER_PIPELINE.md).

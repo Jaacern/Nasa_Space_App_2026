@@ -1,12 +1,12 @@
 # Assets de ARES FORGE
 
-Fecha: 14-11-2026.
+Fecha: 15-11-2026.
 Estados: **Hecho** (listo para la v1), **Provisional** (funciona y se reemplazará), **Pendiente** (no existe).
 El catálogo de modelos de Blender lo escribe otra persona del equipo: `docs/assets/CATALOGO_BLENDER.md`. Este documento no lo duplica.
 
 ## 1. Modelos 3D
 
-Los 28 modelos low-poly facetados de Blender están integrados en el cliente con `EditableMesh` (`game/src/client/MeshFactory.luau` + `game/src/shared/Meshes/<nombre>.luau`), con respaldo automático en `ReplicatedStorage/Templates` (`game/src/shared/Visuals.luau`). Además se exportan los FBX en `assets/export/` y el catálogo detallado vive en `docs/assets/CATALOGO_BLENDER.md`.
+Los 30 modelos low-poly facetados de Blender (`28` base + `Rover` + `Insignia`) están integrados en el cliente con `EditableMesh` (`game/src/client/MeshFactory.luau` + `game/src/shared/Meshes/<nombre>.luau`), con respaldo automático en `ReplicatedStorage/Templates` (`game/src/shared/Visuals.luau`). Además hay `30` FBX en `assets/export/`, `30` renders `512x512` en `docs/assets/previews/` y el catálogo detallado vive en `docs/assets/CATALOGO_BLENDER.md`.
 
 | Asset | Estado | Dónde vive | Notas |
 |---|---|---|---|
@@ -28,8 +28,8 @@ Los 28 modelos low-poly facetados de Blender están integrados en el cliente con
 | Pieza 3: generador de oxígeno (`Piece3`) | Hecho | `game/src/shared/Meshes/Piece3.luau` | 128 tris |
 | Pieza 4: propulsor de retorno (`Piece4`) | Hecho | `game/src/shared/Meshes/Piece4.luau` | 560 tris |
 | Rover Perseverance (`Rover`) | Hecho (carga verificada en Studio el 15-11-2026) | `game/src/shared/Meshes/Rover.luau`, colocado por `Scenery.luau` (`refreshRover`) | 800 tris, 4 materiales. Hito visual fuera del borde jugable. Modelado propio con medidas del GLB oficial; ver `docs/assets/NASA_ROVER.md` |
-| Pipeline Blender (29 modelos, previews PNG y catálogo) | Hecho | `tools/blender/`, `assets/blend/ares_assets.blend`, `docs/assets/previews/` | Ver `docs/assets/CATALOGO_BLENDER.md` (28/28 PASS) |
-| FBX exportados | Hecho | `assets/export/*.fbx` | 28 archivos FBX del flujo clásico (no se suben a Roblox) |
+| Pipeline Blender (30 modelos, previews PNG y catálogo) | Hecho | `tools/blender/`, `assets/blend/ares_assets.blend`, `docs/assets/previews/` | 30 módulos `.luau` y 30 renders PNG; ver `docs/assets/CATALOGO_BLENDER.md` |
+| FBX exportados | Hecho | `assets/export/*.fbx` | 30 archivos FBX (no se suben a Roblox) |
 
 Plantillas en tiempo de ejecución: `ReplicatedStorage/Templates` (creadas por `WorldBuilder.build()`).
 
@@ -48,7 +48,7 @@ Plantillas en tiempo de ejecución: `ReplicatedStorage/Templates` (creadas por `
 
 | Asset | Estado | Dónde vive | Notas |
 |---|---|---|---|
-| Números de daño con pooling | Hecho | `game/src/client/Fx.luau` | Usan la fuente `GothamBlack`, fuera del sistema tipográfico |
+| Números de daño con pooling | Hecho | `game/src/client/Fx.luau` | Usan `Enum.Font.Bangers` (`Ui.Fonts.impact`), alineados con el HUD |
 | Partículas de chispas y muerte | Hecho | `game/src/client/Fx.luau` | `ParticleEmitter` con modo de efectos bajos |
 | Sacudida de cámara, hitstop y destello | Hecho | `game/src/client/Fx.luau`, `game/src/client/Renderer.luau` | Valores en `Balance.Juice` |
 | Avisos de ataque en el suelo (círculos y líneas naranjas) | Hecho | `game/src/client/Renderer.luau` | Con pooling |
@@ -61,10 +61,10 @@ Plantillas en tiempo de ejecución: `ReplicatedStorage/Templates` (creadas por `
 | Asset | Estado | Dónde vive | Notas |
 |---|---|---|---|
 | Sistema "Dark Telemetry" (colores y paneles) | Hecho | `game/src/client/Ui.luau` | `#070B14`, `#0B132B`, `#00B4D8`, `#00D2FF`, `#FF6B35` |
-| Tipografías Michroma, Titillium Web y Roboto Mono | Hecho | `game/src/client/Ui.luau` | Incluidas en Roblox. Sustituyen a Bahnschrift, Satoshi y Space Mono |
-| Menú, ajustes, créditos y fuentes | Hecho | `game/src/client/Hud.luau` | Ajustes: FOV, sensibilidad y efectos |
-| HUD de misión (vida, XP, oleada, bioma, jefe, telemetría) | Hecho | `game/src/client/Hud.luau` | |
-| Cartas de subida de nivel (1 de 3, con rareza) | Hecho | `game/src/client/Hud.luau` | Teclas 1, 2 y 3 |
+| Tipografías Michroma, Bangers, Titillium Web y Roboto Mono | Hecho | `game/src/client/Ui.luau`, `Hud.luau`, `Fx.luau` | Incluidas en Roblox. Sustituyen a Bahnschrift, Satoshi y Space Mono |
+| Menú («Forma humana»), hangar, ajustes y controles, créditos | Hecho | `game/src/client/Hud.luau` | Botones con chip `01..06` y color por sección; ajustes de FOV, sensibilidad y efectos bajos + recuadro `WASD / Flechas ↑↓←→` |
+| HUD de misión (vida, XP, `ETAPA 1..3`, oleada, jefe, telemetría) | Hecho | `game/src/client/Hud.luau` | Colores por bioma y cabeceras `Bangers` |
+| Cartas de subida de nivel (1 de 3, con rareza y «DATO REAL») | Hecho | `game/src/client/Hud.luau` | Teclas 1, 2 y 3; título con color de rareza |
 | Panel "Pieza recuperada" con texto "En la realidad" | Hecho | `game/src/client/Hud.luau` | Textos en `game/src/shared/Content.luau` |
 | Informe de misión (victoria y derrota) | Hecho | `game/src/client/Hud.luau` | |
 | Tutorial guiado (7 pasos y práctica) | Hecho | `game/src/client/Hud.luau`, `Content.Tutorial` | |
@@ -88,8 +88,9 @@ La tabla de sonidos está en `game/src/shared/Balance.luau`, grupo `Audio`, y su
 | Copia local de DONKI (clima espacial) | Hecho | `game/src/shared/NasaData.luau` | Capturada el 14-11-2026. Ventana: 15-10-2026 a 14-11-2026. Modo `snapshot` |
 | Textos "En la realidad" de las 4 piezas | Hecho | `game/src/shared/Content.luau` | Sin cifras |
 | Referencia NTRS 20150005587 (MMRTG) | Hecho | `Content.Pieces[1]` | Verificada |
+| Referencia NTRS 20040084278 (antena de alta ganancia MER) | Hecho | `Content.Pieces[2]` | Verificada en `ntrs.nasa.gov` |
+| Referencia NTRS 20205007222 (generador de oxígeno MOXIE) | Hecho | `Content.Pieces[3]` | Verificada en `ntrs.nasa.gov` |
 | Referencia NTRS 20240003648 (propulsión de Orion) | Hecho | `Content.Pieces[4]` | Verificada |
-| Referencia NTRS de antena y generador de oxígeno | Pendiente | `Content.Pieces[2]` y `[3]` | `[PENDIENTE]` (P-06) |
 | Llamada en vivo a NASA | Pendiente | | Exige HttpService y un proxy (P-07) |
 
 ## 7. Herramientas y archivos de apoyo

@@ -29,7 +29,7 @@ Estado: **preparado, no ejecutado.** Se produce cuando el juego esté completo. 
 | Fuente | Uso | Obligación |
 |---|---|---|
 | Captura de Studio (juego real) | Gameplay principal | Ninguna, es propio |
-| Renders de Blender (28 mallas) | Planos de personajes y enemigos | Ninguna, es propio |
+| Renders de Blender (30 mallas) | Planos de personajes y enemigos | Ninguna, es propio |
 | NASA Images / Mars Trek / DONKI | Marte, Sol, mapas, datos | Crédito a NASA |
 | Google Flow (opcional) | Planos de ambientación o transiciones | Rótulo "generado", presupuesto máximo 600 créditos, confirmar cada lote |
 | Agent Reach (investigación) | Buscar materiales oficiales y verificar licencias | Registrar URL y fecha de cada asset |

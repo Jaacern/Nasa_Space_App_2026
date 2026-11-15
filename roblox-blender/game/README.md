@@ -11,16 +11,25 @@ La carpeta `game/src/` es la fuente de verdad del código Luau (`--!strict`):
 | Carpeta | Destino en Roblox Studio | Rol |
 |---|---|---|
 | `game/src/shared/` | `ReplicatedStorage/Shared` | Equilibrio (`Balance.luau`), textos y fichas (`Content.luau`), copia local DONKI (`NasaData.luau`), plantillas de respaldo (`Visuals.luau`) |
-| `game/src/shared/Meshes/` | `ReplicatedStorage/Shared/Meshes` | 28 módulos de geometría low-poly exportados desde Blender (`Ship`, `Helmet`, `Backpack`, `Piece1..4`, enemigos, jefes, props) |
+| `game/src/shared/Meshes/` | `ReplicatedStorage/Shared/Meshes` | 30 módulos de geometría low-poly exportados desde Blender (`Ship`, `Helmet`, `Backpack`, `Piece1..4`, `Rover`, `Insignia`, enemigos, jefes, props) |
 | `game/src/server/` | `ServerScriptService/Server` | Simulación autoritativa: `Session.luau`, `Combat.luau`, `Enemies.luau`, `Loot.luau`, `SaveService.luau`, `WorldBuilder.luau`, `Main.server.luau` |
 | `game/src/client/` | `StarterPlayer/StarterPlayerScripts/Client` | Cámara orbital, pooling (`Renderer.luau`), mallas (`MeshFactory.luau`), nave/entorno (`Scenery.luau`), UI (`Hud.luau`, `Ui.luau`), FX/audio (`Fx.luau`), `Main.client.luau` |
 
 ### Generación de mallas (`MeshFactory.luau`)
-- `MeshFactory` construye los 28 modelos en el cliente usando `AssetService:CreateEditableMesh()`, los convierte a inmutables mediante `AssetService:CreateEditableMeshAsync(..., { FixedSize = true })` (destruyendo inmediatamente el `EditableMesh` temporal para no agotar el presupuesto de memoria) y genera cada `MeshPart` con `CreateMeshPartAsync`.
+- `MeshFactory` construye los 30 modelos en el cliente usando `AssetService:CreateEditableMesh()`, los convierte a inmutables mediante `AssetService:CreateEditableMeshAsync(..., { FixedSize = true })` (destruyendo inmediatamente el `EditableMesh` temporal para no agotar el presupuesto de memoria) y genera cada `MeshPart` con `CreateMeshPartAsync`.
 - Si una malla aún no está lista o falla, `Renderer.luau` usa automáticamente las plantillas de respaldo en `ReplicatedStorage/Templates`.
 
-## 2. Sincronización en 2 pasos hacia Roblox Studio
+## 2. Sincronización hacia Roblox Studio
 
+### Vía A — Lugar en la nube «Núcleo de Ares» (`placeId: 114817072312952`, recomendada)
+En lugares ya guardados en la nube de Roblox, `HttpService` bloquea `127.0.0.1`. Con Studio abierto y *Enable Studio as MCP server* activo, genera el paquete y ejecútalo vía stdio MCP:
+```bash
+STUDIO_ID=<id> python -B tools/studio/push.py push.json client/Hud.luau shared/Content.luau
+python -B tools/studio/studio_call.py execute_luau @push.json
+```
+También puedes sincronizar con herramientas MCP (`execute_luau`) y guardar en la nube con `save_place` (sin publicar). Ver [`../tools/studio/README.md`](../tools/studio/README.md).
+
+### Vía B — Lugar local sin nube (HTTP `127.0.0.1:8765`)
 1. Desde la raíz del subproyecto (`roblox-blender/`), arranca el servidor HTTP solo en `127.0.0.1`:
    ```bash
    python -m http.server 8765 --bind 127.0.0.1 --directory game/src
@@ -34,7 +43,7 @@ La carpeta `game/src/` es la fuente de verdad del código Luau (`--!strict`):
 
 ## 3. Controles
 
-- **Movimiento**: `W A S D` / joystick izquierdo / joystick táctil
+- **Movimiento**: `W A S D` o Flechas (`↑ ↓ ← →`) / joystick izquierdo / joystick táctil
 - **Cámara orbital**: ratón y rueda (zoom) / arrastre táctil / stick derecho
 - **Salto**: `Espacio` (gravedad marciana `74,5 studs/s²`)
 - **Habilidades**: `Q` o `Shift izq.` (Impulso RCS) · `E` (Pulso)

@@ -2,25 +2,224 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Outpost Run (prototipo)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="dark">
+  <title>ARES FORGE · Telemetría NASA y Compatibilidad Multiplataforma</title>
   <style>
-    body { font: 16px system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
-    .badge { display: inline-block; padding: 2px 8px; border-radius: 99px; font-size: .8rem; background: #e8eefc; }
-    .badge.snapshot { background: #fff1d6; }
-    li { margin: .4rem 0; }
+    :root {
+      --bg: #070B14;
+      --panel: #0B132B;
+      --panel-hi: #13204A;
+      --line: #1F3A6B;
+      --cyan: #00D2FF;
+      --orange: #FF6B35;
+      --gold: #FFC828;
+      --green: #50E696;
+      --red: #FF2D55;
+      --text: #F8FAFC;
+      --dim: #9FB0CC;
+      --radius: 10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100dvh;
+      background:
+        radial-gradient(1200px 540px at 85% -10%, rgba(255, 107, 53, 0.16), transparent 65%),
+        radial-gradient(900px 500px at 10% 10%, rgba(0, 210, 255, 0.10), transparent 60%),
+        var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.5;
+      padding: clamp(1rem, 3vw, 2.25rem) clamp(0.9rem, 3vw, 2rem);
+    }
+    .wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: clamp(1rem, 2.5vw, 1.5rem); }
+    .hero {
+      background: linear-gradient(180deg, rgba(19, 32, 74, 0.85), rgba(11, 19, 43, 0.92));
+      border: 1px solid var(--line);
+      border-top: 3px solid var(--orange);
+      border-radius: var(--radius);
+      padding: clamp(1.1rem, 3vw, 1.85rem);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+    .kicker {
+      font: 700 0.78rem/1.2 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin: 0 0 0.35rem;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 3.6vw, 2.3rem);
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+    }
+    .sub { margin: 0.4rem 0 0; color: var(--dim); max-width: 62ch; font-size: clamp(0.92rem, 1.6vw, 1rem); }
+    .status-box {
+      background: rgba(7, 11, 20, 0.75);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 0.65rem 0.95rem;
+      font: 600 0.85rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      min-width: 220px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.15rem 0.55rem;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: rgba(0, 210, 255, 0.16);
+      color: var(--cyan);
+      border: 1px solid rgba(0, 210, 255, 0.4);
+    }
+    .badge.snapshot { background: rgba(255, 200, 40, 0.14); color: var(--gold); border-color: rgba(255, 200, 40, 0.45); }
+    .badge.live { background: rgba(80, 230, 150, 0.16); color: var(--green); border-color: rgba(80, 230, 150, 0.45); }
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.5rem;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 0.45rem;
+    }
+    h2 {
+      margin: 0;
+      font-size: clamp(1.05rem, 2.2vw, 1.25rem);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--cyan);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+      gap: 0.9rem;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .card {
+      background: rgba(11, 19, 43, 0.88);
+      border: 1px solid var(--line);
+      border-left: 3px solid var(--cyan);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      transition: transform 0.16s ease, border-color 0.16s ease;
+    }
+    .card:hover { transform: translateY(-2px); border-color: var(--cyan); }
+    .card h3 { margin: 0 0 0.35rem; font-size: 1.05rem; color: var(--text); }
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem 0.75rem;
+      font: 600 0.82rem/1.4 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--dim);
+      margin-bottom: 0.35rem;
+    }
+    .threat { color: var(--gold); }
+    .platforms {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+      gap: 0.9rem;
+    }
+    .plat-card {
+      background: rgba(11, 19, 43, 0.78);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 0.95rem 1.05rem;
+    }
+    .plat-card strong {
+      display: block;
+      font: 700 0.88rem/1.3 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      letter-spacing: 0.06em;
+      color: var(--green);
+      margin-bottom: 0.35rem;
+    }
+    .plat-card p { margin: 0; font-size: 0.9rem; color: var(--dim); }
+    footer {
+      color: var(--dim);
+      font-size: 0.84rem;
+      border-top: 1px solid rgba(31, 58, 107, 0.6);
+      padding-top: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .card { transition: none; }
+      .card:hover { transform: none; }
+    }
+    @media (max-width: 540px) {
+      .status-box { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <h1>Outpost Run</h1>
-  <p>Pantalla de arranque de prueba: confirma que el juego puede leer la API local. Reemplázala por el juego real.</p>
-  <h2>Escenarios reales disponibles</h2>
-  <p id="mode"></p>
-  <ul id="list"><li>Cargando…</li></ul>
-  <p><small>Datos: NASA CCMC DONKI. NASA y CSA no patrocinan ni respaldan este proyecto.</small></p>
+  <main class="wrap">
+    <header class="hero">
+      <div>
+        <p class="kicker">CRÁTER JEZERO · TELEMETRÍA LOCAL · NASA SPACE APPS 2026</p>
+        <h1>ARES FORGE / Outpost Run</h1>
+        <p class="sub">Consola web responsiva de telemetría NASA CCMC DONKI y soporte multiplataforma para navegador, móvil, consola y escritorio.</p>
+      </div>
+      <div class="status-box" aria-live="polite">
+        <div id="mode">Consultando telemetría local…</div>
+        <div id="clientSpec" style="margin-top:.35rem;color:var(--dim);font-size:.78rem;"></div>
+      </div>
+    </header>
+
+    <section aria-labelledby="sec-scenarios">
+      <div class="section-head">
+        <h2 id="sec-scenarios">Escenarios reales de clima espacial</h2>
+      </div>
+      <ul id="list" class="grid"><li class="card">Cargando escenarios…</li></ul>
+    </section>
+
+    <section aria-labelledby="sec-platforms">
+      <div class="section-head">
+        <h2 id="sec-platforms">Compatibilidad y controles adaptados</h2>
+      </div>
+      <div class="platforms">
+        <article class="plat-card">
+          <strong>PC Y NAVEGADOR WEB</strong>
+          <p>WASD o Flechas ↑↓←→ moverse · Ratón cámara · Rueda zoom · Espacio saltar · Q/E habilidades · 1-2-3 elegir carta · P pausa.</p>
+        </article>
+        <article class="plat-card">
+          <strong>CONSOLA Y MANDO</strong>
+          <p>Stick Izq/Der mover y cámara · A saltar · X/L1 e B/R1 habilidades · ◀▲▶ o foco D-Pad para cartas · R3 zoom · Start pausa.</p>
+        </article>
+        <article class="plat-card">
+          <strong>MÓVIL Y TABLET (H / V)</strong>
+          <p>Joystick izquierdo aislado · Arrastrar derecha para cámara · Pellizcar zoom · Botones grandes de habilidades y escalado automático.</p>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>Datos: NASA CCMC DONKI (copia local y modo en vivo).</span>
+      <span>NASA y CSA no patrocinan ni respaldan este proyecto.</span>
+    </footer>
+  </main>
 
   <script type="module">
     const esc = (v) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+    const specEl = document.getElementById("clientSpec");
+    const isTouch = matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+    const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const dpr = Math.round((window.devicePixelRatio || 1) * 10) / 10;
+    const cores = navigator.hardwareConcurrency ? `${navigator.hardwareConcurrency} núcleos` : "perfil estándar";
+    specEl.textContent = `Perfil web: ${isTouch ? "Táctil" : "Escritorio"} · ${cores} · ${dpr}x${reduced ? " · anim. reducida" : ""}`;
+
     try {
       const res = await fetch("/api/scenarios");
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -31,11 +230,11 @@
       document.getElementById("mode").innerHTML =
         `Origen: <span class="badge ${modeClass}">${rawMode === "live" ? "en vivo" : "copia guardada"}</span> (${esc(day)})`;
       document.getElementById("list").innerHTML = scenarios
-        .map((s) => `<li><strong>${esc(s.name?.es)}</strong> — ${esc(s.difficulty)}, ${esc(s.windowStart)} a ${esc(s.windowEnd)}, amenaza máx. ${esc(s.summary?.maxThreat)}</li>`)
+        .map((s) => `<li class="card"><h3>${esc(s.name?.es)}</h3><div class="meta-row"><span>${esc(s.difficulty)}</span><span>${esc(s.windowStart)} → ${esc(s.windowEnd)}</span></div><div class="meta-row"><span class="threat">Amenaza máx.: ${esc(s.summary?.maxThreat)}</span></div></li>`)
         .join("");
     } catch (err) {
       document.getElementById("mode").textContent = "No se pudo consultar la API local.";
-      document.getElementById("list").textContent = String(err?.message ?? err);
+      document.getElementById("list").innerHTML = `<li class="card">${esc(err?.message ?? err)}</li>`;
     }
   </script>
 </body>

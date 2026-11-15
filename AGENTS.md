@@ -13,7 +13,7 @@ Este archivo sirve a cualquier modelo (Claude, GPT, Gemini, DeepSeek u otro). No
 0. Si estás en un equipo nuevo: `docs/CONTINUAR-EN-OTRO-EQUIPO.md`.
 
 1. `CLAUDE.md` (reglas del repositorio; valen para cualquier IA).
-2. `roblox-blender/docs/NOTAS.md` sección 9 (estado más reciente y cosas sin verificar).
+2. `roblox-blender/docs/NOTAS.md` secciones 9 y 10 (estado más reciente y cosas sin verificar).
 3. `roblox-blender/docs/DECISIONES.md` (pendientes `P-01` a `P-17`).
 4. `roblox-blender/docs/ASSETS.md` y `docs/assets/AUDIO.md`.
 5. `roblox-blender/docs/TRAILER_BRIEF_FABLE.md` (tráiler; se produce al final).
@@ -42,11 +42,11 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 ## Siguiente trabajo (15-11-2026)
 
-1. Una persona escucha la mezcla de audio (el menú ya se verificó por captura).
-2. El lugar está en Roblox como «Núcleo de Ares»; guardar con `save_place` tras cada avance. No publicar sin pedirlo.
-3. Pulido pendiente: ninguno de código. Lista: audio por una persona, tráiler al final. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
-4. Pendientes `P-01` a `P-15` que dependen del equipo.
-5. Tráiler, al final.
+1. Una persona escucha la mezcla de audio (`P-12`) y prueba manualmente en dispositivos reales (PC/web, móvil vertical/horizontal y mando/consola) la calidad adaptativa, los controles adaptados (`kb`, `gamepad`, `touch`), los 3 modos de arma (`laser`, `spread`, `mortar`) + nuevas armas (`nova`, `missiles`, `arc`), el escudo con CD 20 s, las 5 zonas, los meteoros y los eventos de agujero negro (`0` errores en consola y `0` fallos `TextFits` verificados en Studio `Play`).
+2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `29`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
+3. Pulido pendiente de código: ninguno inmediato tras añadir modos de arma (`laser`, `spread`, `mortar`) y ataques en área/encadenados (`nova`, `missiles`, `arc`) sobre `Balance`, `NasaData`, `Content`, `Visuals`, `WorldBuilder`, `SaveService`, `Loot`, `Combat`, `Enemies`, `Main.server`, `Session`, `Ui`, `Fx`, `Scenery`, `Renderer`, `Main.client` y `Hud` sincronizados y guardados. Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
+4. Pendientes `P-01` a `P-15` que dependen del equipo (`roblox-blender/docs/DECISIONES.md`).
+5. Tráiler, al final (`roblox-blender/docs/TRAILER_BRIEF_FABLE.md`).
 
 ## Agente DeepSeek (opcional, con tope de gasto)
 

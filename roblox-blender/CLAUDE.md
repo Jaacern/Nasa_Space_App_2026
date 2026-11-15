@@ -9,8 +9,8 @@ Reglas locales al abrir Claude Code dentro de `roblox-blender/` (ver también [`
 
 ## Reglas de desarrollo Luau y assets
 
-- **Fuente de verdad:** `game/src/` (`--!strict`). Todo cambio de código debe sincronizarse a Studio (`python -m http.server 8765 --bind 127.0.0.1 --directory game/src` + `sync_studio.lua` en Studio modo Edit). Si editas `tools/sync/sync_studio.luau`, replica el cambio exacto en `game/src/sync_studio.lua`.
-- **Mallas 3D:** los `28` modelos viven en `game/src/shared/Meshes/` y se construyen en cliente con `EditableMesh` (`FixedSize = true`) en `game/src/client/MeshFactory.luau`. No editar las tablas de vértices a mano; regenerar desde `tools/blender/`.
+- **Fuente de verdad:** `game/src/` (`--!strict`). Todo cambio de código debe sincronizarse hacia el lugar en la nube «Núcleo de Ares» (`placeId: 114817072312952`) mediante `tools/studio/push.py` + `tools/studio/studio_call.py` (o MCP `execute_luau`); para lugares locales sin nube sigue disponible `http://127.0.0.1:8765/sync_studio.lua`. Si editas `tools/sync/sync_studio.luau`, replica el cambio exacto en `game/src/sync_studio.lua`.
+- **Mallas 3D:** los `30` modelos viven en `game/src/shared/Meshes/` (28 iniciales + `Rover` e `Insignia`) y se construyen en cliente con `EditableMesh` (`FixedSize = true`) en `game/src/client/MeshFactory.luau`. No editar las tablas de vértices a mano; regenerar desde `tools/blender/`.
 - **Verificación Python:** usar `python -B -m py_compile` para no generar carpetas `__pycache__/`.
 
 ## Punteros clave

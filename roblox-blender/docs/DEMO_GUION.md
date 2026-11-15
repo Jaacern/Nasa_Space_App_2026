@@ -1,94 +1,105 @@
-# Guion de la demo de 3 minutos (F6)
+# Guion de la partida de pitch (demo de 2 minutos)
 
-Fecha: 14-11-2026. Estado: guion escrito. **Ningún tiempo está ensayado ni medido.** Los tiempos son un objetivo. Se ajustan en los ensayos (P-13).
-Criterio de la fase F6: la demo corre sin fallos en 3 ensayos seguidos.
+Fecha: 15-11-2026. Sustituye al guion de 3 minutos del 14-11-2026.
+Estado: tiempos medidos con un bot en Studio (3 partidas completas). **Sin ensayar con una persona.**
 
 ## 1. Idea central
 
-La demo usa el modo **Demo rápida**: el tiempo de misión corre ×5 y la XP sube ×3,2 (`Balance.Modes.demo`). La misión completa dura unos 3,6 minutos de reloj real (jefe final a los 204 s), sin contar las pausas de cartas y de piezas. Eso no cabe en 3 minutos con comentarios. Por eso el guion usa los atajos de depuración de Studio para saltar entre jefes (`docs/NOTAS.md`, sección 4).
+El botón **DEMO RÁPIDA** del menú lanza una partida completa pensada para el pitch. No hacen falta atajos de depuración.
 
-Una persona habla. Una segunda persona maneja el juego si es posible.
+| Ajuste (`Balance.Modes.demo`) | Valor | Para qué |
+|---|---|---|
+| `TimeScale` | 12 | Las 18 oleadas pasan en 85 s |
+| `XpMult` | 2,6 | Una carta de mejora cada 6 a 8 s |
+| `BossHp` | 0,22 | Cada jefe cae en 7 a 10 s |
+| `EnemyHp` / `EnemyDmg` | 0,45 / 0,25 | Mucha acción y poco riesgo |
+| `SpawnMult` | 1,5 | Hay enemigos desde el primer segundo |
+| `FreeRevive` | sí | Si la vida llega a 0, el «Protocolo de emergencia» te levanta una vez |
+| `Briefing` / `Checkpoints` | no | Entra directo al combate y no escribe en el guardado |
+
+Medición del 15-11-2026 con un bot que camina en círculo y **no esquiva**: victoria a los 95 s de juego, 105 s de reloj, nivel 15, 420 bajas y 98 golpes recibidos sin morir. Con `TimeScale = 10` las tres partidas de prueba dieron 111, 115 y 111 s.
+
+El reloj del juego se detiene mientras eliges carta o lees una pieza. Con una persona leyendo, calcula entre 2:00 y 2:15 de reloj.
 
 ## 2. Preparación (10 minutos antes)
 
-Lista de verificación:
+- [ ] Studio abierto con el lugar «Núcleo de Ares» y la Salida sin errores.
+- [ ] Una partida de calentamiento completa en Demo rápida, y volver al menú.
+- [ ] Ventana a 1920×1080, sonido encendido, notificaciones apagadas.
+- [ ] Vídeo de respaldo abierto en otra ventana (plan B).
+- [ ] Quién habla, quién juega y quién vigila el reloj.
 
-- [ ] Studio abierto con el lugar sincronizado desde `game/src/` (`docs/NOTAS.md`, sección 2). Servidor local detenido.
-- [ ] `Lighting.Technology = Future` puesto a mano (P-01).
-- [ ] Salida de Studio limpia: sin errores rojos.
-- [ ] Una prueba rápida de 30 s en Demo rápida, y volver al menú.
-- [ ] Pantalla en 1920×1080. Sonido encendido. Notificaciones del sistema apagadas.
-- [ ] Barra de comandos de Studio lista, con las líneas de depuración copiadas (sección 5).
-- [ ] Vídeo de respaldo grabado y abierto en otra ventana (plan B). **Pendiente de grabar.**
-- [ ] Segunda ventana con `docs/PITCH.md` abierto.
-- [ ] El equipo sabe quién habla, quién juega y quién vigila el reloj.
+## 3. La partida, paso a paso
 
-## 3. Guion cronometrado
+Tiempos de juego (los que marca el bot). Una persona habla y otra juega.
 
-Los tiempos son del reloj de la presentación (de 0:00 a 3:00). "Demo" indica el estado del juego. Las líneas entre comillas son lo que se dice.
-
-| Tiempo | Qué se ve | Acción | Qué decir |
+| Juego | Qué pasa en pantalla | Qué hace quien juega | Qué decir |
 |---|---|---|---|
-| 0:00 a 0:15 | Menú con la nave estrellada y la órbita lenta de la cámara | Nadie toca nada. Mostrar el título | "Esto es ARES FORGE. Tu nave cayó en Marte. Debes recuperar sus 4 piezas y volver a casa." |
-| 0:15 a 0:25 | Menú | Pulsar DEMO RÁPIDA | "Esta es la demo rápida: el tiempo corre cinco veces más rápido. Una misión completa dura 18 minutos." |
-| 0:25 a 0:50 | Oleadas 1 a 3. Enemigos en grupo, números de daño | Moverse en círculos. Esquivar con Q una vez | "El láser dispara solo. Yo solo me muevo y esquivo. Mira los círculos naranjas en el suelo: avisan antes del golpe." |
-| 0:50 a 1:05 | Subida de nivel, tres cartas | Elegir una carta con la tecla 1, 2 o 3 | "Al subir de nivel elijo 1 de 3 mejoras. Tienen rareza: común, rara, épica o legendaria." |
-| 1:05 a 1:25 | Minijefe 1 (oleada 5). Barra de jefe | Esquivar el aviso del jefe. Atajo si tarda: `bosshp` | "El primer jefe anuncia cada ataque en el suelo. Al vencerlo suelta una pieza de la nave." |
-| 1:25 a 1:45 | Panel "Pieza recuperada: Batería nuclear (MMRTG)" | Dejar el panel abierto. La simulación está en pausa. Pulsar CONTINUAR al terminar | Leer el texto "En la realidad" del panel (sección 4, línea 1) |
-| 1:45 a 2:00 | Bioma 2. Cambia el color del cielo y del suelo | Atajo: `time` 540. Jefe 2 aparece | "Cada pieza viene de un jefe y cada jefe vive en un bioma. Salto al segundo bioma." |
-| 2:00 a 2:15 | Jefe 2. Pieza 2 | Atajo: `bosshp` 100 | "Antena de alta ganancia: su bono es más experiencia, porque vuelve el enlace de datos." |
-| 2:15 a 2:35 | Bioma 3. Alerta "ALERTA DE CLIMA ESPACIAL" con una fecha real | Atajo: `time` 840. Esperar la alerta (unos 4 s) | Leer la alerta (sección 4, línea 2) |
-| 2:35 a 2:50 | Jefe final. Pieza 4 | Atajo: `time` 1020 tras caer los anteriores. `bosshp` 200 | "El jefe final suelta el propulsor de retorno. Con él, la nave puede despegar." |
-| 2:50 a 3:00 | Despegue e informe de misión | Dejar que corra la cinemática | "Misión cumplida. Gracias." (el pitch continúa en `docs/PITCH.md`) |
+| Antes | Menú con la nave y la órbita de cámara | Nada, 5 s. Luego DEMO RÁPIDA | "Esto es ARES FORGE. Tu nave cayó en Marte. Recupera sus 4 piezas y vuelve a casa." |
+| 0:00 a 0:20 | Remolinos de polvo, muestras doradas | Caminar en círculo alrededor de la nave. Recoger muestras | "El láser dispara solo. Yo me muevo y recojo muestras." |
+| ~0:13 | Primera carta de mejora | Leer el «Dato real» y pulsar 1, 2 o 3 | "Cada mejora trae un dato real de una misión a Marte." |
+| 0:20 | **Jefe 1**: Tormenta de polvo global | Esquivar la carga con Q. Usar el escudo con E | "Los círculos naranjas avisan antes de cada golpe." |
+| ~0:28 | **Pieza 1**: Batería nuclear (MMRTG) | Dejar el panel 3 s. CONTINUAR | Frase 1 de la sección 4 |
+| 0:30 | Etapa 2: Campo de cráteres. Cambia el cielo | Pulsar F: pasar a Abanico | "Cada etapa cambia el terreno. Con F cambio el modo del arma." |
+| 0:45 | **Jefe 2**: Coloso de la lluvia de rocas | Salir de los círculos | "Cada jefe guarda un sistema de la nave." |
+| ~0:48 | Anomalía en el horizonte (agujero negro) | Girar la cámara hacia el horizonte un segundo | "En el cielo aparecen objetos reales observados por Chandra." |
+| ~0:52 | **Pieza 2**: Antena de alta ganancia | CONTINUAR | "La antena devuelve el enlace de datos: más experiencia." |
+| 1:00 | Etapa 3: Frente de tormenta solar. Alerta de clima espacial | Seguir en movimiento | Frase 2 de la sección 4 |
+| 1:10 | **Jefe 3**: Heraldo de la erupción | Pulsar F: Mortero para los grupos | "El mortero limpia grupos enteros." |
+| ~1:19 | **Pieza 3**: Generador de oxígeno | CONTINUAR | "Oxígeno a partir del CO2 de Marte." |
+| 1:25 | **Jefe final**: Coloso de la tormenta solar | Q para esquivar, E para el escudo | "Último sistema: el propulsor de retorno." |
+| ~1:35 | **Pieza 4** y despegue (5,5 s) | CONTINUAR y soltar el teclado | Frase 3 de la sección 4 |
+| Final | Informe de misión | Nada | "Misión cumplida. Gracias." |
 
-Nota: el despegue dura unos 5,5 s antes de que aparezca el informe (`game/src/client/Main.client.luau`).
+Consejos para quien juega:
 
-Los atajos dependen del orden de jefes (`R.bossIdx`). `time` no salta jefes. Si usas `time` 540 con el jefe 1 vivo, el jefe 2 no aparece hasta que caiga el jefe 1. Ensaya el orden exacto (P-13).
+- Elige cartas con las teclas 1, 2 y 3. No uses el ratón.
+- Si salen varias cartas seguidas (pasa al caer un jefe), elige siempre la 1.
+- No te quedes quieto: el bot sobrevive caminando en círculo a unos 40 studs de la nave.
+- Si la vida baja de 30, usa E y aléjate. El Protocolo de emergencia te cubre una vez.
 
 ## 4. Frases de apoyo
 
-Las líneas salen de los textos del juego (`game/src/shared/Content.luau`, `game/src/shared/NasaData.luau`). No digas "según NASA".
+Salen de los textos del juego (`game/src/shared/Content.luau`, `game/src/shared/NasaData.luau`). No digas "según NASA".
 
-1. Pieza 1 (MMRTG): "Un generador termoeléctrico de radioisótopos convierte en electricidad el calor de un material radiactivo. Funciona de día, de noche y con polvo. La referencia técnica es la ficha NTRS 20150005587."
-2. Alerta de clima espacial: "Esta alerta se basa en un evento real registrado en la base de datos DONKI, copia del 14-11-2026. El efecto en el juego es de diseño."
-3. Pieza 4 (propulsor): "El módulo de servicio de Orion usa propelentes que se encienden al mezclarse. Referencia: ficha NTRS 20240003648."
+1. Pieza 1: "Un generador termoeléctrico de radioisótopos convierte en electricidad el calor de un material radiactivo. Funciona de día, de noche y con polvo. Referencia: ficha NTRS 20150005587."
+2. Alerta de clima espacial: "Esta alerta sale de un evento real de la base DONKI, copia del 14-11-2026. El efecto en el juego es de diseño."
+3. Pieza 4: "El módulo de servicio de Orion usa propelentes que se encienden al mezclarse. Referencia: ficha NTRS 20240003648."
 
-No cites cifras de la antena ni del generador de oxígeno. Su referencia NTRS está pendiente (P-06).
+Las cuatro piezas tienen ficha NTRS verificada (`20150005587`, `20040084278`, `20205007222`, `20240003648`). No des cifras de la antena ni del generador de oxígeno que no estén en el panel.
 
-## 5. Atajos de depuración (solo Studio)
+## 5. Atajos de depuración (solo ensayos en Studio)
 
-Se escriben en la barra de comandos con contexto de cliente `VERIFICAR EN STUDIO`.
+La partida de pitch no los necesita. Sirven para repetir un tramo:
 
 ```lua
 local cmd = game.ReplicatedStorage.Remotes.Cmd
-cmd:FireServer("debug", "time", 540)      -- bioma 2 y jefe 2 (si el jefe 1 ya cayó)
-cmd:FireServer("debug", "bosshp", 100)    -- baja la vida del jefe vivo
-cmd:FireServer("debug", "time", 840)      -- bioma 3 y jefe 3
-cmd:FireServer("debug", "time", 1020)     -- jefe final
+cmd:FireServer("debug", "time", 540)      -- salta a la oleada 10 (jefe 2 si el 1 ya cayó)
+cmd:FireServer("debug", "bosshp", 50)     -- baja la vida del jefe vivo
 cmd:FireServer("debug", "hp", 100)        -- recupera vida
+cmd:FireServer("debug", "invincible", true)
 ```
 
-`invincible` sirve para los ensayos. En la demo ante el jurado, si lo activas, dilo si te lo preguntan. Es un modo de presentación.
+Si usas `invincible` ante el jurado, dilo si te lo preguntan.
 
 ## 6. Plan B
 
-| Falla | Señal | Respuesta |
-|---|---|---|
-| Falla la red del lugar | Internet cae o la página no carga | El juego en Studio no usa los datos de NASA en vivo: la telemetría y las alertas salen de una copia local (`NasaData.luau`). Seguir con Studio. Decir: "El juego muestra la copia guardada del 14-11-2026" |
-| Studio no abre el lugar | Error al abrir | Abrir el vídeo de respaldo. Una persona narra encima con el mismo guion |
-| El juego arroja un error en la Salida durante la demo | Texto rojo | No lo menciones. Si el juego sigue, continúa. Si se congela, reiniciar con Stop y Play y saltar al minuto 1:45 con los atajos |
-| Un atajo no hace nada | El jefe no aparece | Comprobar si hay un jefe vivo (los atajos de tiempo no saltan jefes). Usar `bosshp` primero |
-| El audio no suena | Silencio | Continuar. El audio actual es provisional (P-12) |
-| Se acaba el tiempo | El reloj marca 2:30 y el jefe final no ha caído | Saltar a la cinemática: `bosshp` 1 en el jefe final |
-
-El vídeo de respaldo debe mostrar el bucle completo (menú, jefe, pieza, bioma 3, despegue e informe) en menos de 2 minutos. **Pendiente de grabar.**
+| Falla | Respuesta |
+|---|---|
+| Studio no abre o se cuelga | Vídeo de respaldo. Una persona narra encima con este guion |
+| Texto rojo en la Salida | No lo menciones. Si el juego sigue, continúa |
+| Mueres dos veces | REINTENTAR en el informe. Di: "La demo también se puede perder" y sigue |
+| Se acaba el tiempo | Pausa con P y pasa al cierre del pitch |
+| No hay sonido | Continúa |
 
 ## 7. Ensayos
 
-Se registran aquí cada ensayo, con fecha y resultado. Objetivo: 3 seguidos sin fallos.
+Objetivo: 3 seguidos sin fallos (P-13).
 
-| Ensayo | Fecha | Duración real | Fallos | Resultado |
+| Ensayo | Fecha | Quién | Duración de reloj | Fallos |
 |---|---|---|---|---|
+| Bot ×10 (3 partidas) | 15-11-2026 | Bot en Studio | 122 a 124 s | Ninguno. Consola limpia |
+| Bot ×12 | 15-11-2026 | Bot en Studio | 105 s | Ninguno. Consola limpia |
 | 1 | `[PENDIENTE]` | | | |
 | 2 | `[PENDIENTE]` | | | |
 | 3 | `[PENDIENTE]` | | | |
@@ -97,5 +108,4 @@ Se registran aquí cada ensayo, con fecha y resultado. Objetivo: 3 seguidos sin 
 
 - Discurso: `docs/PITCH.md`
 - Tráiler: `docs/TRAILER.md`
-- Atajos: `docs/NOTAS.md`, sección 4
-- Tiempos de la demo rápida: `docs/BALANCE_V0.md`, sección 2
+- Valores de la demo: `game/src/shared/Balance.luau` (`Balance.Modes.demo`) y `docs/BALANCE_V0.md`
