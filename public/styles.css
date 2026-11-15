@@ -8,6 +8,41 @@
    ============================================================================ */
 
 @font-face {
+  font-family: "Inter";
+  src: url("/public/assets/fonts/Inter-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/public/assets/fonts/Inter-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("/public/assets/fonts/Inter-800.woff2") format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Mono";
+  src: url("/public/assets/fonts/DMMono-400.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DM Mono";
+  src: url("/public/assets/fonts/DMMono-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
   font-family: "Public Sans";
   src: url("/public/assets/fonts/PublicSans-Regular.woff2") format("woff2");
   font-weight: 400;
@@ -86,10 +121,10 @@
   --axis-y: #22c55e;
   --axis-z: #3b82f6;
 
-  --font-display: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Inter", "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: "Instrument Serif", Georgia, serif;
-  --font-sans: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "IBM Plex Mono", monospace;
+  --font-sans: "Inter", "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "DM Mono", "IBM Plex Mono", monospace;
   --font-nasa: "Michroma", sans-serif;
 
   --radius-xl: 18px;
@@ -1025,4 +1060,72 @@ body {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+
+/* ============================================================================
+   CAPA INSTITUCIONAL HDS (nasa.gov Horizon Design System): simulador sobrio
+   — paneles planos, bordes 1px, radios minimos, Inter + DM Mono, sin glow —
+   ============================================================================ */
+.pitch-sim-shell {
+  background: #090d14;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid #222c3a;
+  border-top: 3px solid var(--nasa-red);
+  border-radius: 4px;
+  box-shadow: none;
+}
+.pitch-sim-shell .stat-box,
+.pitch-sim-shell .decision-card,
+.pitch-sim-shell .alert-banner {
+  border-radius: 3px;
+  background: #0d121b;
+  border: 1px solid #1f2937;
+  box-shadow: none;
+}
+.pitch-sim-shell .stat-label {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  color: #8b96a5;
+}
+.pitch-sim-shell .stat-value {
+  font-family: var(--font-mono);
+  color: #f8fafc;
+}
+.pitch-sim-shell .progress-track {
+  border-radius: 1px;
+  background: #151c27;
+}
+.pitch-sim-shell .progress-fill { border-radius: 1px; }
+.pitch-sim-shell .sol-cell { border-radius: 2px; }
+.pitch-sim-shell .sol-cell.done {
+  background: rgba(54, 113, 216, 0.22);
+  border-color: rgba(54, 113, 216, 0.5);
+  color: #b9d0f2;
+}
+.pitch-sim-shell .btn,
+.pitch-sim-shell .select-pill {
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  box-shadow: none;
+}
+.pitch-sim-shell .btn-halo {
+  background: #a32613;
+  border-color: #fc3d21;
+}
+.pitch-sim-shell .btn-halo:hover,
+.pitch-sim-shell .btn-halo.active {
+  background: #c43118;
+  box-shadow: none;
+}
+.pitch-sim-shell .decision-card:hover {
+  border-color: #3671d8;
+  box-shadow: none;
+}
+.pitch-sim-shell .decision-card.selected {
+  border-color: #3671d8;
+  background: rgba(54, 113, 216, 0.08);
 }

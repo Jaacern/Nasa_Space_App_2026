@@ -368,10 +368,9 @@ const HALO_PORTAL_FRAGMENT = `
     float r = length(centered) * 2.0;
     float angle = atan(centered.y, centered.x);
 
-    float wave = fbm(vec2(cos(angle) * 2.3 + uTime * 0.25, sin(angle) * 2.3 - uTime * 0.2));
-    float portalEdge = r + wave * 0.05;
+    float portalEdge = r;
 
-    float outerAlpha = 1.0 - smoothstep(0.68, 0.96, portalEdge);
+    float outerAlpha = 1.0 - smoothstep(0.965, 1.0, portalEdge);
     if (outerAlpha <= 0.005) discard;
 
     float zoom = 0.93 + 0.04 * sin(uTime * 0.65);
@@ -391,10 +390,9 @@ const HALO_PORTAL_FRAGMENT = `
 
     vec3 coreColor = mix(holoScan, nasaTex.rgb * 1.16, clamp(paintMask, 0.0, 1.0));
 
-    float rimGlow = smoothstep(0.78, 0.9, portalEdge) * (1.0 - smoothstep(0.9, 0.97, portalEdge));
-    float innerFlare = smoothstep(0.8, 0.88, portalEdge) * 0.2;
-
-    vec3 finalRgb = coreColor + uPortalColor * (rimGlow * 0.8 + innerFlare);
+    // Viñeta fotografica sutil hacia el marco (nada de aros pintados estilo CSS)
+    float vign = 1.0 - smoothstep(0.62, 0.99, portalEdge) * 0.42;
+    vec3 finalRgb = coreColor * vign;
     float finalAlpha = outerAlpha * uPassFade * 0.92;
     gl_FragColor = vec4(finalRgb, finalAlpha);
   }
@@ -615,6 +613,80 @@ function initThreeSpaceEngine() {
     return tex;
   }
   const circleSpriteTex = makeSoftCircleTexture();
+
+  // Texturas procedurales de fabrica aeroespacial para mallas GLB que vienen sin textura:
+  // paneles de aluminio con costuras y remaches, foil Kapton arrugado y celdas solares.
+  function makeTileTex(draw, size = 256, repeat = 2) {
+    const cv = document.createElement("canvas");
+    cv.width = cv.height = size;
+    draw(cv.getContext("2d"), size);
+    const t = new THREE.CanvasTexture(cv);
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(repeat, repeat);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.anisotropy = 8;
+    return t;
+  }
+  const aeroPanelTex = makeTileTex((g, S) => {
+    g.fillStyle = "#c9ced5";
+    g.fillRect(0, 0, S, S);
+    for (let i = 0; i < 2600; i++) {
+      const v = 185 + ((Math.random() * 46) | 0);
+      g.fillStyle = `rgba(${v},${v},${v + 5},0.18)`;
+      g.fillRect(Math.random() * S, Math.random() * S, 1.6, 1.6);
+    }
+    const step = S / 4;
+    g.strokeStyle = "rgba(74,82,94,0.55)";
+    g.lineWidth = 2;
+    for (let i = 0; i <= 4; i++) {
+      g.beginPath(); g.moveTo(i * step, 0); g.lineTo(i * step, S); g.stroke();
+      g.beginPath(); g.moveTo(0, i * step); g.lineTo(S, i * step); g.stroke();
+    }
+    g.fillStyle = "rgba(60,66,76,0.5)";
+    for (let i = 0; i < 4; i++)
+      for (let j = 0; j < 4; j++)
+        for (let k = 0; k < 6; k++) {
+          g.beginPath();
+          g.arc(i * step + 10 + k * ((step - 20) / 5), j * step + 7, 1.7, 0, 7);
+          g.fill();
+        }
+  });
+  const foilTex = makeTileTex((g, S) => {
+    g.fillStyle = "#8a6a22";
+    g.fillRect(0, 0, S, S);
+    for (let i = 0; i < 320; i++) {
+      const x = Math.random() * S;
+      const y = Math.random() * S;
+      const grd = g.createLinearGradient(x, y, x + 30 - Math.random() * 60, y + 30 - Math.random() * 60);
+      grd.addColorStop(0, "rgba(255,212,116,0.5)");
+      grd.addColorStop(1, "rgba(86,58,10,0.45)");
+      g.fillStyle = grd;
+      g.beginPath();
+      g.moveTo(x, y);
+      for (let k = 0; k < 5; k++) g.lineTo(x + (Math.random() - 0.5) * 46, y + (Math.random() - 0.5) * 46);
+      g.closePath();
+      g.fill();
+    }
+  }, 256, 3);
+  const solarCellTex = makeTileTex((g, S) => {
+    g.fillStyle = "#0d1d33";
+    g.fillRect(0, 0, S, S);
+    const c = S / 8;
+    g.strokeStyle = "rgba(150,178,215,0.85)";
+    g.lineWidth = 2;
+    for (let i = 0; i <= 8; i++) {
+      g.beginPath(); g.moveTo(i * c, 0); g.lineTo(i * c, S); g.stroke();
+      g.beginPath(); g.moveTo(0, i * c); g.lineTo(S, i * c); g.stroke();
+    }
+    for (let i = 0; i < 8; i++)
+      for (let j = 0; j < 8; j++) {
+        const grd = g.createLinearGradient(i * c, j * c, (i + 1) * c, (j + 1) * c);
+        grd.addColorStop(0, "rgba(82,124,186,0.4)");
+        grd.addColorStop(1, "rgba(10,20,40,0)");
+        g.fillStyle = grd;
+        g.fillRect(i * c + 2, j * c + 2, c - 4, c - 4);
+      }
+  });
   texLoader.setCrossOrigin("anonymous");
 
   // Como descomprimimos los 17 modelos .glb de la NASA en disco, GLTFLoader los carga directamente al instante
@@ -693,6 +765,7 @@ function initThreeSpaceEngine() {
         let meshIdx = 0;
         raw.traverse((child) => {
           if (child.isMesh && child.material) {
+            const hasUV = Boolean(child.geometry?.attributes?.uv);
             const mats = Array.isArray(child.material) ? child.material : [child.material];
             for (const m of mats) {
               m.envMapIntensity = 0.85;
@@ -702,19 +775,22 @@ function initThreeSpaceEngine() {
               if (!m.map) {
                 const mName = (m.name || "").toLowerCase();
                 if (mName.includes("gold") || mName.includes("foil") || mName.includes("kapton") || mName.includes("mli")) {
-                  m.color = new THREE.Color(0xb08d3f); // MLI dorado apagado
-                  m.metalness = 0.85;
-                  m.roughness = 0.38;
+                  if (hasUV) { m.map = foilTex; m.bumpMap = foilTex; m.bumpScale = 0.05; m.color = new THREE.Color(0xffffff); }
+                  else m.color = new THREE.Color(0xb08d3f);
+                  m.metalness = 0.82;
+                  m.roughness = 0.4;
                 } else if (mName.includes("solar") || mName.includes("panel") || mName.includes("cell") || mName.includes("array")) {
-                  m.color = new THREE.Color(0x14233c); // celda solar azul muy profundo
-                  m.metalness = 0.6;
-                  m.roughness = 0.32;
+                  if (hasUV) { m.map = solarCellTex; m.bumpMap = solarCellTex; m.bumpScale = 0.02; m.color = new THREE.Color(0xffffff); }
+                  else m.color = new THREE.Color(0x14233c);
+                  m.metalness = 0.55;
+                  m.roughness = 0.34;
                 } else {
-                  // Aluminio / pintura termica blanca-gris, con variacion minima por malla
-                  const tone = 0.62 + (meshIdx % 3) * 0.07;
-                  m.color = new THREE.Color(tone, tone, tone * 1.02);
-                  m.metalness = 0.42;
-                  m.roughness = 0.5;
+                  // Aluminio con paneles, costuras y remaches; tono minimamente variado por malla
+                  const tone = 0.86 + (meshIdx % 3) * 0.06;
+                  if (hasUV) { m.map = aeroPanelTex; m.bumpMap = aeroPanelTex; m.bumpScale = 0.035; m.color = new THREE.Color(tone, tone, tone * 1.01); }
+                  else m.color = new THREE.Color(tone * 0.72, tone * 0.72, tone * 0.73);
+                  m.metalness = 0.45;
+                  m.roughness = 0.48;
                 }
                 if (m.emissive) {
                   m.emissive = new THREE.Color(0x000000);
@@ -763,8 +839,16 @@ function initThreeSpaceEngine() {
   //    5. Fase Outpost (u = 0.90 .. 1.00): Aterrizaje frente al Hábitat HDU,
   //       el Rover Perseverance y el Helicóptero Ingenuity en el Cráter Jezero.
   // ============================================================================
+  // Centro y radio del planeta: el pad se asienta SOBRE la esfera y el cohete
+  // asciende por la normal de la superficie antes de bordear todo el globo.
+  const EARTH_CENTER = new THREE.Vector3(0, -0.5, -24.0);
+  const EARTH_RADIUS = 7.6;
+  const padNormal = new THREE.Vector3(1.4, -4.9, 12.0).normalize();
+  const padSurface = EARTH_CENTER.clone().addScaledVector(padNormal, EARTH_RADIUS);
+
   const controlPoints = [
-    new THREE.Vector3(1.4, -5.4, -12.0),   // P00 (u=0.00): Cabo Cañaveral Pad 39B (frente-abajo de la Tierra)
+    padSurface.clone().addScaledVector(padNormal, 0.45),  // P00 (u=0.00): sobre el Pad 39B, en la superficie
+    padSurface.clone().addScaledVector(padNormal, 3.4),   // P00b: ascenso vertical por la normal (efecto Google Earth)
     new THREE.Vector3(7.8, -3.6, -15.8),   // P01 (u=0.06): Ascenso bordeando el limbo oriental terrestre
     new THREE.Vector3(11.0, 1.4, -21.8),   // P02 (u=0.12): Órbita ecuatorial derecha de la Tierra (junto a Shuttle/Canadarm)
     new THREE.Vector3(9.4, 7.2, -27.2),    // P03 (u=0.18): Hemisferio norte terrestre
@@ -996,7 +1080,8 @@ function initThreeSpaceEngine() {
 
   // 1. Mobile Launcher Pad 39B (.glb) junto al punto de despegue en Cabo Cañaveral (P00)
   const launchPadHolder = new THREE.Group();
-  launchPadHolder.position.set(3.2, -5.2, -13.2);
+  launchPadHolder.position.copy(padSurface);
+  launchPadHolder.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), padNormal);
   scene.add(launchPadHolder);
   loadNasaGlbNormalized("/public/assets/models/mobile_launcher.glb", 2.8, (model) => {
     launchPadHolder.add(model);
@@ -1520,7 +1605,16 @@ function initThreeSpaceEngine() {
     return t;
   })();
   const portalDiskGeo = new THREE.CircleGeometry(2.35, 64);
-  const gyroRingGeo = new THREE.TorusGeometry(2.18, 0.018, 16, 100);
+  // Marco fisico del portal: torus de aluminio pulido (recibe luz, sombras y reflejo IBL)
+  // + filete emisivo interior fino con el color de la estacion.
+  const portalFrameGeo = new THREE.TorusGeometry(2.46, 0.095, 20, 84);
+  const portalAccentGeo = new THREE.TorusGeometry(2.355, 0.02, 12, 84);
+  const portalFrameMat = new THREE.MeshStandardMaterial({
+    color: 0xcfd4db,
+    metalness: 0.92,
+    roughness: 0.26,
+    envMapIntensity: 1.1,
+  });
 
   const envColors = {
     tierra: new THREE.Color(0x38bdf8),
@@ -1582,17 +1676,25 @@ function initThreeSpaceEngine() {
     scene.add(portalMesh);
     portalMeshes.push(portalMesh);
 
-    const ringMat = new THREE.MeshBasicMaterial({
-      color: pColor,
+    const accentMat = new THREE.MeshStandardMaterial({
+      color: 0x090d12,
+      emissive: pColor,
+      emissiveIntensity: 1.5,
+      metalness: 0.3,
+      roughness: 0.45,
       transparent: true,
-      opacity: 0.28,
-      depthWrite: false,
+      opacity: 1.0,
     });
-    const ringMesh = new THREE.Mesh(gyroRingGeo, ringMat);
-    ringMesh.position.copy(portalPos);
-    ringMesh.lookAt(portalPos.clone().sub(tangent));
-    scene.add(ringMesh);
-    portalRings.push(ringMesh);
+    const ringGroup = new THREE.Group();
+    const frameMesh = new THREE.Mesh(portalFrameGeo, portalFrameMat);
+    frameMesh.castShadow = true;
+    const accentMesh = new THREE.Mesh(portalAccentGeo, accentMat);
+    ringGroup.add(frameMesh, accentMesh);
+    ringGroup.position.copy(portalPos);
+    ringGroup.lookAt(portalPos.clone().sub(tangent));
+    ringGroup.userData.accentMat = accentMat;
+    scene.add(ringGroup);
+    portalRings.push(ringGroup);
   });
 
   if (currentMission) syncOutpost3DCallback?.(currentMission.state);
@@ -1644,9 +1746,10 @@ function initThreeSpaceEngine() {
     }
   });
 
+  let blenderGridUserOn = true;
   toggleBlenderGridCallback = () => {
-    blenderVectorGroup.visible = !blenderVectorGroup.visible;
-    return blenderVectorGroup.visible;
+    blenderGridUserOn = !blenderGridUserOn;
+    return blenderGridUserOn;
   };
 
   setCameraPresetCallback = (axis) => {
@@ -1748,26 +1851,40 @@ function initThreeSpaceEngine() {
     shipGroup.lookAt(lookTarget);
 
     // Cámara de persecución vectorial con soporte de órbita estilo Blender (userOrbitYaw / userOrbitPitch)
-    const camDist = 6.2;
+    // Despegue: la cámara parte pegada al cohete sobre la superficie y se aleja al ganar altura,
+    // revelando la curvatura del planeta (pull-back estilo Google Earth).
+    const launchZoom = THREE.MathUtils.smoothstep(currentU, 0.004, 0.085);
+    const camDist = 3.6 + launchZoom * 2.6;
     const backVec = shipTan.clone().negate();
     const cosP = Math.cos(userOrbitPitch);
     const sinP = Math.sin(userOrbitPitch);
     const cosY = Math.cos(userOrbitYaw);
     const sinY = Math.sin(userOrbitYaw);
 
-    const orbitOffset = new THREE.Vector3()
+    const cruiseOffset = new THREE.Vector3()
       .addScaledVector(backVec, cosP * cosY * camDist)
       .addScaledVector(rightVec, cosP * sinY * camDist)
       .addScaledVector(upVec, sinP * camDist + 0.55);
+    // Toma fija de plataforma: lateral, baja, con el planeta ocupando el fondo
+    const launchOffset = new THREE.Vector3()
+      .addScaledVector(rightVec, 4.1)
+      .addScaledVector(backVec, 1.1)
+      .addScaledVector(padNormal, 1.25);
+    const orbitOffset = launchOffset.lerp(cruiseOffset, launchZoom);
 
     const desiredCamPos = finalShipPos.clone().add(orbitOffset);
     camera.position.lerp(desiredCamPos, 0.12);
+    earthAtmo.visible = camera.position.distanceTo(earthGroup.position) > EARTH_RADIUS * 1.18;
+    // El decorado vectorial (nodos, tubo, grillas) entra tras abandonar la superficie
+    blenderVectorGroup.visible = blenderGridUserOn && currentU > 0.034;
+    eqRing.visible = polarRing.visible = currentU > 0.034;
 
     // En la fase de órbita terrestre (currentU < 0.34), sesgamos suavemente la mirada hacia la Tierra
     // para que el espectador vea cómo el cohete bordea la enorme esfera del Planeta Tierra 3D
-    const camLookTarget = finalShipPos.clone().addScaledVector(shipTan, 3.8);
+    const camLookTarget = finalShipPos.clone().addScaledVector(shipTan, 3.8 * launchZoom);
+    camLookTarget.addScaledVector(padNormal, (1 - launchZoom) * 1.3);
     if (currentU < 0.34) {
-      const earthBias = (1.0 - currentU / 0.34) * 0.24;
+      const earthBias = (1.0 - currentU / 0.34) * 0.2 * launchZoom;
       camLookTarget.lerp(earthGroup.position, earthBias);
     }
     camera.lookAt(camLookTarget);
@@ -1803,7 +1920,9 @@ function initThreeSpaceEngine() {
       } else {
         u.uPassFade.value = 1.0;
       }
-      portalRings[idx].material.opacity = u.uPassFade.value * (0.18 + approachFactor * 0.55);
+      const accent = portalRings[idx].userData.accentMat;
+      accent.opacity = u.uPassFade.value;
+      accent.emissiveIntensity = 0.7 + approachFactor * 1.6;
     });
 
     raycaster.setFromCamera(mouse, camera);
@@ -1995,28 +2114,28 @@ function renderGameUI() {
     </div>
     <div class="stat-box">
       <div class="stat-label"><span>1. ENERGÍA</span><span>MÁX 100</span></div>
-      <div class="stat-value" style="color:#fde047;">${state.power}</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${state.power}%; background:#eab308;"></div></div>
+      <div class="stat-value">${state.power}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${state.power}%; background:#3671d8;"></div></div>
     </div>
     <div class="stat-box">
       <div class="stat-label"><span>2. AIRE Y VIDA</span><span>MÁX 100</span></div>
-      <div class="stat-value" style="color:#38bdf8;">${state.air}</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${state.air}%; background:#0ea5e9;"></div></div>
+      <div class="stat-value">${state.air}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${state.air}%; background:#3671d8;"></div></div>
     </div>
     <div class="stat-box">
       <div class="stat-label"><span>3. BLINDAJE</span><span>MÁX 5</span></div>
-      <div class="stat-value" style="color:#c084fc;">Nv ${state.shield}</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${(state.shield / 5) * 100}%; background:#a855f7;"></div></div>
+      <div class="stat-value">Nv ${state.shield}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${(state.shield / 5) * 100}%; background:#3671d8;"></div></div>
     </div>
     <div class="stat-box">
       <div class="stat-label"><span>DOSIS RADLAB</span><span>LÍM 100</span></div>
-      <div class="stat-value" style="color:${state.dose > 60 ? "#f43f5e" : "#10b981"};">${state.dose.toFixed(1)}</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, state.dose)}%; background:${state.dose > 60 ? "#f43f5e" : "#10b981"};"></div></div>
+      <div class="stat-value" style="color:${state.dose > 60 ? "#fc3d21" : "#f8fafc"};">${state.dose.toFixed(1)}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, state.dose)}%; background:${state.dose > 60 ? "#fc3d21" : "#3671d8"};"></div></div>
     </div>
     <div class="stat-box">
       <div class="stat-label"><span>CIENCIA OSDR</span><span>${state.profile.doseMultiplierVsIss}× ISS</span></div>
-      <div class="stat-value" style="color:#6ee7b7;">${state.science}</div>
-      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, state.science * 4)}%; background:#10b981;"></div></div>
+      <div class="stat-value">${state.science}</div>
+      <div class="progress-track"><div class="progress-fill" style="width:${Math.min(100, state.science * 4)}%; background:#3671d8;"></div></div>
     </div>
   `;
 
