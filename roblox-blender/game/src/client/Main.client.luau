@@ -63,12 +63,88 @@ local function useSkill(idx: number)
 	send("skill", idx, dir.X, dir.Z)
 end
 
+local function detectHardwareTier(): string
+	local ok, lvl = pcall(function()
+		return (UserSettings() :: any):GetService("UserGameSettings").SavedQualityLevel
+	end)
+	if ok and lvl then
+		if lvl == Enum.SavedQualitySetting.QualityLevel1
+			or lvl == Enum.SavedQualitySetting.QualityLevel2
+			or lvl == Enum.SavedQualitySetting.QualityLevel3
+		then
+			return "low"
+		elseif lvl == Enum.SavedQualitySetting.QualityLevel4
+			or lvl == Enum.SavedQualitySetting.QualityLevel5
+			or lvl == Enum.SavedQualitySetting.QualityLevel6
+		then
+			return "med"
+		end
+	end
+	if UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled then
+		return "med"
+	end
+	return "high"
+end
+
+local hwTier = detectHardwareTier()
+Hud.settings.effectiveQuality = hwTier
+local fpsEma, lowFpsT, highFpsT = 60, 0, 0
+
 local function applySettings()
 	local S = Hud.settings
-	Fx.setLow(S.lowFx)
+	local tier = if S.qualityMode == "auto" then S.effectiveQuality else S.qualityMode
+	Hud.setEffectiveQuality(tier)
+	Fx.setQuality(tier)
+	Renderer.setQuality(tier)
 	local bloom = Lighting:FindFirstChild("Bloom")
 	if bloom and bloom:IsA("BloomEffect") then
-		bloom.Enabled = not S.lowFx
+		bloom.Enabled = (tier ~= "low")
+		bloom.Intensity = if tier == "high" then 0.55 else 0.32
+	end
+	pcall(function()
+		Lighting.GlobalShadows = (tier ~= "low")
+	end)
+end
+
+-- Equilibrio gráfico automático con histéresis para adaptarse a la carga real del dispositivo.
+local function updateAdaptiveQuality(dt: number)
+	if Hud.settings.qualityMode ~= "auto" or not inRun() or Hud.wantsCursor() then
+		lowFpsT = 0
+		highFpsT = 0
+		return
+	end
+	local instFps = math.clamp(1 / math.max(dt, 0.001), 10, 120)
+	fpsEma = fpsEma * 0.93 + instFps * 0.07
+	local cur = Hud.settings.effectiveQuality
+	if fpsEma < 42 then
+		lowFpsT += dt
+		highFpsT = 0
+		if lowFpsT >= 2.5 then
+			lowFpsT = 0
+			if cur == "high" then
+				Hud.settings.effectiveQuality = "med"
+				applySettings()
+			elseif cur == "med" then
+				Hud.settings.effectiveQuality = "low"
+				applySettings()
+			end
+		end
+	elseif fpsEma > 57 then
+		highFpsT += dt
+		lowFpsT = 0
+		if highFpsT >= 7.0 then
+			highFpsT = 0
+			if cur == "low" then
+				Hud.settings.effectiveQuality = "med"
+				applySettings()
+			elseif cur == "med" and hwTier == "high" then
+				Hud.settings.effectiveQuality = "high"
+				applySettings()
+			end
+		end
+	else
+		lowFpsT = math.max(0, lowFpsT - dt * 0.5)
+		highFpsT = math.max(0, highFpsT - dt * 0.5)
 	end
 end
 
@@ -253,6 +329,7 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 Renderer.init()
 Scenery.init()
 Hud.init(send, useSkill, applySettings)
+applySettings()
 pcall(function()
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false)
 	StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList, false)
@@ -277,25 +354,77 @@ sync.OnClientEvent:Connect(function(snap: any, events: any)
 end)
 send("ready")
 
--- ------------------------------------------------------------ Entrada
+-- ------------------------------------------------------------ Entrada multiplataforma
+local function modeFromInputType(t: Enum.UserInputType): string?
+	if t == Enum.UserInputType.Touch then
+		return "touch"
+	elseif t == Enum.UserInputType.Gamepad1
+		or t == Enum.UserInputType.Gamepad2
+		or t == Enum.UserInputType.Gamepad3
+		or t == Enum.UserInputType.Gamepad4
+		or t == Enum.UserInputType.Gamepad5
+		or t == Enum.UserInputType.Gamepad6
+		or t == Enum.UserInputType.Gamepad7
+		or t == Enum.UserInputType.Gamepad8
+	then
+		return "gamepad"
+	elseif t == Enum.UserInputType.Keyboard
+		or t == Enum.UserInputType.MouseButton1
+		or t == Enum.UserInputType.MouseButton2
+		or t == Enum.UserInputType.MouseMovement
+		or t == Enum.UserInputType.MouseWheel
+	then
+		return "kb"
+	end
+	return nil
+end
+
+local initInputMode = modeFromInputType(UserInputService:GetLastInputType())
+if initInputMode then
+	Hud.setInputMode(initInputMode)
+end
+UserInputService.LastInputTypeChanged:Connect(function(t)
+	local m = modeFromInputType(t)
+	if m then
+		Hud.setInputMode(m)
+	end
+end)
+
 UserInputService.InputBegan:Connect(function(input, processed)
+	local k = input.KeyCode
+	if k == Enum.KeyCode.ButtonB and not UserInputService:GetFocusedTextBox() and Hud.wantsCursor() then
+		if Hud.back() then
+			return
+		end
+	end
 	if processed then
 		return
 	end
-	local k = input.KeyCode
-	if k == Enum.KeyCode.Q or k == Enum.KeyCode.ButtonX or k == Enum.KeyCode.LeftShift then
+	if k == Enum.KeyCode.Q or k == Enum.KeyCode.LeftShift or k == Enum.KeyCode.ButtonX or k == Enum.KeyCode.ButtonL1 then
 		useSkill(1)
-	elseif k == Enum.KeyCode.E or k == Enum.KeyCode.ButtonB then
+	elseif k == Enum.KeyCode.E or k == Enum.KeyCode.ButtonB or k == Enum.KeyCode.ButtonR1 then
 		useSkill(2)
-	elseif k == Enum.KeyCode.One or k == Enum.KeyCode.KeypadOne then
+	elseif k == Enum.KeyCode.One or k == Enum.KeyCode.KeypadOne or k == Enum.KeyCode.DPadLeft then
 		Hud.pick(1)
-	elseif k == Enum.KeyCode.Two or k == Enum.KeyCode.KeypadTwo then
+	elseif k == Enum.KeyCode.Two or k == Enum.KeyCode.KeypadTwo or k == Enum.KeyCode.DPadUp then
 		Hud.pick(2)
-	elseif k == Enum.KeyCode.Three or k == Enum.KeyCode.KeypadThree then
+	elseif k == Enum.KeyCode.Three or k == Enum.KeyCode.KeypadThree or k == Enum.KeyCode.DPadRight then
 		Hud.pick(3)
+	elseif k == Enum.KeyCode.ButtonR3 then
+		if inRun() and not Hud.wantsCursor() then
+			if dist > (CAM.Distance + CAM.MaxDistance) * 0.5 then
+				dist = CAM.MinDistance
+			elseif dist < (CAM.MinDistance + CAM.Distance) * 0.5 then
+				dist = CAM.Distance
+			else
+				dist = CAM.MaxDistance
+			end
+		end
 	elseif k == Enum.KeyCode.P or k == Enum.KeyCode.ButtonStart then
-		if phase == "run" then
+		if phase == "run" and not Hud.wantsCursor() then
 			send("pause")
+		elseif Hud.wantsCursor() then
+			Hud.back()
 		end
 	end
 end)
@@ -329,10 +458,31 @@ UserInputService.InputChanged:Connect(function(input, processed)
 	end
 end)
 
--- Táctil: arrastrar fuera del joystick y de los botones gira la cámara.
+-- Táctil: evita que el joystick virtual inferior izquierdo gire la cámara, y soporta pellizco para zoom.
+local joystickTouches: { [InputObject]: boolean } = {}
+UserInputService.TouchStarted:Connect(function(touchInput, processed)
+	if processed then
+		joystickTouches[touchInput] = true
+		return
+	end
+	local cam = Workspace.CurrentCamera
+	local vp = if cam then cam.ViewportSize else Vector2.new(1280, 720)
+	local p = touchInput.Position
+	if p.X < vp.X * 0.38 and p.Y > vp.Y * 0.52 then
+		joystickTouches[touchInput] = true
+	end
+end)
+UserInputService.TouchEnded:Connect(function(touchInput)
+	joystickTouches[touchInput] = nil
+end)
 UserInputService.TouchMoved:Connect(function(touchInput, processed)
-	if not processed and inRun() and not Hud.wantsCursor() then
+	if not processed and not joystickTouches[touchInput] and inRun() and not Hud.wantsCursor() then
 		rotate(touchInput.Delta.X * 1.6, touchInput.Delta.Y * 1.6)
+	end
+end)
+UserInputService.TouchPinch:Connect(function(_touches, _scale, velocity, _state, processed)
+	if not processed and inRun() and not Hud.wantsCursor() then
+		dist = math.clamp(dist - velocity * 0.08, CAM.MinDistance, CAM.MaxDistance)
 	end
 end)
 
@@ -364,13 +514,14 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 		end
 	end
 
+	updateAdaptiveQuality(dt)
 	Fx.update(dt)
 	Fx.kickUpdate(dt)
 	Scenery.update(dt)
 	Renderer.update(dt)
 	Hud.update(dt, if inRun() then Renderer.nearestChest() else nil)
 
-	local locked = inRun() and not Hud.wantsCursor() and UserInputService.MouseEnabled
+	local locked = inRun() and not Hud.wantsCursor() and Hud.getInputMode() == "kb" and UserInputService.MouseEnabled
 	UserInputService.MouseBehavior = if locked then Enum.MouseBehavior.LockCenter else Enum.MouseBehavior.Default
 	UserInputService.MouseIconEnabled = not locked
 

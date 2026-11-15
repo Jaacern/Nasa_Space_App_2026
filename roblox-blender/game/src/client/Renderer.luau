@@ -46,6 +46,8 @@ local hud: { number }? = nil
 local simT = 0
 local playerPos = Vector3.zero
 local lastGemSound = 0
+local qualityTier = "high"
+local oddFrame = false
 
 local function take(kind: string): Model
 	local pool = pools[kind]
@@ -401,7 +403,16 @@ function Renderer.skillFx(idx: number)
 	Fx.play("skill", if idx == 1 then 1.3 else 1)
 end
 
+function Renderer.setQuality(tier: string)
+	if tier ~= "high" and tier ~= "med" and tier ~= "low" then
+		tier = "high"
+	end
+	qualityTier = tier
+end
+
 function Renderer.update(dt: number)
+	oddFrame = not oddFrame
+	local farDistSq = if qualityTier == "low" then 4900 elseif qualityTier == "med" then 10000 else math.huge
 	local char = Players.LocalPlayer.Character
 	local hrp = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
 	if hrp then
@@ -454,15 +465,18 @@ function Renderer.update(dt: number)
 				moved = true
 			end
 			if moved then
-				local y = -6 * (1 - e.rise) * (1 - e.rise)
-				local pos = Vector3.new(e.x, y, e.z)
-				if e.dx * e.dx + e.dz * e.dz > 0.0001 then
-					-- el golpe empuja al enemigo hacia atras y lo inclina un instante
-					local back = kick * Balance.Juice.KickDist
-					pos -= Vector3.new(e.dx, 0, e.dz) * back
-					e.root.CFrame = CFrame.lookAt(pos, pos + Vector3.new(e.dx, 0, e.dz)) * CFrame.Angles(kick * 0.26, 0, 0)
-				else
-					e.root.CFrame = CFrame.new(pos)
+				local skipFar = oddFrame and e.flash <= 0 and kick <= 0 and ((e.x - px) * (e.x - px) + (e.z - pz) * (e.z - pz) > farDistSq)
+				if not skipFar then
+					local y = -6 * (1 - e.rise) * (1 - e.rise)
+					local pos = Vector3.new(e.x, y, e.z)
+					if e.dx * e.dx + e.dz * e.dz > 0.0001 then
+						-- el golpe empuja al enemigo hacia atras y lo inclina un instante
+						local back = kick * Balance.Juice.KickDist
+						pos -= Vector3.new(e.dx, 0, e.dz) * back
+						e.root.CFrame = CFrame.lookAt(pos, pos + Vector3.new(e.dx, 0, e.dz)) * CFrame.Angles(kick * 0.26, 0, 0)
+					else
+						e.root.CFrame = CFrame.new(pos)
+					end
 				end
 			end
 			if e.flash > 0 then

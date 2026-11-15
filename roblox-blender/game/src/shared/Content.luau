@@ -131,6 +131,8 @@ Content.Tutorial = {
 }
 
 Content.Controls = "WASD / Flechas mover · Ratón girar cámara · Espacio saltar · Q impulso · E pulso · P pausa · 1-2-3 elegir carta"
+Content.ControlsGamepad = "STICK IZQ : Mover · STICK DER : Cámara · A : Saltar · X/L1 : Impulso · B/R1 : Pulso · ◀/▲/▶ : Carta · START : Pausa"
+Content.ControlsTouch = "JOYSTICK IZQ : Moverse · ARRASTRAR DER : Girar cámara · PELLIZCAR : Zoom · BOTONES : Salto, Impulso y Pulso"
 
 Content.Credits = {
 	"ARES FORGE. Proyecto del equipo para NASA International Space Apps Challenge 2026.",

@@ -19,6 +19,7 @@ local musicVol: { [string]: number } = {}
 local emitters: { [string]: { att: Attachment, em: ParticleEmitter } } = {}
 local shake = 0
 local low = false
+local qualityTier = "high"
 local hitstopT = 0
 
 type Num = { part: Part, label: TextLabel, t: number, life: number, vy: number }
@@ -143,13 +144,29 @@ end
 
 function Fx.setLow(on: boolean)
 	low = on
+	qualityTier = if on then "low" else "high"
+end
+
+-- Ajusta densidad de partículas, sacudida y rótulos flotantes según las especificaciones del dispositivo.
+function Fx.setQuality(tier: string)
+	if tier ~= "high" and tier ~= "med" and tier ~= "low" then
+		tier = "high"
+	end
+	qualityTier = tier
+	low = (tier == "low")
+end
+
+function Fx.getQuality(): string
+	return qualityTier
 end
 
 function Fx.burst(name: string, pos: Vector3, count: number)
 	local e = emitters[name]
 	if e then
-		if low then
-			count = math.max(2, count // 3)
+		if qualityTier == "low" then
+			count = math.max(3, math.round(count * 0.35))
+		elseif qualityTier == "med" then
+			count = math.max(4, math.round(count * 0.65))
 		end
 		e.att.WorldPosition = pos
 		e.em:Emit(count)
@@ -157,7 +174,8 @@ function Fx.burst(name: string, pos: Vector3, count: number)
 end
 
 function Fx.shake(amount: number)
-	shake = math.min(Balance.Camera.ShakeMax, math.max(shake, amount))
+	local mul = if qualityTier == "low" then 0.55 elseif qualityTier == "med" then 0.85 else 1
+	shake = math.min(Balance.Camera.ShakeMax, math.max(shake, amount * mul))
 end
 
 -- Retroceso del heroe al disparar: empuje breve hacia atras de la camara que vuelve solo.
@@ -190,6 +208,9 @@ function Fx.frozen(): boolean
 end
 
 function Fx.number(pos: Vector3, text: string, color: Color3, big: boolean?)
+	if qualityTier == "low" and not big and #numActive >= 8 then
+		return
+	end
 	local n = table.remove(numPool)
 	if not n then
 		n = table.remove(numActive, 1) :: Num

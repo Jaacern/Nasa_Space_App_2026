@@ -2,6 +2,7 @@
 -- Interfaz completa: HUD de misión, menú, hangar, ajustes, créditos, cartas de nivel, pieza, pausa y resumen.
 -- Estilo: consola de control de misión (ver Ui.luau).
 
+local GuiService = game:GetService("GuiService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
@@ -34,7 +35,7 @@ local META_COLORS: { [string]: Color3 } = {
 	luck = T.violet,
 }
 
-Hud.settings = { fov = Balance.Camera.Fov, sens = 1, lowFx = false }
+Hud.settings = { fov = Balance.Camera.Fov, sens = 1, qualityMode = "auto", effectiveQuality = "high", lowFx = false }
 
 local send: (...any) -> () = function() end
 local useSkill: (number) -> () = function() end
@@ -52,7 +53,18 @@ local choiceOpen = false
 local bossName = ""
 local overlays: { Frame } = {}
 local fitPanels: { { p: GuiObject, w: number, h: number } } = {}
-local touch = UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+local inputMode = if GuiService:IsTenFootInterface()
+	then "gamepad"
+	elseif UserInputService.TouchEnabled and not UserInputService.KeyboardEnabled
+	then "touch"
+	elseif UserInputService.GamepadEnabled and not UserInputService.KeyboardEnabled
+	then "gamepad"
+	else "kb"
+local touch = (inputMode == "touch")
+local refitFn: () -> () = function() end
+local qualityLabelFn: () -> string = function()
+	return "AUTO"
+end
 
 local function click(fn: () -> ()): () -> ()
 	return function()
@@ -76,6 +88,32 @@ local function centerPanel(parent: Instance, w: number, h: number, tag: string?,
 	return p
 end
 
+local function updateFocus()
+	if not gui or inputMode ~= "gamepad" then
+		GuiService.SelectedObject = nil
+		return
+	end
+	if r.level and r.level.Visible and r.cards and r.cards[1] then
+		GuiService.SelectedObject = r.cards[1].card
+	elseif r.piece and r.piece.Visible and r.pieceContinueBtn then
+		GuiService.SelectedObject = r.pieceContinueBtn
+	elseif r.pause and r.pause.Visible and r.pauseContinueBtn then
+		GuiService.SelectedObject = r.pauseContinueBtn
+	elseif r.summary and r.summary.Visible and r.sumRetryBtn then
+		GuiService.SelectedObject = r.sumRetryBtn
+	elseif r.shop and r.shop.Visible and r.shopBackBtn then
+		GuiService.SelectedObject = r.shopBackBtn
+	elseif r.settings and r.settings.Visible and r.settingsBackBtn then
+		GuiService.SelectedObject = r.settingsBackBtn
+	elseif r.credits and r.credits.Visible and r.creditsBackBtn then
+		GuiService.SelectedObject = r.creditsBackBtn
+	elseif r.menu and r.menu.Visible and r.menuBtnPlay then
+		GuiService.SelectedObject = r.menuBtnPlay
+	else
+		GuiService.SelectedObject = nil
+	end
+end
+
 local function show(f: Frame, on: boolean)
 	if on and not f.Visible then
 		local p = f:FindFirstChild("Panel")
@@ -84,6 +122,7 @@ local function show(f: Frame, on: boolean)
 		end
 	end
 	f.Visible = on
+	updateFocus()
 end
 
 -- ---------------------------------------------------------------- HUD de misión
@@ -96,11 +135,17 @@ local function buildHud()
 	r.xpFill = xpFill
 	local lvlChip = panel({ Position = UDim2.fromOffset(16, 18), Size = UDim2.fromOffset(136, 36), ZIndex = Z.hud, TagColor = T.gold })
 	lvlChip.Parent = h
+	r.lvlChip = lvlChip
+	r.lvlScale = new("UIScale", { Scale = 1 })
+	r.lvlScale.Parent = lvlChip
 	r.lvl = label("NIVEL 1", 24, { FontFace = F.impact, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.hudTop })
 	r.lvl.Parent = lvlChip
 
 	local suit = panel({ Position = UDim2.fromOffset(16, 62), Size = UDim2.fromOffset(340, 100), ZIndex = Z.hud }, "ESTADO DEL TRAJE")
 	suit.Parent = h
+	r.suitPanel = suit
+	r.suitScale = new("UIScale", { Scale = 1 })
+	r.suitScale.Parent = suit
 	local hpBack, hpFill = Ui.bar(suit, UDim2.fromOffset(12, 36), UDim2.fromOffset(316, 26), T.green, Z.hud)
 	r.hpFill = hpFill
 	r.shieldFill = new("Frame", { Size = UDim2.fromScale(0, 0.28), BackgroundColor3 = T.cyanHi, BorderSizePixel = 0, ZIndex = Z.hudTop })
@@ -111,14 +156,16 @@ local function buildHud()
 	r.kills.Parent = suit
 	label("SOPORTE VITAL", 18, { FontFace = F.mono, Position = UDim2.fromOffset(164, 68), Size = UDim2.fromOffset(164, 24), TextXAlignment = RIGHT, TextColor3 = T.green, ZIndex = Z.hudTop }).Parent = suit
 
-	r.wave = label("OLEADA 01/18", 34, { Name = "Wave", FontFace = F.impact, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(420, 40), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.15, ZIndex = Z.hud })
+	r.wave = label("OLEADA 01/18", 34, { Name = "Wave", FontFace = F.impact, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 14), Size = UDim2.fromOffset(420, 40), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.15, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
+	new("UITextSizeConstraint", { MinTextSize = 20, MaxTextSize = 34 }).Parent = r.wave
 	r.wave.Parent = h
 	r.timer = label("T+ 00:00", 22, { Name = "Timer", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 54), Size = UDim2.fromOffset(240, 26), TextXAlignment = CENTER, TextColor3 = T.cyanHi, TextStrokeTransparency = 0.3, ZIndex = Z.hud })
 	r.timer.Parent = h
-	r.biome = label("ETAPA 1 · " .. Content.Biomes[1].name, 18, { Name = "Biome", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 82), Size = UDim2.fromOffset(480, 24), TextXAlignment = CENTER, TextColor3 = BIOME_COLORS[1], TextStrokeTransparency = 0.25, ZIndex = Z.hud })
+	r.biome = label("ETAPA 1 · " .. Content.Biomes[1].name, 18, { Name = "Biome", FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 82), Size = UDim2.fromOffset(480, 24), TextXAlignment = CENTER, TextColor3 = BIOME_COLORS[1], TextStrokeTransparency = 0.25, TextWrapped = false, TextScaled = true, ZIndex = Z.hud })
+	new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 18 }).Parent = r.biome
 	r.biome.Parent = h
 
-	local bossWrap = new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), Size = UDim2.new(0.42, 0, 0, 52), BackgroundTransparency = 1, Visible = false })
+	local bossWrap = new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), Size = UDim2.new(0.38, 0, 0, 52), BackgroundTransparency = 1, Visible = false })
 	bossWrap.Parent = h
 	r.bossWrap = bossWrap
 	r.bossName = label("", 20, { FontFace = F.bold, TextColor3 = T.orange, TextXAlignment = CENTER, Size = UDim2.new(1, 0, 0, 24), TextStrokeTransparency = 0.3, ZIndex = Z.hud })
@@ -129,6 +176,9 @@ local function buildHud()
 	-- Piezas de la nave
 	local ship = panel({ AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 18), Size = UDim2.fromOffset(368, 92), ZIndex = Z.hud }, "NAVE · PIEZAS RECUPERADAS")
 	ship.Parent = h
+	r.shipPanel = ship
+	r.shipScale = new("UIScale", { Scale = 1 })
+	r.shipScale.Parent = ship
 	r.pieces = {}
 	for i = 1, 4 do
 		local cell = new("TextLabel", {
@@ -161,7 +211,10 @@ local function buildHud()
 		local stroke = Ui.stroke(T.cyanHi, 2.5, 0)
 		stroke.Parent = b
 		label(sk.short, 20, { FontFace = F.bold, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 24), Size = UDim2.new(1, 0, 0, 26), TextColor3 = T.cyanHi, ZIndex = Z.hudTop }).Parent = b
-		label(if touch then "" else "[" .. sk.key .. "]", 18, { FontFace = F.mono, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 52), Size = UDim2.new(1, 0, 0, 22), TextColor3 = T.dim, ZIndex = Z.hudTop }).Parent = b
+		local keyLbl = label(if touch then "TOCAR" elseif inputMode == "gamepad" then (if i == 1 then "[X/L1]" else "[B/R1]") else "[" .. sk.key .. "]", 17, { FontFace = F.mono, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 52), Size = UDim2.new(1, -8, 0, 22), TextColor3 = T.dim, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
+		keyLbl.Position = UDim2.fromOffset(4, 52)
+		new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 17 }).Parent = keyLbl
+		keyLbl.Parent = b
 		local cdOverlay = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.bg, BackgroundTransparency = 0.05, BorderSizePixel = 0, Visible = false, ZIndex = Z.hudTop + 1 })
 		Ui.corner(50).Parent = cdOverlay
 		cdOverlay.Parent = b
@@ -171,12 +224,15 @@ local function buildHud()
 			useSkill(i)
 		end)
 		b.Parent = h
-		r.skills[i] = { button = b, overlay = cdOverlay, text = cdText, stroke = stroke, ready = true }
+		r.skills[i] = { button = b, overlay = cdOverlay, text = cdText, stroke = stroke, keyLabel = keyLbl, ready = true }
 	end
 
 	-- Telemetría (datos NASA)
 	local ticker = panel({ AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 16, 1, -(touch and 180 or 20)), Size = UDim2.fromOffset(470, 66), ZIndex = Z.hud }, "TELEMETRÍA · NASA DONKI · COPIA LOCAL")
 	ticker.Parent = h
+	r.tickerPanel = ticker
+	r.tickerScale = new("UIScale", { Scale = 1 })
+	r.tickerScale.Parent = ticker
 	r.ticker = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(12, 34), Size = UDim2.fromOffset(446, 24), ZIndex = Z.hudTop, TextWrapped = false, TextTruncate = Enum.TextTruncate.AtEnd })
 	r.ticker.Parent = ticker
 
@@ -188,10 +244,12 @@ local function buildHud()
 	local tut = panel({ AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -150), Size = UDim2.fromOffset(640, 96), Visible = false, ZIndex = Z.hud }, "TUTORIAL 1/8")
 	tut.Parent = h
 	r.tut = tut
-	r.tutText = label("", 20, { FontFace = F.semi, Position = UDim2.fromOffset(14, 34), Size = UDim2.fromOffset(612, 54), ZIndex = Z.hudTop, TextYAlignment = TOP })
+	r.tutText = label("", 20, { FontFace = F.semi, Position = UDim2.fromOffset(14, 34), Size = UDim2.fromOffset(612, 54), ZIndex = Z.hudTop, TextYAlignment = TOP, TextScaled = true })
+	new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 20 }).Parent = r.tutText
 	r.tutText.Parent = tut
 
-	r.hint = label(Content.Controls, 18, { FontFace = F.mono, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -24), Size = UDim2.new(0.5, 0, 0, 48), TextXAlignment = CENTER, TextColor3 = T.text, TextStrokeTransparency = 0.3, Visible = false, ZIndex = Z.hud })
+	r.hint = label(Content.Controls, 17, { FontFace = F.mono, AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.new(0.46, 0, 0, 48), TextXAlignment = CENTER, TextColor3 = T.text, TextStrokeTransparency = 0.3, TextWrapped = true, TextScaled = true, Visible = false, ZIndex = Z.hud })
+	new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 17 }).Parent = r.hint
 	r.hint.Parent = h
 
 	r.arrow = label("▲", 40, { FontFace = F.bold, AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(48, 48), TextXAlignment = CENTER, TextColor3 = T.gold, TextStrokeTransparency = 0.2, Visible = false, ZIndex = Z.hud })
@@ -215,20 +273,22 @@ local function buildHud()
 end
 
 -- ---------------------------------------------------------------- Menú principal
-local function stepper(parent: Instance, y: number, title: string, get: () -> string, dec: () -> (), inc: () -> ())
-	label(title, 20, { FontFace = F.semi, Position = UDim2.fromOffset(24, y), Size = UDim2.fromOffset(320, 46), ZIndex = Z.content }).Parent = parent
-	local value = label(get(), 20, { FontFace = F.monoBold, Position = UDim2.fromOffset(422, y), Size = UDim2.fromOffset(118, 46), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
+local function stepper(parent: Instance, y: number, title: string, get: () -> string, dec: () -> (), inc: () -> ()): TextLabel
+	label(title, 20, { FontFace = F.semi, Position = UDim2.fromOffset(24, y), Size = UDim2.fromOffset(310, 46), ZIndex = Z.content, TextWrapped = false, TextScaled = true }).Parent = parent
+	local value = label(get(), 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(406, y), Size = UDim2.fromOffset(172, 46), TextXAlignment = CENTER, TextColor3 = T.cyanHi, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 18 }).Parent = value
 	value.Parent = parent
 	button("−", click(function()
 		dec()
 		value.Text = get()
 		onSettings()
-	end), { Position = UDim2.fromOffset(362, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
+	end), { Position = UDim2.fromOffset(348, y), Size = UDim2.fromOffset(50, 46), ZIndex = Z.content }, "ghost").Parent = parent
 	button("+", click(function()
 		inc()
 		value.Text = get()
 		onSettings()
-	end), { Position = UDim2.fromOffset(548, y), Size = UDim2.fromOffset(52, 46), ZIndex = Z.content }, "ghost").Parent = parent
+	end), { Position = UDim2.fromOffset(586, y), Size = UDim2.fromOffset(50, 46), ZIndex = Z.content }, "ghost").Parent = parent
+	return value
 end
 
 local function virtualSize(): Vector2
@@ -256,6 +316,7 @@ local function buildMainMenu()
 		}),
 	}).Parent = shade
 	shade.Parent = m
+	r.menuShade = shade
 
 	local col = new("Frame", {
 		Name = "MenuColumn",
@@ -338,6 +399,7 @@ local function buildMainMenu()
 		send("start", "full")
 	end))
 	hero.Parent = col
+	r.menuBtnPlay = hero
 
 	local function darkCard(name: string, x: number, py: number, w: number, h: number, titleTxt: string, subTxt: string?, accent: Color3, fn: () -> ()): TextButton
 		local b = new("TextButton", {
@@ -496,16 +558,43 @@ local function buildMenu()
 		b.Parent = row
 		r.shopRows[id] = { lvl = lvl, btn = b }
 	end
-	button("VOLVER", click(function()
+	local shopBack = button("VOLVER", click(function()
 		show(r.shop, false)
-	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = sp
+	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content })
+	shopBack.Parent = sp
+	r.shopBackBtn = shopBack
 
 	-- Ajustes y Controles
 	local st = overlay("Settings")
 	r.settings = st
-	local stp = centerPanel(st, 640, 468, "AJUSTES Y CONTROLES", T.green)
+	local stp = centerPanel(st, 660, 504, "AJUSTES Y CONTROLES", T.green)
 	label("AJUSTES DEL TRAJE", 28, { FontFace = F.impact, Position = UDim2.fromOffset(24, 34), Size = UDim2.fromOffset(420, 32), TextColor3 = T.green, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = stp
 	local S = Hud.settings
+	local QUALITY_CYCLE = { "auto", "high", "med", "low" }
+	local function tierEs(t: string): string
+		if t == "low" then
+			return "BAJA"
+		elseif t == "med" then
+			return "MEDIA"
+		end
+		return "ALTA"
+	end
+	local function qualityLabel(): string
+		if S.qualityMode == "auto" then
+			return "AUTO (" .. tierEs(S.effectiveQuality) .. ")"
+		end
+		return tierEs(S.qualityMode)
+	end
+	qualityLabelFn = qualityLabel
+	local function stepQuality(delta: number)
+		local cur = table.find(QUALITY_CYCLE, S.qualityMode) or 1
+		local nextIdx = ((cur - 1 + delta) % #QUALITY_CYCLE) + 1
+		S.qualityMode = QUALITY_CYCLE[nextIdx]
+		if S.qualityMode ~= "auto" then
+			S.effectiveQuality = S.qualityMode
+			S.lowFx = (S.qualityMode == "low")
+		end
+	end
 	stepper(stp, 74, "CAMPO DE VISIÓN", function()
 		return tostring(S.fov) .. "°"
 	end, function()
@@ -520,32 +609,39 @@ local function buildMenu()
 	end, function()
 		S.sens = math.min(2.6, S.sens + 0.2)
 	end)
-	stepper(stp, 178, "EFECTOS VISUALES", function()
-		return if S.lowFx then "BAJOS" else "ALTOS"
+	r.qualityValue = stepper(stp, 178, "CALIDAD GRÁFICA", qualityLabel, function()
+		stepQuality(-1)
 	end, function()
-		S.lowFx = true
-	end, function()
-		S.lowFx = false
+		stepQuality(1)
 	end)
-	local ctrlBox = new("Frame", { Position = UDim2.fromOffset(24, 236), Size = UDim2.new(1, -48, 0, 150), BackgroundColor3 = T.bg, BackgroundTransparency = 0.3, BorderSizePixel = 0, ZIndex = Z.panel })
+	local ctrlBox = new("Frame", { Position = UDim2.fromOffset(24, 236), Size = UDim2.new(1, -48, 0, 178), BackgroundColor3 = T.bg, BackgroundTransparency = 0.3, BorderSizePixel = 0, ZIndex = Z.panel })
 	Ui.corner(4).Parent = ctrlBox
 	Ui.stroke(T.green, 1, 0.55).Parent = ctrlBox
 	ctrlBox.Parent = stp
-	label("CONTROLES DE MANDO", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 8), Size = UDim2.new(1, -28, 0, 22), TextColor3 = T.green, ZIndex = Z.content }).Parent = ctrlBox
+	label("CONTROLES POR PLATAFORMA", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 8), Size = UDim2.fromOffset(290, 22), TextColor3 = T.green, TextWrapped = false, ZIndex = Z.content }).Parent = ctrlBox
+	r.platformBadge = label("", 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(310, 8), Size = UDim2.new(1, -324, 0, 22), TextXAlignment = RIGHT, TextColor3 = T.cyanHi, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = r.platformBadge
+	r.platformBadge.Parent = ctrlBox
+	new("Frame", { Position = UDim2.fromOffset(14, 33), Size = UDim2.new(1, -28, 0, 1), BackgroundColor3 = T.line, BackgroundTransparency = 0.4, BorderSizePixel = 0, ZIndex = Z.content }).Parent = ctrlBox
 	local ctrlLines = {
-		{ k = "WASD / FLECHAS ↑↓←→", d = "Moverse en 8 direcciones", c = T.cyanHi },
-		{ k = "RATÓN / ARRASTRAR", d = "Girar cámara  ·  RUEDA : Zoom", c = T.gold },
-		{ k = "ESPACIO", d = "Saltar  ·  Q : Impulso RCS  ·  E : Pulso", c = T.green },
-		{ k = "1 · 2 · 3", d = "Elegir carta de mejora  ·  P : Pausa", c = T.orange },
+		{ k = "PC / WEB", d = "WASD o Flechas ↑↓←→ mover · Ratón cámara · Rueda zoom · Espacio saltar · Q/E habs · 1-3 cartas · P pausa", c = T.cyanHi },
+		{ k = "CONSOLA / MANDO", d = "Stick Izq mover · Stick Der cámara · A saltar · X/L1 e B/R1 habs · ◀▲▶ elegir carta · Start pausa", c = T.gold },
+		{ k = "MÓVIL / TÁCTIL", d = "Joystick izq mover · Arrastrar derecha cámara · Pellizcar zoom · Botones saltar, RCS, Pulso y tocar cartas", c = T.green },
 	}
 	for idx, cl in ctrlLines do
-		local ly = 34 + (idx - 1) * 27
-		label(cl.k, 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, ly), Size = UDim2.fromOffset(218, 24), TextColor3 = cl.c, ZIndex = Z.content, TextWrapped = false }).Parent = ctrlBox
-		label(cl.d, 16, { FontFace = F.semi, Position = UDim2.fromOffset(238, ly), Size = UDim2.new(1, -252, 0, 24), TextColor3 = T.text, ZIndex = Z.content, TextWrapped = false }).Parent = ctrlBox
+		local ly = 40 + (idx - 1) * 44
+		local kl = label(cl.k, 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, ly), Size = UDim2.fromOffset(146, 38), TextColor3 = cl.c, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = kl
+		kl.Parent = ctrlBox
+		local dl = label(cl.d, 15, { FontFace = F.semi, Position = UDim2.fromOffset(166, ly), Size = UDim2.new(1, -180, 0, 38), TextColor3 = T.text, TextScaled = true, ZIndex = Z.content })
+		new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 15 }).Parent = dl
+		dl.Parent = ctrlBox
 	end
-	button("VOLVER", click(function()
+	local stBack = button("VOLVER", click(function()
 		show(r.settings, false)
-	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = stp
+	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content })
+	stBack.Parent = stp
+	r.settingsBackBtn = stBack
 
 	-- Créditos
 	local c = overlay("Credits")
@@ -553,9 +649,11 @@ local function buildMenu()
 	local cp = centerPanel(c, 800, 620, "CRÉDITOS Y FUENTES", T.cyanHi)
 	label("ARCHIVO DE FUENTES Y CRÉDITOS", 28, { FontFace = F.impact, Position = UDim2.fromOffset(24, 34), Size = UDim2.new(1, -48, 0, 32), TextColor3 = T.cyanHi, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = cp
 	label(table.concat(Content.Credits, "\n"), 18, { Position = UDim2.fromOffset(24, 72), Size = UDim2.new(1, -48, 1, -150), TextYAlignment = TOP, TextColor3 = T.text, LineHeight = 1.12, ZIndex = Z.content }).Parent = cp
-	button("VOLVER", click(function()
+	local crBack = button("VOLVER", click(function()
 		show(r.credits, false)
-	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content }).Parent = cp
+	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -16), Size = UDim2.fromOffset(240, 50), ZIndex = Z.content })
+	crBack.Parent = cp
+	r.creditsBackBtn = crBack
 end
 
 -- ---------------------------------------------------------------- Cartas, pieza, pausa, resumen
@@ -564,12 +662,13 @@ local function buildOverlays()
 	r.level = lv
 	r.levelTag = label("SUBIDA DE NIVEL", 18, { FontFace = F.monoBold, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.fromScale(0.5, 0.1), Size = UDim2.new(0.9, 0, 0, 24), TextXAlignment = CENTER, TextColor3 = T.cyanHi, ZIndex = Z.content })
 	r.levelTag.Parent = lv
-	r.levelTitle = label("", 46, { FontFace = F.impact, TextColor3 = T.gold, TextStrokeTransparency = 0.2, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 26), Size = UDim2.new(0.9, 0, 0, 52), TextXAlignment = CENTER, ZIndex = Z.content })
+	r.levelTitle = label("", 46, { FontFace = F.impact, TextColor3 = T.gold, TextStrokeTransparency = 0.2, AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0.1, 26), Size = UDim2.new(0.92, 0, 0, 52), TextXAlignment = CENTER, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 22, MaxTextSize = 46 }).Parent = r.levelTitle
 	r.levelTitle.Parent = lv
 	local row = new("Frame", { Name = "Panel", AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.56), Size = UDim2.fromOffset(960, 340), BackgroundTransparency = 1, ZIndex = Z.panel })
 	Ui.list(22, true).Parent = row
 	row.Parent = lv
-	table.insert(fitPanels, { p = row, w = 980, h = 560 })
+	r.levelRow = row
 	r.cards = {}
 	for i = 1, 3 do
 		local card = new("TextButton", { Size = UDim2.fromOffset(304, 340), BackgroundColor3 = T.panel, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = i, ZIndex = Z.panel })
@@ -578,9 +677,10 @@ local function buildOverlays()
 		stroke.Parent = card
 		local band = new("Frame", { Size = UDim2.new(1, 0, 0, 6), BackgroundColor3 = T.cyanHi, BorderSizePixel = 0, ZIndex = Z.content })
 		band.Parent = card
-		local rar = label("", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 18), Size = UDim2.fromOffset(200, 24), ZIndex = Z.content })
+		local rar = label("", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 18), Size = UDim2.fromOffset(180, 24), ZIndex = Z.content })
 		rar.Parent = card
-		label(if touch then "" else "[" .. i .. "]", 18, { FontFace = F.mono, Position = UDim2.fromOffset(226, 18), Size = UDim2.fromOffset(60, 24), TextXAlignment = RIGHT, TextColor3 = T.dim, ZIndex = Z.content }).Parent = card
+		local keyLbl = label(if touch then "TOCAR" elseif inputMode == "gamepad" then (if i == 1 then "[◀]" elseif i == 2 then "[▲]" else "[▶]") else "[" .. i .. "]", 17, { FontFace = F.monoBold, Position = UDim2.fromOffset(204, 18), Size = UDim2.fromOffset(82, 24), TextXAlignment = RIGHT, TextColor3 = T.dim, TextWrapped = false, ZIndex = Z.content })
+		keyLbl.Parent = card
 		local name = label("", 28, { FontFace = F.impact, Position = UDim2.fromOffset(18, 52), Size = UDim2.fromOffset(268, 66), TextStrokeTransparency = 0.25, ZIndex = Z.content, TextYAlignment = TOP })
 		name.Parent = card
 		local desc = label("", 20, { Position = UDim2.fromOffset(18, 120), Size = UDim2.fromOffset(268, 52), ZIndex = Z.content, TextYAlignment = TOP })
@@ -596,17 +696,21 @@ local function buildOverlays()
 		local lvlText = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(18, 270), Size = UDim2.fromOffset(268, 24), TextColor3 = T.dim, ZIndex = Z.content })
 		lvlText.Parent = card
 		local _, lvlFill = Ui.bar(card, UDim2.fromOffset(18, 300), UDim2.fromOffset(268, 10), T.cyanHi, Z.content)
-		card.MouseEnter:Connect(function()
+		local function cardOver()
 			Ui.tween(card, 0.15, { BackgroundColor3 = T.panelHi })
-		end)
-		card.MouseLeave:Connect(function()
+		end
+		local function cardOut()
 			Ui.tween(card, 0.15, { BackgroundColor3 = T.panel })
-		end)
+		end
+		card.MouseEnter:Connect(cardOver)
+		card.SelectionGained:Connect(cardOver)
+		card.MouseLeave:Connect(cardOut)
+		card.SelectionLost:Connect(cardOut)
 		card.Activated:Connect(function()
 			Hud.pick(i)
 		end)
 		card.Parent = row
-		r.cards[i] = { card = card, name = name, desc = desc, fact = fact, lvl = lvlText, fill = lvlFill, rar = rar, band = band, stroke = stroke }
+		r.cards[i] = { card = card, name = name, desc = desc, fact = fact, lvl = lvlText, fill = lvlFill, rar = rar, band = band, stroke = stroke, keyLabel = keyLbl }
 	end
 
 	local pc = overlay("Piece")
@@ -624,21 +728,25 @@ local function buildOverlays()
 	r.pieceReal.Parent = pp
 	r.pieceRef = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(24, 310), Size = UDim2.new(1, -48, 0, 96), TextColor3 = T.cyanHi, ZIndex = Z.content, TextYAlignment = TOP })
 	r.pieceRef.Parent = pp
-	button("CONTINUAR", click(function()
+	local pcCont = button("CONTINUAR", click(function()
 		show(r.piece, false)
 		send("continue")
 		if choiceOpen then
 			show(r.level, true)
 		end
-	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.fromOffset(280, 54), ZIndex = Z.content }).Parent = pp
+	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.fromOffset(280, 54), ZIndex = Z.content })
+	pcCont.Parent = pp
+	r.pieceContinueBtn = pcCont
 
 	local pa = overlay("Pause")
 	r.pause = pa
 	local pap = centerPanel(pa, 440, 300, "MISIÓN EN PAUSA", T.orange)
 	label("PAUSA", 50, { FontFace = F.impact, TextColor3 = T.orange, TextStrokeTransparency = 0.2, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 40), Size = UDim2.new(1, 0, 0, 56), ZIndex = Z.content }).Parent = pap
-	button("CONTINUAR", click(function()
+	local paCont = button("CONTINUAR", click(function()
 		send("pause")
-	end), { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), ZIndex = Z.content }).Parent = pap
+	end), { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 112), ZIndex = Z.content })
+	paCont.Parent = pap
+	r.pauseContinueBtn = paCont
 	button("ABANDONAR MISIÓN", click(function()
 		show(r.pause, false)
 		send("menu")
@@ -659,15 +767,107 @@ local function buildOverlays()
 	r.sumItems = label("", 18, { Position = UDim2.fromOffset(60, 362), Size = UDim2.new(1, -120, 0, 180), TextYAlignment = TOP, ZIndex = Z.content, TextScaled = true })
 	new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 18 }).Parent = r.sumItems
 	r.sumItems.Parent = sp
-	button("REINTENTAR", click(function()
+	local sumRetry = button("REINTENTAR", click(function()
 		send("start", lastMode)
-	end), { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 60, 1, -18), Size = UDim2.fromOffset(310, 54), ZIndex = Z.content }).Parent = sp
+	end), { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 60, 1, -18), Size = UDim2.fromOffset(310, 54), ZIndex = Z.content })
+	sumRetry.Parent = sp
+	r.sumRetryBtn = sumRetry
 	button("MENÚ", click(function()
 		send("menu")
 	end), { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -60, 1, -18), Size = UDim2.fromOffset(310, 54), ZIndex = Z.content }, "ghost").Parent = sp
 end
 
 local refreshMeta: () -> ()
+
+local function applyInputLabels()
+	touch = (inputMode == "touch")
+	if not gui then
+		return
+	end
+	if r.skills then
+		for i = 1, 2 do
+			local sk = Content.Skills[i]
+			local kl = r.skills[i] and r.skills[i].keyLabel
+			if kl then
+				kl.Text = if inputMode == "touch"
+					then "TOCAR"
+					elseif inputMode == "gamepad" then (if i == 1 then "[X/L1]" else "[B/R1]")
+					else "[" .. sk.key .. "]"
+			end
+		end
+	end
+	if r.cards then
+		for i = 1, 3 do
+			local kl = r.cards[i] and r.cards[i].keyLabel
+			if kl then
+				kl.Text = if inputMode == "touch"
+					then "TOCAR"
+					elseif inputMode == "gamepad" then (if i == 1 then "[◀]" elseif i == 2 then "[▲]" else "[▶]")
+					else "[" .. i .. "]"
+			end
+		end
+	end
+	if r.hint then
+		r.hint.Text = if inputMode == "gamepad"
+			then Content.ControlsGamepad
+			elseif inputMode == "touch" then Content.ControlsTouch
+			else Content.Controls
+	end
+	if r.platformBadge then
+		r.platformBadge.Text = if inputMode == "gamepad"
+			then "MODO ACTIVO: MANDO / CONSOLA"
+			elseif inputMode == "touch" then "MODO ACTIVO: MÓVIL / TÁCTIL"
+			else "MODO ACTIVO: PC / WEB"
+	end
+	updateFocus()
+	refitFn()
+end
+
+function Hud.setInputMode(mode: string)
+	if mode ~= "kb" and mode ~= "gamepad" and mode ~= "touch" then
+		return
+	end
+	if inputMode == mode then
+		return
+	end
+	inputMode = mode
+	applyInputLabels()
+end
+
+function Hud.getInputMode(): string
+	return inputMode
+end
+
+function Hud.setEffectiveQuality(tier: string)
+	if tier ~= "high" and tier ~= "med" and tier ~= "low" then
+		return
+	end
+	Hud.settings.effectiveQuality = tier
+	Hud.settings.lowFx = (tier == "low")
+	if r.qualityValue then
+		r.qualityValue.Text = qualityLabelFn()
+	end
+end
+
+function Hud.back(): boolean
+	if r.settings and r.settings.Visible then
+		show(r.settings, false)
+		return true
+	end
+	if r.credits and r.credits.Visible then
+		show(r.credits, false)
+		return true
+	end
+	if r.shop and r.shop.Visible then
+		show(r.shop, false)
+		return true
+	end
+	if r.pause and r.pause.Visible then
+		send("pause")
+		return true
+	end
+	return false
+end
 
 function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: () -> ())
 	send = sendFn
@@ -679,36 +879,150 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 	local function rescale()
 		local cam = Workspace.CurrentCamera
 		local vp = if cam then cam.ViewportSize else Vector2.new(1280, 720)
-		uiScale.Scale = math.clamp(math.min(vp.Y / 720, vp.X / 1180), 0.8, 1.8)
+		uiScale.Scale = math.clamp(math.min(vp.Y / 720, vp.X / 1200), 0.48, 1.8)
 	end
 	rescale()
 	buildHud()
 	buildMainMenu()
 	buildMenu()
 	buildOverlays()
-	-- Ajusta los paneles grandes y mantiene el menu izquierdo bajo la barra superior de Roblox.
+
+	-- Maquetación adaptable para PC, Web, Consola/TV y Móvil (horizontal y vertical).
 	local function refit()
 		rescale()
 		local v = virtualSize()
+		local topInset = GuiService:GetGuiInset()
+		local topSafe = math.ceil(math.max(60, topInset.Y + 6) / uiScale.Scale)
+		local safeH = math.max(200, v.Y - topSafe - 16)
+		local safeW = math.max(260, v.X - 24)
 		for _, e in fitPanels do
-			local s = math.min(1, (v.Y - 16) / e.h, (v.X - 16) / e.w)
+			local s = math.min(1, safeH / e.h, safeW / e.w)
 			e.p:SetAttribute("Fit", s)
+			e.p.Position = UDim2.new(0.5, 0, 0, topSafe + safeH * 0.5)
 			Ui.pop(e.p, true)
 		end
+		if r.levelTag and r.levelTitle and r.levelRow then
+			r.levelTag.Position = UDim2.new(0.5, 0, 0, topSafe + 8)
+			r.levelTitle.Position = UDim2.new(0.5, 0, 0, topSafe + 34)
+			local cardsTop = topSafe + 94
+			local cardsH = math.max(160, v.Y - cardsTop - 18)
+			local cardScale = math.min(1, cardsH / 348, (v.X - 28) / 960)
+			r.levelRow:SetAttribute("Fit", cardScale)
+			r.levelRow.Position = UDim2.new(0.5, 0, 0, cardsTop + cardsH * 0.5)
+			Ui.pop(r.levelRow, true)
+		end
+
+		local portrait = v.X < v.Y
 		if r.menuCol and r.menuColScale then
-			local topSafe = 64 / uiScale.Scale
-			local availH = math.max(120, v.Y - topSafe - 18)
-			local availW = math.max(180, v.X * 0.35)
-			local colScale = math.clamp(math.min(1, availH / 504, availW / 368), 0.5, 1)
-			r.menuColScale.Scale = colScale
-			r.menuCol.Position = UDim2.new(0, 28, 0, topSafe + availH * 0.5)
+			if portrait then
+				if r.menuShade then
+					r.menuShade.Size = UDim2.new(1, 0, 0.58, 0)
+					r.menuShade.Position = UDim2.new(0, 0, 0.42, 0)
+					local grad = r.menuShade:FindFirstChildOfClass("UIGradient")
+					if grad then
+						grad.Rotation = -90
+					end
+				end
+				local availW = math.max(240, v.X - 32)
+				local availH = math.max(200, (v.Y - topSafe) * 0.56)
+				r.menuColScale.Scale = math.clamp(math.min(1, availH / 504, availW / 368), 0.5, 1)
+				r.menuCol.AnchorPoint = Vector2.new(0.5, 1)
+				r.menuCol.Position = UDim2.new(0.5, 0, 1, -18)
+			else
+				if r.menuShade then
+					r.menuShade.Size = UDim2.new(0.36, 0, 1, 0)
+					r.menuShade.Position = UDim2.fromOffset(0, 0)
+					local grad = r.menuShade:FindFirstChildOfClass("UIGradient")
+					if grad then
+						grad.Rotation = 0
+					end
+				end
+				local availH = math.max(160, v.Y - topSafe - 18)
+				local availW = math.max(220, v.X * 0.35)
+				r.menuColScale.Scale = math.clamp(math.min(1, availH / 504, availW / 368), 0.5, 1)
+				r.menuCol.AnchorPoint = Vector2.new(0, 0.5)
+				r.menuCol.Position = UDim2.new(0, 28, 0, topSafe + availH * 0.5)
+			end
+		end
+
+		if r.hud then
+			local cornerScale = math.clamp((v.X - 40) / 1080, 0.68, 1)
+			r.lvlScale.Scale = cornerScale
+			r.suitScale.Scale = cornerScale
+			r.shipScale.Scale = cornerScale
+			r.tickerScale.Scale = cornerScale
+
+			r.lvlChip.Position = UDim2.fromOffset(16, topSafe)
+			r.suitPanel.Position = UDim2.fromOffset(16, topSafe + math.ceil(42 * cornerScale))
+			r.shipPanel.Position = UDim2.new(1, -16, 0, topSafe)
+
+			local rightNextY = topSafe + math.ceil(98 * cornerScale)
+			r.pauseBtn.Position = UDim2.new(1, -16, 0, rightNextY)
+			r.exitBtn.Position = UDim2.new(1, -16, 0, rightNextY)
+			r.toast:SetAttribute("Fit", cornerScale)
+			Ui.pop(r.toast, true)
+			r.toast.Position = UDim2.new(1, -16, 0, rightNextY + 54)
+
+			local narrow = v.X < 1080
+			local centerY = if narrow then (topSafe + math.max(122, math.ceil(154 * cornerScale))) else math.max(14, topSafe - 4)
+			local corridor = if narrow then (v.X - 32) else math.max(300, math.floor(v.X - 56 - 340 * cornerScale - 368 * cornerScale))
+			local waveW = math.min(420, corridor)
+			local biomeW = math.min(460, corridor)
+			r.wave.Position = UDim2.new(0.5, 0, 0, centerY)
+			r.wave.Size = UDim2.fromOffset(waveW, 40)
+			r.timer.Position = UDim2.new(0.5, 0, 0, centerY + 40)
+			r.biome.Position = UDim2.new(0.5, 0, 0, centerY + 68)
+			r.biome.Size = UDim2.fromOffset(biomeW, 24)
+			r.bossWrap.Position = UDim2.new(0.5, 0, 0, centerY + 96)
+			r.bossWrap.Size = UDim2.fromOffset(math.min(460, corridor), 52)
+
+			local tw = if narrow then math.max(260, math.floor(v.X - 32)) else math.clamp(math.floor(v.X * 0.39), 320, 470)
+			r.tickerPanel.Size = UDim2.fromOffset(tw, 66)
+			r.ticker.Size = UDim2.fromOffset(tw - 24, 24)
+			if inputMode == "touch" then
+				r.tickerPanel.AnchorPoint = Vector2.new(0, 0)
+				local tickerY = if narrow then (centerY + 104) else (topSafe + math.ceil(150 * cornerScale))
+				r.tickerPanel.Position = UDim2.fromOffset(16, tickerY)
+			else
+				r.tickerPanel.AnchorPoint = Vector2.new(0, 1)
+				r.tickerPanel.Position = UDim2.new(0, 16, 1, -20)
+			end
+
+			local skillFit = if inputMode == "touch" then math.clamp(0.72 / uiScale.Scale, 0.85, 1.15) else cornerScale
+			local skillGap = math.ceil(110 * skillFit)
+			local skillRightPad = if inputMode == "touch" then (if narrow then 134 else 156) else 24
+			local skillBottomPad = if inputMode == "touch" then 34 else 28
+			for i = 1, 2 do
+				local btn = r.skills[i].button
+				btn:SetAttribute("Fit", skillFit)
+				Ui.pop(btn, true)
+				btn.Position = UDim2.new(1, -skillRightPad - (2 - i) * skillGap, 1, -skillBottomPad)
+			end
+
+			local tutW = math.min(640, v.X - 32)
+			r.tut.Size = UDim2.fromOffset(tutW, 96)
+			r.tutText.Size = UDim2.fromOffset(tutW - 28, 54)
+			r.tut.Position = UDim2.new(0.5, 0, 1, if inputMode == "touch" then -196 elseif v.X < 1080 then -154 else -146)
+
+			if v.X < 1080 then
+				r.hint.Size = UDim2.fromOffset(math.min(540, v.X - 40), 46)
+				r.hint.Position = UDim2.new(0.5, 0, 1, if inputMode == "touch" then -144 else -96)
+			else
+				r.hint.Size = UDim2.fromOffset(math.min(660, v.X - 64), 42)
+				r.hint.Position = UDim2.new(0.5, 0, 1, if inputMode == "touch" then -20 else -94)
+			end
 		end
 	end
-	refit()
+	refitFn = refit
+	applyInputLabels()
 	if Workspace.CurrentCamera then
 		Workspace.CurrentCamera:GetPropertyChangedSignal("ViewportSize"):Connect(refit)
 	end
 	gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+end
+
+function Hud.refit()
+	refitFn()
 end
 
 refreshMeta = function()
@@ -788,7 +1102,7 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 		if extra and extra.mode then
 			lastMode = extra.mode
 		end
-		r.hint.Visible = not touch
+		r.hint.Visible = true
 		hintT = 14
 	elseif r.summary.Visible and extra then
 		local win = extra.win == true
@@ -818,6 +1132,7 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 		end
 		r.sumItems.Text = if #parts > 0 then table.concat(parts, "  ·  ") else "Nada todavía."
 	end
+	updateFocus()
 end
 
 function Hud.setHud(h: { number })
@@ -906,6 +1221,7 @@ function Hud.pick(i: number)
 	if choiceOpen and r.level.Visible and r.cards[i].card.Visible then
 		choiceOpen = false
 		r.level.Visible = false
+		updateFocus()
 		Fx.play("ui")
 		send("choose", i)
 	end

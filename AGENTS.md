@@ -42,9 +42,9 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 ## Siguiente trabajo (15-11-2026)
 
-1. Una persona escucha la mezcla de audio (`P-12`) y confirma visualmente en Studio el menú «Forma humana», fuentes `Bangers`/`Michroma`, colores por sección/etapa y movimiento con `WASD / Flechas (↑ ↓ ← →)` (ya verificados en modo `Play`: `0` errores, `TextIssuesCount = 0`).
-2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `14`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
-3. Pulido pendiente de código: ninguno inmediato tras la octava tanda (retroceso de enemigos, fuente de impacto, destello de boca, menú «Forma humana», tipografía/colores y flechas `↑ ↓ ← →` ya hechos y sincronizados). Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
+1. Una persona escucha la mezcla de audio (`P-12`) y prueba manualmente en dispositivos reales (PC/web, móvil vertical/horizontal y mando/consola) la calidad adaptativa y los controles adaptados (`kb`, `gamepad`, `touch`, ya verificados en Studio en modo `Play`: `0` errores, `TextIssuesCount = 0` y `0` solapamientos de HUD en los 3 modos).
+2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `17`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
+3. Pulido pendiente de código: ninguno inmediato tras la tanda multiplataforma y gráfica (`Fx`, `Renderer`, `Hud`, `Main`, `Content`, `public/index.html` sincronizados y verificados). Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
 4. Pendientes `P-01` a `P-15` que dependen del equipo (`roblox-blender/docs/DECISIONES.md`).
 5. Tráiler, al final (`roblox-blender/docs/TRAILER_BRIEF_FABLE.md`).
 
