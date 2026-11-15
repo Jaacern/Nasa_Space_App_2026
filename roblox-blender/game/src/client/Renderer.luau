@@ -182,7 +182,7 @@ function Renderer.init()
 	folder.Parent = Workspace
 	templates = ReplicatedStorage:WaitForChild("Templates")
 	Fx.init(folder)
-	auraRing = flat(Enum.PartType.Cylinder, C.cyan, 0.68)
+	auraRing = flat(Enum.PartType.Cylinder, C.cyan, 0.84)
 	shieldBubble = flat(Enum.PartType.Ball, C.cyan, 0.66)
 	shieldBubble.Material = Enum.Material.ForceField
 	shieldBubble.Size = Vector3.new(7, 7, 7)
@@ -472,11 +472,11 @@ end
 
 function Renderer.tele(id: number, shape: string, a: number, b: number, c: number, d: number, e: number?, f: number?, g: number?)
 	if shape == "c" or shape == "m" then
-		local col = if shape == "m" then Color3.fromRGB(255, 70, 35) else C.orange
+		local col = if shape == "m" then Color3.fromRGB(255, 45, 30) else Color3.fromRGB(255, 55, 45)
 		local base = table.remove(circlePool) or flat(Enum.PartType.Cylinder, col, 0.78)
 		local fill = table.remove(circlePool) or flat(Enum.PartType.Cylinder, col, 0.42)
 		base.Color, fill.Color = col, col
-		base.Transparency, fill.Transparency = 0.76, 0.4
+		base.Transparency, fill.Transparency = 0.7, 0.5
 		setCircle(base, a, b, c, 0.14)
 		setCircle(fill, a, b, 0.1, 0.22)
 		local rock: Model? = nil
@@ -491,15 +491,15 @@ function Renderer.tele(id: number, shape: string, a: number, b: number, c: numbe
 		local len = math.max(0.5, math.sqrt((x2 - x) ^ 2 + (z2 - z) ^ 2))
 		local cf = CFrame.lookAt(Vector3.new((x + x2) / 2, 0.14, (z + z2) / 2), Vector3.new(x2, 0.14, z2))
 		local base = table.remove(linePool) or flat(Enum.PartType.Block, C.orange, 0.8)
-		base.Color = if real then C.orange else C.magenta
-		base.Transparency = if real then 0.8 else 0.55
+		base.Color = if real then Color3.fromRGB(255, 55, 45) else C.magenta
+		base.Transparency = if real then 0.7 else 0.55
 		base.Size = Vector3.new(w, 0.12, len)
 		base.CFrame = cf
 		local fill: Part? = nil
 		if real then
 			fill = table.remove(linePool) or flat(Enum.PartType.Block, C.orange, 0.45)
 			local fp = fill :: Part
-			fp.Color = C.orange
+			fp.Color = Color3.fromRGB(255, 55, 45)
 			fp.Transparency = 0.45
 			fp.Size = Vector3.new(0.1, 0.14, len)
 			fp.CFrame = cf + Vector3.new(0, 0.05, 0)
@@ -652,6 +652,18 @@ function Renderer.setQuality(tier: string)
 		tier = "high"
 	end
 	qualityTier = tier
+end
+
+-- Campo electrostatico: el anillo solo se muestra si hay un enemigo dentro de su alcance.
+local function auraNearby(px: number, pz: number): boolean
+	local R = Balance.Upgrades.aura.radius + 4
+	for _, e in enemies do
+		local dx, dz = e.x - px, e.z - pz
+		if dx * dx + dz * dz <= R * R then
+			return true
+		end
+	end
+	return false
 end
 
 function Renderer.update(dt: number)
@@ -849,7 +861,7 @@ function Renderer.update(dt: number)
 			local a = simT * D.angSpeed + (i - 1) * math.pi * 2 / want
 			;(m.PrimaryPart :: Part).CFrame = CFrame.new(px + math.cos(a) * D.radius, feet + 1.2, pz + math.sin(a) * D.radius) * CFrame.Angles(0, -a, 0)
 		end
-		if h[15] == 1 then
+		if h[15] == 1 and auraNearby(px, pz) then
 			setCircle(auraRing, px, pz, Balance.Upgrades.aura.radius, feet + 0.15)
 		else
 			auraRing.CFrame = FAR
@@ -861,17 +873,17 @@ function Renderer.update(dt: number)
 			shieldBubble.CFrame = CFrame.new(playerPos)
 			if shieldFlashT > 0 then
 				shieldBubble.Color = WHITE
-				shieldBubble.Transparency = 0.25
+				shieldBubble.Transparency = 0.45
 			elseif hasActiveShield then
 				shieldBubble.Color = C.cyan
-				shieldBubble.Transparency = 0.48 + math.sin(simT * 6) * 0.06
+				shieldBubble.Transparency = 0.78 + math.sin(simT * 6) * 0.03
 			else
-				shieldBubble.Color = C.cyanDark
-				shieldBubble.Transparency = 0.72
+				shieldBubble.Color = C.cyan
+				shieldBubble.Transparency = 0.8
 			end
 			shieldRing.Size = Vector3.new(0.24, d * 1.12, d * 1.12)
 			shieldRing.Color = if shieldFlashT > 0 then WHITE else C.cyan
-			shieldRing.Transparency = if hasActiveShield then 0.2 else 0.55
+			shieldRing.Transparency = if hasActiveShield then 0.45 else 0.7
 			shieldRing.CFrame = CFrame.new(playerPos) * CFrame.Angles(0.32, simT * 2.2, math.rad(90) + 0.18)
 		else
 			shieldBubble.CFrame = FAR
