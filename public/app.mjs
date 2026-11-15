@@ -190,7 +190,6 @@ const STOPS = [
         "Equipo: Javier (Estudiante Ingeniería Informática), Gonzalo (Psicólogo) y Cristóbal (Estudiante).",
         "Propósito: Convertir ciencia real de la NASA en exploración viva y significativa.",
       ],
-      footer: "DESAFÍO NASA SPACE APPS 2026 · KENNEDY SPACE CENTER PAD 39B",
     }),
   },
   {
@@ -229,7 +228,6 @@ const STOPS = [
         "Causa y efecto real: Ahorrar energía hoy puede costar reservas de oxígeno mañana.",
         "Clima espacial vivo: Tormentas solares reales (API NASA DONKI) obligan a decidir en segundos.",
       ],
-      footer: "FUENTE REAL: API NASA DONKI & MISIÓN OSIRIS-REX (BENNU)",
     }),
   },
   {
