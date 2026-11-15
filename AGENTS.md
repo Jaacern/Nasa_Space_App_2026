@@ -47,3 +47,11 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 3. Pulido pendiente: ninguno de código. Lista: audio por una persona, tráiler al final. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
 4. Pendientes `P-01` a `P-15` que dependen del equipo.
 5. Tráiler, al final.
+
+## Agente DeepSeek (opcional, con tope de gasto)
+
+- Conectado como MCP `deepseek-agente` (ámbito usuario). Herramientas: `deepseek_perfiles`, `deepseek_encargar`, `deepseek_estado`, `deepseek_reanudar`.
+- Flujo: `deepseek_encargar` → `deepseek_estado` hasta `terminado` → revisar los archivos que informa. Nunca aplicar a ciegas.
+- Topes por perfil entre 0,05 y 0,30 USD. El límite que fijó el usuario es 0,80 USD por encargo.
+- Gasto mensual: el saldo puede estar en estado crítico; revisar `deepseek_perfiles` antes de encargar algo grande.
+- Solo para encargos acotados y verificables (un bloque de código, una tabla, una búsqueda). El juego se verifica siempre en Studio.
