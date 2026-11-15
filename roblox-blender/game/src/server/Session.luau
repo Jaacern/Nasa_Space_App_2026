@@ -142,6 +142,7 @@ function Session:saveCheckpoint(silent: boolean?)
 		scienceBonus = R.scienceBonus or 0,
 		px = R.px,
 		pz = R.pz,
+		weaponMode = R.weaponMode or 1,
 		savedAt = os.time(),
 	}
 	local active = SaveService.activeProfile(self.account)
@@ -172,7 +173,9 @@ function Session:startRun(modeName: string, tutorial: boolean, cp: any?)
 		pendingLevels = 0, choice = nil, chestsOpened = if cp then cp.chestsOpened else 0,
 		enemies = {}, nextId = 0, anyDead = false, teles = {}, nextTele = 0,
 		shots = {}, nextShot = 0, shotCount = 0, eshots = {}, gems = {}, nextGem = 0, chests = {}, nextChest = 0,
-		events = {}, cds = { 0, 0 }, cdMax = { 1, 1 }, used = { false, false }, atkT = 0.5, auraT = 0,
+		events = {}, cds = { 0, 0 }, cdMax = { 1, 1 }, used = { false, false },
+		atkT = 0.5, auraT = 0, novaT = 1.0, missileT = 0.8, arcT = 0.6,
+		weaponMode = if cp and cp.weaponMode then cp.weaponMode else 1,
 		spawnAcc = 0, nextElite = if cp then cp.nextElite else (startT + D.EliteInterval),
 		chestT = if cp then cp.chestT else D.ChestInterval * 0.5, hazT = 0, hazN = 0,
 		meteorT = 12, meteorN = 0, bhT = Balance.BlackHole.FirstAt, bhIdx = 0,
@@ -204,6 +207,7 @@ function Session:startRun(modeName: string, tutorial: boolean, cp: any?)
 		table.insert(R.events, { "wave", R.wave, Balance.Run.TotalWaves })
 		table.insert(R.events, { "biome", R.biome })
 		table.insert(R.events, { "zone", R.zone })
+		table.insert(R.events, { "weaponMode", R.weaponMode or 1 })
 		for id, lv in R.upgrades do
 			table.insert(R.events, { "chosen", id, lv })
 		end
@@ -233,7 +237,7 @@ function Session:flush(R: Run, withSnapshot: boolean)
 				math.floor(R.t), r1(R.cds[1]), r1(R.cdMax[1]), r1(R.cds[2]), r1(R.cdMax[2]),
 				if boss then math.max(0, boss.hp / boss.hpMax) else -1, s.drones, if s.aura > 0 then 1 else 0, r1(R.real),
 				if R.invuln > 0.5 then 1 else 0, if R.paused then 1 else 0, s.pickup, R.wave,
-				math.ceil(R.shieldMax or Balance.Skills.Pulse.Shield), r1(math.max(0, R.shieldT)), R.zone or 1,
+				math.ceil(R.shieldMax or Balance.Skills.Pulse.Shield), r1(math.max(0, R.shieldT)), R.zone or 1, R.weaponMode or 1,
 			},
 		}
 	end
@@ -576,6 +580,13 @@ function Session:onCmd(name: any, a: any, b: any, c: any)
 			if R.won then
 				self:finish(true)
 			end
+		end
+	elseif name == "weaponMode" then
+		if R then
+			local maxM = #Balance.WeaponModes
+			local nextMode = if type(a) == "number" and a >= 1 and a <= maxM then math.floor(a) else (((R.weaponMode or 1) % maxM) + 1)
+			R.weaponMode = nextMode
+			table.insert(R.events, { "weaponMode", nextMode })
 		end
 	elseif name == "pause" then
 		if R then

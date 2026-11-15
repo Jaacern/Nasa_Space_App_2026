@@ -21,6 +21,9 @@ Content.Upgrades = {
 	cooldown = { name = "Recarga eficiente", fmt = "-%d %% de espera de habilidades.", scale = 100, fact = "El generador MMRTG convierte en electricidad el calor de la desintegración del plutonio." },
 	crit = { name = "Puntería de precisión", fmt = "+%d %% de golpe crítico.", scale = 100, fact = "SuperCam puede analizar zonas de roca tan pequeñas como la punta de un lápiz." },
 	aura = { name = "Campo electrostático", fmt = "+%d de daño por pulso a los enemigos cercanos.", scale = 1, fact = "El láser de ChemCam vaporiza la superficie de la roca y crea un plasma que el instrumento analiza." },
+	nova = { name = "Onda Sísmica 360°", fmt = "Onda 360° en área (+%d daño y más radio).", scale = 1, fact = "La misión InSight de la NASA detectó más de 1 300 terremotos marcianos con su sismómetro SEIS." },
+	missiles = { name = "Salva de Micromisiles", fmt = "Salva a varios blancos (+%d daño y +1 misil).", scale = 1, fact = "El láser ultravioleta SHERLOC de Perseverance escanea rocas marcianas con gran precisión." },
+	arc = { name = "Arco Electrostático", fmt = "Rayo encadenado (+%d daño y +1 salto).", scale = 1, fact = "El polvo seco de Marte genera descargas electrostáticas en remolinos de polvo." },
 	heal = { name = "Reparación de campo", desc = "Recupera 30 de vida.", fact = "MOXIE probó cómo producir oxígeno a partir de la atmósfera de Marte." },
 }
 Content.CardRarities = { "COMÚN", "RARA", "ÉPICA", "LEGENDARIA" }
@@ -109,23 +112,43 @@ Content.Skills = {
 }
 
 Content.AutoWeapon = {
-	name = "Láser Táctico Automático",
+	name = "Sistema Modular de Armas",
 	short = "LÁSER",
 	key = "AUTO",
-	desc = "Disparo continuo al enemigo más cercano. Mejora su daño, cadencia, perforación y haz dividido.",
+	tag = "AUTO · [F] CAMBIA MODO",
+	desc = "[F] Alterna Láser, Abanico (3+) o Mortero AOE. Suma Ondas, Misiles y Arcos.",
+}
+
+Content.WeaponModes = {
+	{
+		id = "laser",
+		name = "Haz Láser",
+		short = "LÁSER",
+		tag = "PRECISIÓN · +8% CRÍTICO",
+		desc = "Disparo rápido de largo alcance. Ideal contra élites y jefes.",
+	},
+	{
+		id = "spread",
+		name = "Abanico Plasma",
+		short = "ABANICO",
+		tag = "3+ PROYECTILES · CONTROL",
+		desc = "Lanza 3+ haces en abanico amplio. Barre grupos cercanos rápido.",
+	},
+	{
+		id = "mortar",
+		name = "Mortero Sísmico",
+		short = "MORTERO",
+		tag = "ÁREA 10.5m · EMPUJE",
+		desc = "Proyectil pesado que detona en área con empuje contra enjambres.",
+	},
 }
 
 Content.ChestTiers = { "COFRE COMÚN", "COFRE RARO", "COFRE ÉPICO", "COFRE LEGENDARIO" }
 
 Content.Briefing = {
-	title = "INFORME TÁCTICO DE TRAJE Y ZONAS",
-	sub = "Revisa tus sistemas antes de entrar en combate (la simulación espera tu confirmación):",
-	sections = {
-		{ title = "LÁSER AUTOMÁTICO (PASIVA)", color = "cyan", text = "Apunta y dispara solo al hostil más cercano. Recoge cristales dorados para subir de nivel y escalar cartas hasta Legendaria en niveles altos." },
-		{ title = "IMPULSO RCS (ACTIVA · Q / X / BOTÓN RCS)", color = "gold", text = "CD 8 s · Propulsión instantánea con 0.45 s de invulnerabilidad. Úsalo para salir de zonas naranja de meteoros o rodear jefes." },
-		{ title = "PULSO DE ESCUDO (ACTIVA · E / B / BOTÓN ESCUDO)", color = "cyan", text = "CD 20 s · Detona un pulso protector de radio 18: empujón + daño en área y +35 de escudo visible en la barra cian por 6 s." },
-		{ title = "ZONAS DEL CRÁTER Y EVENTOS CÓSMICOS", color = "orange", text = "Explora las 5 zonas del mapa (Centro seguro, Norte +XP, Este +Ciencia, Sur +Velocidad, Oeste -CD). Evita lluvias de meteoros (niv. 5+) y contempla anomalías de agujero negro." },
-	},
+	"• [F / Y] Alterna arma principal (Láser, Abanico 3+ o Mortero AOE) y suma Ondas 360°, Misiles y Arco.",
+	"• 5 Zonas activas (Centro +vida, +XP, +Ciencia, +Velocidad, -CD). Usa Impulso [Q] y Escudo [E] (CD 20 s).",
+	"• Cofres Común a Legendario, meteoros (niv. 5+) y anomalías de agujero negro NASA en el horizonte.",
 }
 
 Content.Meta = {
@@ -150,9 +173,9 @@ Content.Tutorial = {
 	"Práctica libre. Pulsa SALIR cuando quieras.",
 }
 
-Content.Controls = "WASD / Flechas mover · Ratón girar cámara · Espacio saltar · Q impulso · E pulso · P pausa · 1-2-3 elegir carta"
-Content.ControlsGamepad = "STICK IZQ : Mover · STICK DER : Cámara · A : Saltar · X/L1 : Impulso · B/R1 : Pulso · ◀/▲/▶ : Carta · START : Pausa"
-Content.ControlsTouch = "JOYSTICK IZQ : Moverse · ARRASTRAR DER : Girar cámara · PELLIZCAR : Zoom · BOTONES : Salto, Impulso y Pulso"
+Content.Controls = "WASD / Flechas mover · Ratón cámara · Espacio saltar · Q impulso · E pulso · F modo arma · P pausa · 1-2-3 carta"
+Content.ControlsGamepad = "STICK IZQ : Mover · STICK DER : Cámara · A : Saltar · X/L1 : Impulso · B/R1 : Pulso · Y : Arma · ◀▲▶ : Carta · START : Pausa"
+Content.ControlsTouch = "JOYSTICK IZQ : Moverse · ARRASTRAR DER : Cámara · PELLIZCAR : Zoom · TOCA RANURA : Arma · BOTONES : Salto, Impulso y Pulso"
 
 Content.Credits = {
 	"ARES FORGE. Proyecto del equipo para NASA International Space Apps Challenge 2026.",

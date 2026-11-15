@@ -42,9 +42,9 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 ## Siguiente trabajo (15-11-2026)
 
-1. Una persona escucha la mezcla de audio (`P-12`) y prueba manualmente en dispositivos reales (PC/web, móvil vertical/horizontal y mando/consola) la calidad adaptativa, los controles adaptados (`kb`, `gamepad`, `touch`), el nuevo escudo con CD 20 s, las 5 zonas, los meteoros y los eventos de agujero negro (`0` errores en consola y `0` fallos `TextFits` en las 8 pantallas en Studio `Play`).
-2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `20`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
-3. Pulido pendiente de código: ninguno inmediato tras la tanda de perfiles, checkpoints, zonas, meteoros/agujeros negros, escudo 20 s y pulido UI/colisiones (`Balance`, `NasaData`, `Content`, `Visuals`, `WorldBuilder`, `SaveService`, `Loot`, `Combat`, `Enemies`, `Main.server`, `Session`, `Ui`, `Fx`, `Scenery`, `Renderer`, `Main.client`, `Hud` sincronizados y guardados). Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
+1. Una persona escucha la mezcla de audio (`P-12`) y prueba manualmente en dispositivos reales (PC/web, móvil vertical/horizontal y mando/consola) la calidad adaptativa, los controles adaptados (`kb`, `gamepad`, `touch`), los 3 modos de arma (`laser`, `spread`, `mortar`) + nuevas armas (`nova`, `missiles`, `arc`), el escudo con CD 20 s, las 5 zonas, los meteoros y los eventos de agujero negro (`0` errores en consola y `0` fallos `TextFits` verificados en Studio `Play`).
+2. El lugar está en Roblox como «Núcleo de Ares» (`placeId: 114817072312952`, guardado en versión `22`); guardar con `save_place` tras cada avance. No publicar sin pedirlo.
+3. Pulido pendiente de código: ninguno inmediato tras añadir modos de arma (`laser`, `spread`, `mortar`) y ataques en área/encadenados (`nova`, `missiles`, `arc`) sobre `Balance`, `NasaData`, `Content`, `Visuals`, `WorldBuilder`, `SaveService`, `Loot`, `Combat`, `Enemies`, `Main.server`, `Session`, `Ui`, `Fx`, `Scenery`, `Renderer`, `Main.client` y `Hud` sincronizados y guardados. Lista: audio por una persona (`P-12`), revisión manual de iluminación (`P-01`), pruebas `F5` (`0/5`) y tráiler al final.
 4. Pendientes `P-01` a `P-15` que dependen del equipo (`roblox-blender/docs/DECISIONES.md`).
 5. Tráiler, al final (`roblox-blender/docs/TRAILER_BRIEF_FABLE.md`).
 

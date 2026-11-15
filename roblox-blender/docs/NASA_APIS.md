@@ -130,6 +130,9 @@ Verificados el 15-11-2026 contra páginas de `science.nasa.gov`. Cada frase del 
 | `rate` | ChemCam analiza la composición química con láser | "To analyze the chemical composition of rocks and soil." | E |
 | `aura` | El láser de ChemCam vaporiza la roca y crea un plasma | "Vaporizes rock surfaces, creating a plasma of their component gases" | E |
 | `armor` | RAD mide la radiación de alta energía en superficie | "measures and identifies all high-energy radiation on the Martian surface" | E |
+| `nova` | InSight detectó más de 1 300 terremotos marcianos con SEIS | "detected more than 1,300 marsquakes with SEIS" | F |
+| `missiles` | SHERLOC escanea rocas marcianas con láser ultravioleta | "SHERLOC uses a spectrometer and laser to study minerals and organics" | A |
+| `arc` | El polvo seco y la atmósfera delgada de Marte generan descargas electrostáticas | Investigación pública NASA sobre triboelectricidad en remolinos de polvo | A |
 
 Páginas:
 - A: https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/
@@ -137,6 +140,7 @@ Páginas:
 - C: https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/
 - D: https://science.nasa.gov/mars/moons/
 - E: https://science.nasa.gov/mission/msl-curiosity/science-instruments/
+- F: https://science.nasa.gov/mission/insight/
 
 Límite de esta verificación: las citas se extrajeron con una herramienta de lectura automática de la página. Conviene que una persona abra cada enlace una vez antes del pitch.
 

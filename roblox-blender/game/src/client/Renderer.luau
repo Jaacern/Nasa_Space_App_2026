@@ -38,8 +38,12 @@ local teles: { [number]: any } = {}
 local gems: { [number]: any } = {}
 local chests: { [number]: any } = {}
 local drones: { Model } = {}
+local waveRings: { any } = {}
+local arcBeams: { any } = {}
 local circlePool: { Part } = {}
 local linePool: { Part } = {}
+local wavePool: { Part } = {}
+local beamPool: { Part } = {}
 local meteorPool: { Model } = {}
 local auraRing: Part
 local shieldBubble: Part
@@ -61,7 +65,14 @@ local CHEST_COLORS: { Color3 } = {
 }
 
 local NON_ENEMY_KINDS: { [string]: boolean } = {
-	gem = true, chest = true, shot = true, eshot = true, drone = true,
+	gem = true, chest = true, shot = true, spread = true, mortar = true, missile = true, eshot = true, drone = true,
+}
+
+local WAVE_COLORS: { Color3 } = {
+	Color3.fromRGB(255, 115, 45),  -- 1: Mortero
+	Color3.fromRGB(255, 195, 55),  -- 2: Onda Sismica 360
+	C.cyan,                        -- 3: Pulso / Campo electrostatico
+	Color3.fromRGB(210, 120, 255), -- 4: Micromisiles
 }
 
 local function outlineColorFor(kind: string): Color3
@@ -171,7 +182,7 @@ function Renderer.init()
 	folder.Parent = Workspace
 	templates = ReplicatedStorage:WaitForChild("Templates")
 	Fx.init(folder)
-	auraRing = flat(Enum.PartType.Cylinder, C.cyan, 0.86)
+	auraRing = flat(Enum.PartType.Cylinder, C.cyan, 0.68)
 	shieldBubble = flat(Enum.PartType.Ball, C.cyan, 0.66)
 	shieldBubble.Material = Enum.Material.ForceField
 	shieldBubble.Size = Vector3.new(7, 7, 7)
@@ -203,7 +214,7 @@ function Renderer.clearAll()
 		enemies[id] = nil
 	end
 	for id, s in shots do
-		give("shot", s.m)
+		give(s.kind or "shot", s.m)
 		shots[id] = nil
 	end
 	for id, s in eshots do
@@ -212,6 +223,18 @@ function Renderer.clearAll()
 	end
 	for id, _ in teles do
 		Renderer.teleEnd(id)
+	end
+	for i = #waveRings, 1, -1 do
+		local w = waveRings[i]
+		w.p.CFrame = FAR
+		table.insert(wavePool, w.p)
+		waveRings[i] = nil
+	end
+	for i = #arcBeams, 1, -1 do
+		local b = arcBeams[i]
+		b.p.CFrame = FAR
+		table.insert(beamPool, b.p)
+		arcBeams[i] = nil
 	end
 	for id, g in gems do
 		give("gem", g.m)
@@ -309,29 +332,83 @@ function Renderer.die(id: number)
 	give(e.kind, e.m)
 end
 
-function Renderer.shot(id: number, x: number, z: number, dx: number, dz: number, speed: number, range: number, boom: boolean)
-	local m = take("shot")
-	shots[id] = { m = m, x = x, z = z, dx = dx, dz = dz, speed = speed, left = range }
-	local mz = muzzle
-	if not mz then
-		mz = flat(Enum.PartType.Ball, MUZZLE_COLOR, 0.2)
-		muzzle = mz
+function Renderer.shot(id: number, x: number, z: number, dx: number, dz: number, speed: number, range: number, boom: boolean, kind: string?)
+	local k = kind or "shot"
+	local m = take(k)
+	shots[id] = { m = m, kind = k, x = x, z = z, dx = dx, dz = dz, speed = speed, left = range }
+	if k ~= "missile" then
+		local mz = muzzle
+		if not mz then
+			mz = flat(Enum.PartType.Ball, MUZZLE_COLOR, 0.2)
+			muzzle = mz
+		end
+		mz.Color = if k == "mortar" then WAVE_COLORS[1] elseif k == "spread" then WAVE_COLORS[2] else MUZZLE_COLOR
+		mz.CFrame = CFrame.new(x + dx * 2, playerPos.Y + 0.3, z + dz * 2)
+		muzzleT = MUZZLE_TIME
+		Fx.kickBack(if boom or k == "mortar" then 0.22 elseif k == "spread" then 0.13 else 0.1)
+		if boom then
+			Fx.shake(0.12)
+		end
+		Fx.play("shoot", if k == "mortar" then 0.56 elseif k == "spread" then 1.18 elseif boom then 0.6 else 1)
+	else
+		Fx.play("shoot", 1.38)
 	end
-	mz.CFrame = CFrame.new(x + dx * 2, playerPos.Y + 0.3, z + dz * 2)
-	muzzleT = MUZZLE_TIME
-	Fx.kickBack(if boom then 0.22 else 0.1)
-	if boom then
-		Fx.shake(0.12)
-	end
-	Fx.play("shoot", if boom then 0.6 else 1)
 end
 
 function Renderer.shotEnd(id: number)
 	local s = shots[id]
 	if s then
 		shots[id] = nil
-		Fx.burst("cyan", Vector3.new(s.x, 2.6, s.z), 5)
-		give("shot", s.m)
+		if s.kind == "spread" then
+			Fx.burst("gold", Vector3.new(s.x, 2.6, s.z), 5)
+		elseif s.kind ~= "mortar" and s.kind ~= "missile" then
+			Fx.burst("cyan", Vector3.new(s.x, 2.6, s.z), 5)
+		end
+		give(s.kind or "shot", s.m)
+	end
+end
+
+function Renderer.waveRing(x: number, z: number, radius: number, kind: number?)
+	local p = table.remove(wavePool) or flat(Enum.PartType.Cylinder, C.cyan, 0.2)
+	local k = kind or 1
+	p.Color = WAVE_COLORS[k] or C.cyan
+	p.Transparency = if k == 3 then 0.42 else 0.16
+	setCircle(p, x, z, math.max(1.5, radius * 0.22), 0.24)
+	table.insert(waveRings, { p = p, x = x, z = z, r = radius, t = 0, dur = if k == 3 then 0.32 else 0.42 })
+	if k == 2 then
+		Fx.burst("gold", Vector3.new(x, 1.5, z), 22)
+		Fx.play("boom", 1.15)
+		Fx.shake(0.16)
+	end
+end
+
+function Renderer.arc(pts: { number })
+	local segCount = 0
+	for i = 1, #pts - 3, 2 do
+		local x1, z1, x2, z2 = pts[i], pts[i + 1], pts[i + 2], pts[i + 3]
+		local mx, mz = (x1 + x2) * 0.5, (z1 + z2) * 0.5
+		local dx, dz = x2 - x1, z2 - z1
+		local len = math.max(0.1, math.sqrt(dx * dx + dz * dz))
+		local nx, nz = -dz / len, dx / len
+		local jit = (if (i // 2) % 2 == 0 then 1 else -1) * math.min(1.6, len * 0.14)
+		local jx, jz = mx + nx * jit, mz + nz * jit
+		local hops = { { x1, z1, jx, jz }, { jx, jz, x2, z2 } }
+		for _, h in hops do
+			local ax, az, bx, bz = h[1], h[2], h[3], h[4]
+			local hdx, hdz = bx - ax, bz - az
+			local hlen = math.max(0.2, math.sqrt(hdx * hdx + hdz * hdz))
+			local p = table.remove(beamPool) or flat(Enum.PartType.Block, Color3.fromRGB(140, 240, 255), 0.08)
+			p.Color = Color3.fromRGB(140, 240, 255)
+			p.Transparency = 0.06
+			p.Size = Vector3.new(0.32, 0.32, hlen)
+			p.CFrame = CFrame.lookAt(Vector3.new((ax + bx) * 0.5, 2.7, (az + bz) * 0.5), Vector3.new(bx, 2.7, bz))
+			table.insert(arcBeams, { p = p, t = 0, dur = 0.18 })
+			segCount += 1
+		end
+		Fx.burst("cyan", Vector3.new(x2, 2.6, z2), 7)
+	end
+	if segCount > 0 then
+		Fx.play("hit", 1.45)
 	end
 end
 
@@ -668,9 +745,36 @@ function Renderer.update(dt: number)
 		s.left -= step
 		if s.left <= 0 then
 			shots[id] = nil
-			give("shot", s.m)
+			give(s.kind or "shot", s.m)
 		else
 			s.m.PrimaryPart.CFrame = CFrame.lookAt(Vector3.new(s.x, 0, s.z), Vector3.new(s.x + s.dx, 0, s.z + s.dz))
+		end
+	end
+	for i = #waveRings, 1, -1 do
+		local w = waveRings[i]
+		w.t += dt
+		local k = math.clamp(w.t / w.dur, 0, 1)
+		if k >= 1 then
+			w.p.CFrame = FAR
+			table.insert(wavePool, w.p)
+			waveRings[i] = waveRings[#waveRings]
+			waveRings[#waveRings] = nil
+		else
+			setCircle(w.p, w.x, w.z, math.max(1.2, w.r * (0.2 + 0.85 * k)), 0.24)
+			w.p.Transparency = 0.18 + 0.82 * (k * k)
+		end
+	end
+	for i = #arcBeams, 1, -1 do
+		local b = arcBeams[i]
+		b.t += dt
+		local k = math.clamp(b.t / b.dur, 0, 1)
+		if k >= 1 then
+			b.p.CFrame = FAR
+			table.insert(beamPool, b.p)
+			arcBeams[i] = arcBeams[#arcBeams]
+			arcBeams[#arcBeams] = nil
+		else
+			b.p.Transparency = 0.06 + 0.94 * k
 		end
 	end
 	for id, s in eshots do

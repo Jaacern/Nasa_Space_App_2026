@@ -275,27 +275,48 @@ local function buildHud()
 	end), { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -16, 0, 118), Size = UDim2.fromOffset(130, 44), ZIndex = Z.hudTop, Visible = false }, "danger")
 	r.exitBtn.Parent = h
 
-	-- Ranura visual de Auto-Láser + 2 habilidades activas con vista 3D integrada
-	local autoCard = new("Frame", {
+	-- Ranura interactiva de arma principal (alternable: Láser / Abanico / Mortero) + 2 habilidades 3D
+	local autoCard = new("TextButton", {
 		AnchorPoint = Vector2.new(1, 1),
 		Position = UDim2.new(1, -264, 1, -(touch and 160 or 28)),
-		Size = UDim2.fromOffset(92, 112),
+		Size = UDim2.fromOffset(98, 112),
 		BackgroundColor3 = T.panel,
 		BackgroundTransparency = 0.06,
+		Text = "",
+		AutoButtonColor = false,
 		BorderSizePixel = 0,
 		ZIndex = Z.hud,
 	})
 	Ui.corner(10).Parent = autoCard
-	Ui.stroke(T.gold, 1.8, 0.15).Parent = autoCard
-	local autoVp = Ui.skillIcon3D("laser", 62, T.gold, 0.7)
-	autoVp.AnchorPoint = Vector2.new(0.5, 0)
-	autoVp.Position = UDim2.new(0.5, 0, 0, 8)
-	autoVp.ZIndex = Z.hudTop
-	autoVp.Parent = autoCard
-	label("LÁSER", 14, { FontFace = F.display, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 72), Size = UDim2.new(1, 0, 0, 18), TextColor3 = T.gold, TextWrapped = false, ZIndex = Z.hudTop }).Parent = autoCard
-	label("AUTO", 13, { FontFace = F.monoBold, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 89), Size = UDim2.new(1, 0, 0, 18), TextColor3 = T.dim, TextWrapped = false, ZIndex = Z.hudTop }).Parent = autoCard
+	local autoStroke = Ui.stroke(T.cyanHi, 1.8, 0.15)
+	autoStroke.Parent = autoCard
+	local autoVps = {
+		Ui.skillIcon3D("laser", 58, T.cyanHi, 0.7),
+		Ui.skillIcon3D("spread", 58, T.gold, 0.7),
+		Ui.skillIcon3D("mortar", 58, T.orange, 0.7),
+	}
+	for idx, vp in autoVps do
+		vp.AnchorPoint = Vector2.new(0.5, 0)
+		vp.Position = UDim2.new(0.5, 0, 0, 8)
+		vp.ZIndex = Z.hudTop
+		vp.Visible = idx == 1
+		vp.Parent = autoCard
+	end
+	local autoTitle = label("LÁSER", 13, { FontFace = F.display, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 70), Size = UDim2.new(1, -8, 0, 18), TextColor3 = T.cyanHi, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
+	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = autoTitle
+	autoTitle.Parent = autoCard
+	local autoSub = label("[F] MODO", 12, { FontFace = F.monoBold, TextXAlignment = CENTER, Position = UDim2.fromOffset(4, 89), Size = UDim2.new(1, -8, 0, 17), TextColor3 = T.dim, TextWrapped = false, TextScaled = true, ZIndex = Z.hudTop })
+	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 12 }).Parent = autoSub
+	autoSub.Parent = autoCard
+	autoCard.Activated:Connect(click(function()
+		send("weaponMode")
+	end))
 	autoCard.Parent = h
 	r.autoSlot = autoCard
+	r.autoStroke = autoStroke
+	r.autoVps = autoVps
+	r.autoTitle = autoTitle
+	r.autoSub = autoSub
 
 	r.skills = {}
 	local skillKinds3D = { "dash", "shield" }
@@ -854,9 +875,9 @@ local function buildMenu()
 	r.platformBadge.Parent = ctrlBox
 	new("Frame", { Position = UDim2.fromOffset(14, 33), Size = UDim2.new(1, -28, 0, 1), BackgroundColor3 = T.line, BackgroundTransparency = 0.4, BorderSizePixel = 0, ZIndex = Z.content }).Parent = ctrlBox
 	local ctrlLines = {
-		{ k = "PC / WEB", d = "WASD o Flechas ↑↓←→ mover · Ratón cámara · Rueda zoom · Espacio saltar · Q/E habs · 1-3 cartas · P pausa", c = T.cyanHi },
-		{ k = "CONSOLA / MANDO", d = "Stick Izq mover · Stick Der cámara · A saltar · X/L1 y B/R1 habs · ◀▲▶ elegir carta · Start pausa", c = T.gold },
-		{ k = "MÓVIL / TÁCTIL", d = "Joystick izq mover · Arrastrar derecha cámara · Pellizcar zoom · Botones saltar, RCS, Pulso y tocar cartas", c = T.green },
+		{ k = "PC / WEB", d = "WASD o Flechas mover · Ratón cámara · Espacio saltar · Q/E habs · F/R arma · 1-3 cartas · P pausa", c = T.cyanHi },
+		{ k = "CONSOLA / MANDO", d = "Stick Izq mover · Stick Der cámara · A saltar · X/L1 y B/R1 habs · Y arma · ◀▲▶ carta · Start pausa", c = T.gold },
+		{ k = "MÓVIL / TÁCTIL", d = "Joystick izq mover · Arrastrar cámara · Pellizcar zoom · Botones saltar, RCS, Pulso y ranura Arma", c = T.green },
 	}
 	for idx, cl in ctrlLines do
 		local ly = 38 + (idx - 1) * 47
@@ -924,7 +945,7 @@ local function buildOverlays()
 		factBox.Parent = card
 		label("DATO REAL", 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(8, 4), Size = UDim2.fromOffset(260, 18), TextColor3 = T.cyanHi, ZIndex = Z.content + 1 }).Parent = factBox
 		local fact = label("", 16, { FontFace = F.body, Position = UDim2.fromOffset(8, 22), Size = UDim2.fromOffset(260, 62), TextColor3 = T.text, TextTransparency = 0, ZIndex = Z.content + 1, TextYAlignment = TOP, TextScaled = true })
-		new("UITextSizeConstraint", { MaxTextSize = 18, MinTextSize = 13 }).Parent = fact
+		new("UITextSizeConstraint", { MaxTextSize = 18, MinTextSize = 11 }).Parent = fact
 		fact.Parent = factBox
 		local lvlText = label("", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(18, 272), Size = UDim2.fromOffset(268, 24), TextColor3 = T.gold, ZIndex = Z.content })
 		lvlText.Parent = card
@@ -958,32 +979,71 @@ local function buildOverlays()
 	}
 	for idx, entry in skEntries do
 		local cx = 24 + (idx - 1) * 276
-		local box = new("Frame", { Position = UDim2.fromOffset(cx, 76), Size = UDim2.fromOffset(262, 260), BackgroundColor3 = T.bg, BackgroundTransparency = 0.08, BorderSizePixel = 0, ZIndex = Z.panel })
+		local box = new("Frame", { Position = UDim2.fromOffset(cx, 74), Size = UDim2.fromOffset(262, 224), BackgroundColor3 = T.bg, BackgroundTransparency = 0.08, BorderSizePixel = 0, ZIndex = Z.panel })
 		Ui.corner(6).Parent = box
 		Ui.stroke(entry.col, 1.4, 0.25).Parent = box
 		box.Parent = bp
-		local vp = Ui.skillIcon3D(entry.kind, 84, entry.col, if idx == 2 then 0.9 else -0.8)
+		local vp = Ui.skillIcon3D(entry.kind, 76, entry.col, if idx == 2 then 0.9 else -0.8)
 		vp.AnchorPoint = Vector2.new(0.5, 0)
-		vp.Position = UDim2.new(0.5, 0, 0, 12)
+		vp.Position = UDim2.new(0.5, 0, 0, 8)
 		vp.ZIndex = Z.content + 1
 		vp.Parent = box
-		label(entry.title, 19, { FontFace = F.display, Position = UDim2.fromOffset(12, 102), Size = UDim2.fromOffset(238, 24), TextXAlignment = CENTER, TextColor3 = entry.col, ZIndex = Z.content + 1 }).Parent = box
-		label(entry.tag, 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(12, 128), Size = UDim2.fromOffset(238, 20), TextXAlignment = CENTER, TextColor3 = T.gold, ZIndex = Z.content + 1 }).Parent = box
-		local dl = label(entry.desc, 15, { FontFace = F.body, Position = UDim2.fromOffset(12, 154), Size = UDim2.fromOffset(238, 96), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, ZIndex = Z.content + 1 })
-		new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 15 }).Parent = dl
+		local tl = label(entry.title, 18, { FontFace = F.display, Position = UDim2.fromOffset(10, 88), Size = UDim2.fromOffset(242, 24), TextXAlignment = CENTER, TextColor3 = entry.col, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 18 }).Parent = tl
+		tl.Parent = box
+		label(entry.tag, 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(10, 114), Size = UDim2.fromOffset(242, 18), TextXAlignment = CENTER, TextColor3 = T.gold, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = box
+		local dl = label(entry.desc, 14, { FontFace = F.body, Position = UDim2.fromOffset(12, 136), Size = UDim2.fromOffset(238, 80), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = dl
 		dl.Parent = box
 	end
-	local envBox = new("Frame", { Position = UDim2.fromOffset(24, 348), Size = UDim2.new(1, -48, 0, 134), BackgroundColor3 = T.bg, BackgroundTransparency = 0.08, BorderSizePixel = 0, ZIndex = Z.panel })
+	local modeBar = new("Frame", { Position = UDim2.fromOffset(24, 304), Size = UDim2.new(1, -48, 0, 52), BackgroundColor3 = T.bg, BackgroundTransparency = 0.1, BorderSizePixel = 0, ZIndex = Z.panel })
+	Ui.corner(6).Parent = modeBar
+	Ui.stroke(T.cyan, 1.2, 0.35).Parent = modeBar
+	modeBar.Parent = bp
+	label("ARMA INICIAL:", 13, { FontFace = F.monoBold, Position = UDim2.fromOffset(12, 0), Size = UDim2.fromOffset(122, 52), TextColor3 = T.cyanHi, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = modeBar
+	local modeBtnCols = { T.cyanHi, T.gold, T.orange }
+	local modeBtnLabels = { "1 · HAZ LÁSER (+8% CRÍT)", "2 · ABANICO (3+ HACES)", "3 · MORTERO (ÁREA)" }
+	r.briefModeBtns = {}
+	r.briefModeStrokes = {}
+	for i = 1, 3 do
+		local bw = 216
+		local mb = new("TextButton", {
+			Position = UDim2.fromOffset(138 + (i - 1) * (bw + 8), 7),
+			Size = UDim2.fromOffset(bw, 38),
+			BackgroundColor3 = if i == 1 then T.bg else T.panel,
+			BackgroundTransparency = if i == 1 then 0.02 else 0.25,
+			FontFace = F.display,
+			TextSize = 13,
+			TextWrapped = false,
+			TextScaled = true,
+			TextColor3 = if i == 1 then modeBtnCols[i] else T.dim,
+			Text = modeBtnLabels[i],
+			AutoButtonColor = false,
+			BorderSizePixel = 0,
+			ZIndex = Z.content + 2,
+		})
+		new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = mb
+		Ui.corner(5).Parent = mb
+		local ms = Ui.stroke(if i == 1 then modeBtnCols[i] else T.line, 1.4, if i == 1 then 0 else 0.5)
+		ms.Parent = mb
+		mb.Activated:Connect(click(function()
+			send("weaponMode", i)
+		end))
+		mb.Parent = modeBar
+		r.briefModeBtns[i] = mb
+		r.briefModeStrokes[i] = ms
+	end
+	local envBox = new("Frame", { Position = UDim2.fromOffset(24, 362), Size = UDim2.new(1, -48, 0, 126), BackgroundColor3 = T.bg, BackgroundTransparency = 0.08, BorderSizePixel = 0, ZIndex = Z.panel })
 	Ui.corner(6).Parent = envBox
 	Ui.stroke(T.orange, 1.2, 0.35).Parent = envBox
 	envBox.Parent = bp
-	label("ZONAS DE MARTE, COFRES Y ANOMALÍAS", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 8), Size = UDim2.new(1, -28, 0, 20), TextColor3 = T.orange, ZIndex = Z.content + 1 }).Parent = envBox
-	local envTxt = label(table.concat(Content.Briefing, "\n"), 15, { FontFace = F.semi, Position = UDim2.fromOffset(14, 30), Size = UDim2.new(1, -28, 0, 96), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, LineHeight = 1.15, ZIndex = Z.content + 1 })
-	new("UITextSizeConstraint", { MinTextSize = 13, MaxTextSize = 15 }).Parent = envTxt
+	label("ZONAS DE MARTE, COFRES Y ANOMALÍAS", 15, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 6), Size = UDim2.new(1, -28, 0, 20), TextColor3 = T.orange, ZIndex = Z.content + 1 }).Parent = envBox
+	local envTxt = label(table.concat(Content.Briefing, "\n"), 15, { FontFace = F.semi, Position = UDim2.fromOffset(14, 28), Size = UDim2.new(1, -28, 0, 92), TextColor3 = T.text, TextYAlignment = TOP, TextScaled = true, LineHeight = 1.12, ZIndex = Z.content + 1 })
+	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = envTxt
 	envTxt.Parent = envBox
 	local deployBtn = button("DESPLEGAR AHORA [ESPACIO]", click(function()
 		Hud.closeBriefing()
-	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -14), Size = UDim2.fromOffset(360, 50), ZIndex = Z.content }, "primary")
+	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -12), Size = UDim2.fromOffset(360, 48), ZIndex = Z.content }, "primary")
 	deployBtn.Parent = bp
 	r.briefDeployBtn = deployBtn
 
@@ -1112,6 +1172,12 @@ local function applyInputLabels()
 					else "[" .. sk.key .. "]"
 			end
 		end
+	end
+	if r.autoSub then
+		r.autoSub.Text = if inputMode == "touch"
+			then "TOCAR MODO"
+			elseif inputMode == "gamepad" then "[Y] MODO"
+			else "[F] MODO"
 	end
 	if r.cards then
 		for i = 1, 3 do
@@ -1555,7 +1621,43 @@ function Hud.setPhase(newPhase: string, newMeta: any, extra: any)
 	updateFocus()
 end
 
+local MODE_COLORS = { T.cyanHi, T.gold, T.orange }
+local activeWeaponMode = 1
+
+function Hud.weaponMode(modeIdx: number)
+	local m = math.clamp(math.floor(modeIdx or 1), 1, #Content.WeaponModes)
+	activeWeaponMode = m
+	local def = Content.WeaponModes[m]
+	local col = MODE_COLORS[m] or T.cyanHi
+	if r.autoTitle and def then
+		r.autoTitle.Text = def.short
+		r.autoTitle.TextColor3 = col
+	end
+	if r.autoStroke then
+		r.autoStroke.Color = col
+	end
+	if r.autoVps then
+		for i, vp in r.autoVps do
+			vp.Visible = (i == m)
+		end
+	end
+	if r.briefModeBtns and r.briefModeStrokes then
+		for i, btn in r.briefModeBtns do
+			local bCol = MODE_COLORS[i] or T.cyanHi
+			local sel = (i == m)
+			btn.BackgroundColor3 = if sel then T.bg else T.panel
+			btn.BackgroundTransparency = if sel then 0.02 else 0.25
+			btn.TextColor3 = if sel then bCol else T.dim
+			r.briefModeStrokes[i].Color = if sel then bCol else T.line
+			r.briefModeStrokes[i].Transparency = if sel then 0 else 0.5
+		end
+	end
+end
+
 function Hud.setHud(h: { number })
+	if h[24] and h[24] ~= activeWeaponMode then
+		Hud.weaponMode(h[24])
+	end
 	local hpFrac = math.clamp(h[1] / math.max(1, h[2]), 0, 1)
 	r.hpFill.Size = UDim2.fromScale(hpFrac, 1)
 	r.hpFill.BackgroundColor3 = if hpFrac > 0.5 then T.green elseif hpFrac > 0.25 then T.gold else T.red
@@ -1651,7 +1753,10 @@ function Hud.levelUp(level: number, ids: { string }, levels: { number }, rars: {
 			c.name.TextColor3 = color
 			c.fact.Text = txt.fact or ""
 			if def then
-				local mult = if Balance.UpgradeCount[id] then 1 else Balance.CardRarity.Mult[rar]
+				local mult = if Balance.UpgradeCount[id]
+					then 1
+					elseif Balance.WeaponRanks and Balance.WeaponRanks[id] then (if rar >= 3 then 2 else 1)
+					else Balance.CardRarity.Mult[rar]
 				local after = math.min(def.max, levels[i] + mult)
 				c.desc.Text = if txt.fmt then string.format(txt.fmt, math.round(def.per * (after - levels[i]) * txt.scale)) else txt.desc
 				c.lvl.Text = string.format("NIVEL %s → %s / %d", Ui.num(levels[i]), Ui.num(after), def.max)

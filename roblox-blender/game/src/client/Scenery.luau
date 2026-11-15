@@ -924,6 +924,17 @@ local function buildGear(char: Model, id: string, lvl: number)
 	elseif id == "aura" then
 		local d = 5 + 0.8 * n
 		gp(torso, s, Vector3.new(0.12, d, d), CFrame.new(0, -2.6, 0) * ring, G_MAGENTA, NEON, Enum.PartType.Cylinder, 0.55)
+	elseif id == "nova" then
+		gp(torso, s, Vector3.new(0.22, 2.7 + 0.25 * n, 2.7 + 0.25 * n), CFrame.new(0, -0.45, 0) * ring, G_ORANGE, NEON, Enum.PartType.Cylinder, 0.25)
+	elseif id == "missiles" then
+		for _, sx in { -1, 1 } do
+			gp(torso, s, Vector3.new(0.55, 0.65, 1.05), CFrame.new(sx * 1.38, 1.35, 0.15), G_DARK, METAL)
+			gp(torso, s, Vector3.new(0.32, 0.32, 0.45), CFrame.new(sx * 1.38, 1.5, -0.42), G_MAGENTA, NEON)
+		end
+	elseif id == "arc" then
+		for _, sx in { -1, 1 } do
+			gp(torso, s, Vector3.new(0.24, 1.15 + 0.12 * n, 0.24), CFrame.new(sx * 0.88, 1.35, 0.92), G_CYAN, NEON)
+		end
 	end
 end
 

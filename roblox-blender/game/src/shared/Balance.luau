@@ -45,6 +45,52 @@ Balance.Hero = {
 	RegenPerSec = 1,
 }
 
+-- Modos de fuego del arma principal (alternables en combate con [F] / [Y] o tocando la ranura).
+Balance.WeaponModes = {
+	{
+		id = "laser",
+		shotKind = "shot",
+		dmgMult = 1.0,
+		rateMult = 1.0,
+		projCountBonus = 0,
+		pierceBonus = 0,
+		range = 48,
+		speedMult = 1.0,
+		critBonus = 0.08,
+		splash = 0,
+		knock = 0,
+		spread = 0.14,
+	},
+	{
+		id = "spread",
+		shotKind = "spread",
+		dmgMult = 0.68,
+		rateMult = 0.92,
+		projCountBonus = 2,
+		pierceBonus = 0,
+		range = 38,
+		speedMult = 0.92,
+		critBonus = 0,
+		splash = 0,
+		knock = 1.5,
+		spread = 0.24,
+	},
+	{
+		id = "mortar",
+		shotKind = "mortar",
+		dmgMult = 1.45,
+		rateMult = 0.56,
+		projCountBonus = 0,
+		pierceBonus = 0,
+		range = 44,
+		speedMult = 0.52,
+		critBonus = 0.05,
+		splash = 10.5,
+		knock = 10,
+		spread = 0.20,
+	},
+}
+
 Balance.Skills = {
 	Dash = { Cooldown = 8, Distance = 24, Width = 5, Damage = 25, Invuln = 0.45, Duration = 0.18 },
 	Pulse = { Cooldown = 20, Radius = 18, Damage = 45, Knockback = 18, Shield = 35, ShieldTime = 6 },
@@ -152,10 +198,15 @@ Balance.Upgrades = {
 	cooldown = { max = 4, per = 0.10 },
 	crit = { max = 5, per = 0.08 },
 	aura = { max = 4, per = 5, radius = 10, interval = 0.5 },
+	nova = { max = 5, baseDmg = 24, per = 11, radius = 14, radiusPer = 2.2, knock = 14, interval = 3.2, intervalPer = 0.25 },
+	missiles = { max = 5, baseCount = 2, dmgMult = 0.82, per = 12, range = 48, speed = 70, splash = 5.2, interval = 2.0, intervalPer = 0.14 },
+	arc = { max = 5, baseChains = 2, dmgMult = 0.78, per = 11, range = 42, jumpRange = 22, interval = 1.65, intervalPer = 0.12 },
 }
--- Mejoras que suman unidades enteras: valen 1 nivel y se desbloquean a partir de nivel 3.
+-- Mejoras que suman unidades enteras: valen 1 nivel y se desbloquean a partir de nivel 2.
 Balance.UpgradeCount = { multishot = true, pierce = true, drone = true }
-Balance.UpgradeCountMinLevel = 3
+Balance.UpgradeCountMinLevel = 2
+-- Armas secundarias por rango: disponibles desde nivel 1 (+1 rango, +2 si carta epica/legendaria).
+Balance.WeaponRanks = { nova = true, missiles = true, arc = true }
 -- Rareza de carta: 1 comun, 2 rara, 3 epica, 4 legendaria. Mult = niveles que otorga.
 -- Escala por nivel del jugador: evita cartas legendarias o epicas en los primeros niveles.
 Balance.CardRarity = {
@@ -183,7 +234,7 @@ Balance.ChestWaveWeights = {
 	{ minWave = 8, w = { 20, 38, 30, 12 } },
 	{ minWave = 12, w = { 10, 30, 38, 22 } },
 }
-Balance.UpgradeOrder = { "damage", "rate", "multishot", "pierce", "armor", "speed", "magnet", "drone", "cooldown", "crit", "aura" }
+Balance.UpgradeOrder = { "damage", "rate", "nova", "missiles", "arc", "multishot", "pierce", "armor", "speed", "magnet", "drone", "cooldown", "crit", "aura" }
 Balance.LevelUpHeal = 30 -- opcion de reserva "Reparacion de campo"
 
 -- Objetos de cofre. cat: off | def | util. rar: 1 comun, 2 raro, 3 epico.

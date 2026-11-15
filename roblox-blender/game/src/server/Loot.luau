@@ -50,6 +50,9 @@ function Loot.recompute(R: Run)
 	s.scienceZoneMult = 1 + (zDef.science or 0)
 	s.drones = math.floor(ul("drone"))
 	s.aura = U.aura.per * ul("aura")
+	s.novaLvl = math.floor(ul("nova"))
+	s.missilesLvl = math.floor(ul("missiles"))
+	s.arcLvl = math.floor(ul("arc"))
 	s.plasma = il("plasma") > 0
 	s.shelter = il("shelter") > 0
 	s.chestItems = 1 + I.orbital.per * il("orbital")
@@ -186,9 +189,11 @@ local function rollRarity(R: Run): number
 	return 1
 end
 
--- Devuelve hasta 3 cartas { id, rar }. Las cartas de unidades enteras arrancan en nivel 3.
+-- Devuelve hasta 3 cartas { id, rar }. Las cartas de unidades enteras arrancan en nivel 2.
+local FIRST_CHOICE_VARIETY = { "nova", "missiles", "arc", "multishot" }
+
 function Loot.makeOptions(R: Run): { any }
-	local minSpec = Balance.UpgradeCountMinLevel or 3
+	local minSpec = Balance.UpgradeCountMinLevel or 2
 	local pool = {}
 	for _, id in Balance.UpgradeOrder do
 		if (R.upgrades[id] or 0) < Balance.Upgrades[id].max then
@@ -206,6 +211,28 @@ function Loot.makeOptions(R: Run): { any }
 		local rar = if Balance.UpgradeCount[id] then (if R.lvl >= 4 then 3 else 2) else rollRarity(R)
 		table.insert(out, { id = id, rar = rar })
 	end
+	if R.lvl <= 3 and #out == 3 then
+		local hasVariety = false
+		for _, opt in out do
+			if table.find(FIRST_CHOICE_VARIETY, opt.id) or opt.id == "aura" then
+				hasVariety = true
+				break
+			end
+		end
+		if not hasVariety then
+			local avail = {}
+			for _, id in FIRST_CHOICE_VARIETY do
+				if (R.upgrades[id] or 0) < Balance.Upgrades[id].max and (not Balance.UpgradeCount[id] or R.lvl >= minSpec) then
+					table.insert(avail, id)
+				end
+			end
+			if #avail > 0 then
+				local pick = avail[rng:NextInteger(1, #avail)]
+				local rar = if Balance.UpgradeCount[pick] then 2 else rollRarity(R)
+				out[3] = { id = pick, rar = rar }
+			end
+		end
+	end
 	if #out < 3 then
 		table.insert(out, { id = "heal", rar = 1 })
 	end
@@ -218,7 +245,10 @@ function Loot.applyChoice(R: Run, opt: any)
 		R.hp = math.min(R.stats.maxHp, R.hp + Balance.LevelUpHeal)
 		return
 	end
-	local mult = if Balance.UpgradeCount[id] then 1 else Balance.CardRarity.Mult[opt.rar]
+	local mult = if Balance.UpgradeCount[id]
+		then 1
+		elseif Balance.WeaponRanks and Balance.WeaponRanks[id] then (if opt.rar >= 3 then 2 else 1)
+		else Balance.CardRarity.Mult[opt.rar]
 	R.upgrades[id] = math.min(Balance.Upgrades[id].max, (R.upgrades[id] or 0) + mult)
 	local before = R.stats.maxHp
 	Loot.recompute(R)

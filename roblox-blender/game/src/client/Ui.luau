@@ -283,6 +283,18 @@ function Ui.skillIcon3D(kind: string, px: number, accent: Color3?, spinSpeed: nu
 		vpPart(wm, Enum.PartType.Block, Vector3.new(1.2, 0.28, 0.8), CFrame.new(0, 0.12, -0.15), glow, Enum.Material.Neon).Parent = rig
 		vpPart(wm, Enum.PartType.Ball, Vector3.new(0.68, 0.68, 0.68), CFrame.new(0, 0.14, -1.55), glow, Enum.Material.Neon).Parent = rig
 		vpPart(wm, Enum.PartType.Block, Vector3.new(0.32, 0.95, 0.8), CFrame.new(0, -0.45, 0.55) * CFrame.Angles(math.rad(18), 0, 0), dark, Enum.Material.Metal).Parent = rig
+	elseif kind == "spread" then
+		vpPart(wm, Enum.PartType.Block, Vector3.new(1.65, 0.65, 1.5), CFrame.new(0, 0, 0.35), dark, Enum.Material.Metal).Parent = rig
+		for _, a in { -22, 0, 22 } do
+			local cf = CFrame.new(math.sin(math.rad(a)) * 0.55, 0.12, -0.72) * CFrame.Angles(0, math.rad(90 + a), 0)
+			vpPart(wm, Enum.PartType.Cylinder, Vector3.new(1.3, 0.28, 0.28), cf, steel, Enum.Material.Metal).Parent = rig
+			vpPart(wm, Enum.PartType.Ball, Vector3.new(0.44, 0.44, 0.44), CFrame.new(math.sin(math.rad(a)) * 0.92, 0.12, -1.32), glow, Enum.Material.Neon).Parent = rig
+		end
+	elseif kind == "mortar" then
+		vpPart(wm, Enum.PartType.Cylinder, Vector3.new(1.3, 1.35, 1.35), CFrame.new(0, 0.05, 0.25) * CFrame.Angles(0, math.rad(90), 0), dark, Enum.Material.Metal).Parent = rig
+		vpPart(wm, Enum.PartType.Cylinder, Vector3.new(1.65, 0.95, 0.95), CFrame.new(0, 0.28, -0.65) * CFrame.Angles(0, math.rad(90), 0), steel, Enum.Material.Metal).Parent = rig
+		vpPart(wm, Enum.PartType.Ball, Vector3.new(0.92, 0.92, 0.92), CFrame.new(0, 0.32, -1.38), glow, Enum.Material.Neon).Parent = rig
+		vpPart(wm, Enum.PartType.Block, Vector3.new(1.85, 0.28, 0.7), CFrame.new(0, -0.58, 0.15), dark, Enum.Material.Metal).Parent = rig
 	elseif kind == "dash" then
 		vpPart(wm, Enum.PartType.Cylinder, Vector3.new(1.7, 0.72, 0.72), CFrame.new(-0.55, 0.1, 0) * CFrame.Angles(0, 0, math.rad(90)), steel, Enum.Material.Metal).Parent = rig
 		vpPart(wm, Enum.PartType.Cylinder, Vector3.new(1.7, 0.72, 0.72), CFrame.new(0.55, 0.1, 0) * CFrame.Angles(0, 0, math.rad(90)), steel, Enum.Material.Metal).Parent = rig

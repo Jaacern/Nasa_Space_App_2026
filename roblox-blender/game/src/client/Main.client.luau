@@ -227,10 +227,20 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 		Renderer.hit(ev[2], ev[3], ev[4] == 1)
 	end,
 	shot = function(ev)
-		Renderer.shot(ev[2], ev[3], ev[4], ev[5], ev[6], ev[7], ev[8], ev[9] == 1)
+		Renderer.shot(ev[2], ev[3], ev[4], ev[5], ev[6], ev[7], ev[8], ev[9] == 1, ev[10])
 	end,
 	shotEnd = function(ev)
 		Renderer.shotEnd(ev[2])
+	end,
+	waveRing = function(ev)
+		Renderer.waveRing(ev[2], ev[3], ev[4], ev[5])
+	end,
+	arc = function(ev)
+		Renderer.arc(ev[2])
+	end,
+	weaponMode = function(ev)
+		Hud.weaponMode(ev[2])
+		Fx.play("ui", 1.25)
 	end,
 	eshot = function(ev)
 		Renderer.eshot(ev[2], ev[3], ev[4], ev[5], ev[6], ev[7])
@@ -436,6 +446,10 @@ UserInputService.InputBegan:Connect(function(input, processed)
 		useSkill(1)
 	elseif k == Enum.KeyCode.E or k == Enum.KeyCode.ButtonB or k == Enum.KeyCode.ButtonR1 then
 		useSkill(2)
+	elseif k == Enum.KeyCode.F or k == Enum.KeyCode.R or k == Enum.KeyCode.ButtonY then
+		if (inRun() and not Hud.wantsCursor()) or Hud.isBriefingOpen() then
+			send("weaponMode")
+		end
 	elseif k == Enum.KeyCode.One or k == Enum.KeyCode.KeypadOne or k == Enum.KeyCode.DPadLeft then
 		Hud.pick(1)
 	elseif k == Enum.KeyCode.Two or k == Enum.KeyCode.KeypadTwo or k == Enum.KeyCode.DPadUp then

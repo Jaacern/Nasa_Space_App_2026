@@ -42,9 +42,9 @@ function Combat.damageEnemy(R: Run, e: any, amount: number, crit: boolean)
 	end
 end
 
-function Combat.areaDamage(R: Run, x: number, z: number, radius: number, amount: number, knock: number?)
+function Combat.areaDamage(R: Run, x: number, z: number, radius: number, amount: number, knock: number?, skipId: number?)
 	for _, e in R.enemies do
-		if not e.dead then
+		if not e.dead and e.id ~= skipId then
 			local dx, dz = e.x - x, e.z - z
 			local rr = radius + e.r
 			local d2 = dx * dx + dz * dz
@@ -116,25 +116,60 @@ local function nearestEnemy(R: Run, range: number): any
 	return best
 end
 
+local function weaponModeOf(R: Run): any
+	local modes = Balance.WeaponModes
+	local idx = R.weaponMode or 1
+	return modes[idx] or modes[1]
+end
+
+local function spawnShot(R: Run, px: number, pz: number, dx: number, dz: number, speed: number, range: number, pierce: number, dmg: number, boom: boolean, kind: string, critChance: number?, splash: number?, knock: number?, detonateOnEnd: boolean?, waveKind: number?)
+	R.nextShot += 1
+	local sx = math.round(dx * 1000) / 1000
+	local sz = math.round(dz * 1000) / 1000
+	table.insert(R.shots, {
+		id = R.nextShot, x = px, z = pz, dx = dx, dz = dz, speed = speed,
+		left = range, pierce = pierce, dmg = dmg, hit = {}, boom = boom,
+		kind = kind, crit = critChance, splash = splash or 0, knock = knock or 0,
+		detonateOnEnd = detonateOnEnd == true, waveKind = waveKind or 1,
+	})
+	table.insert(R.events, { "shot", R.nextShot, math.round(px * 10) / 10, math.round(pz * 10) / 10, sx, sz, speed, range, boom and 1 or 0, kind })
+end
+
 local function fire(R: Run, target: any)
 	local H, s = Balance.Hero, R.stats
+	local mode = weaponModeOf(R)
 	local dx, dz = target.x - R.px, target.z - R.pz
 	local d = math.max(0.01, math.sqrt(dx * dx + dz * dz))
 	dx, dz = dx / d, dz / d
-	local n = s.projCount
+	local n = math.max(1, s.projCount + (mode.projCountBonus or 0))
+	local stepAng = mode.spread or math.rad(H.SpreadDeg)
+	local speed = s.projSpeed * (mode.speedMult or 1)
+	local shotKind = mode.shotKind or "shot"
+	local range = if shotKind == "mortar" then math.min(mode.range, math.max(10, d)) else (mode.range or H.Range)
+	local splash = mode.splash or 0
+	local knock = mode.knock or 0
+	local pierce = if splash > 0 then 0 else (s.pierce + (mode.pierceBonus or 0))
+	local dmg = H.Damage * s.dmgMult * (mode.dmgMult or 1)
+	local crit = math.min(Balance.Caps.Crit, s.crit + (mode.critBonus or 0))
+	local detEnd = splash > 0
 	for k = 1, n do
-		local ang = math.rad((k - (n + 1) / 2) * H.SpreadDeg)
+		local ang = (k - (n + 1) / 2) * stepAng
 		local c, sn = math.cos(ang), math.sin(ang)
 		local sx, sz = dx * c - dz * sn, dx * sn + dz * c
-		R.nextShot += 1
 		R.shotCount += 1
 		local boom = s.plasma and (R.shotCount % Balance.Items.plasma.every == 0)
-		table.insert(R.shots, {
-			id = R.nextShot, x = R.px, z = R.pz, dx = sx, dz = sz, speed = s.projSpeed,
-			left = H.Range, pierce = s.pierce, dmg = H.Damage * s.dmgMult, hit = {}, boom = boom,
-		})
-		table.insert(R.events, { "shot", R.nextShot, math.round(R.px * 10) / 10, math.round(R.pz * 10) / 10, math.round(sx * 1000) / 1000, math.round(sz * 1000) / 1000, s.projSpeed, H.Range, boom and 1 or 0 })
+		spawnShot(R, R.px, R.pz, sx, sz, speed, range, pierce, dmg, boom, shotKind, crit, splash, knock, detEnd, 1)
 	end
+end
+
+local function triggerSplash(R: Run, x: number, z: number, sh: any, skipId: number?)
+	local splash = sh.splash or 0
+	if splash <= 0 then
+		return
+	end
+	Combat.areaDamage(R, x, z, splash, sh.dmg * (if skipId then 0.85 else 1), sh.knock, skipId)
+	table.insert(R.events, { "boom", math.round(x), math.round(z), splash })
+	table.insert(R.events, { "waveRing", math.round(x * 10) / 10, math.round(z * 10) / 10, splash, sh.waveKind or 1 })
 end
 
 local function stepShots(R: Run, dt: number)
@@ -145,13 +180,14 @@ local function stepShots(R: Run, dt: number)
 		local sh = shots[i]
 		local dist = math.min(sh.speed * dt, sh.left)
 		local cands = {}
+		local hitRadius = projR + (if sh.kind == "mortar" then 0.8 else 0)
 		for _, e in R.enemies do
 			if not e.dead and not sh.hit[e.id] then
 				local rx, rz = e.x - sh.x, e.z - sh.z
 				local t = rx * sh.dx + rz * sh.dz
 				if t >= -e.r and t <= dist + e.r then
 					local qx, qz = rx - sh.dx * t, rz - sh.dz * t
-					local rr = e.r + projR
+					local rr = e.r + hitRadius
 					if qx * qx + qz * qz <= rr * rr then
 						table.insert(cands, { t = t, e = e })
 					end
@@ -166,13 +202,16 @@ local function stepShots(R: Run, dt: number)
 			for _, c in cands do
 				local e = c.e
 				sh.hit[e.id] = true
-				local crit = rng:NextNumber() < s.crit
+				local crit = rng:NextNumber() < (sh.crit or s.crit)
 				Combat.damageEnemy(R, e, sh.dmg * (crit and Balance.Hero.CritMult or 1), crit)
+				if sh.splash and sh.splash > 0 then
+					triggerSplash(R, e.x, e.z, sh, e.id)
+				end
 				if sh.boom then
 					sh.boom = false
 					local pl = Balance.Items.plasma
 					table.insert(R.events, { "boom", math.round(e.x), math.round(e.z), pl.radius })
-					Combat.areaDamage(R, e.x, e.z, pl.radius, sh.dmg * pl.frac)
+					Combat.areaDamage(R, e.x, e.z, pl.radius, sh.dmg * pl.frac, nil, e.id)
 				end
 				if sh.pierce <= 0 then
 					ended = true
@@ -184,6 +223,9 @@ local function stepShots(R: Run, dt: number)
 		sh.x += sh.dx * dist
 		sh.z += sh.dz * dist
 		sh.left -= dist
+		if not ended and sh.left <= 0 and sh.detonateOnEnd and sh.splash and sh.splash > 0 then
+			triggerSplash(R, sh.x, sh.z, sh, nil)
+		end
 		if ended then
 			table.insert(R.events, { "shotEnd", sh.id })
 		end
@@ -225,6 +267,7 @@ function Combat.useSkill(R: Run, idx: number, dx: number, dz: number)
 	elseif idx == 2 then
 		local P = Balance.Skills.Pulse
 		Combat.areaDamage(R, R.px, R.pz, P.Radius, P.Damage * s.dmgMult, P.Knockback)
+		table.insert(R.events, { "waveRing", math.round(R.px * 10) / 10, math.round(R.pz * 10) / 10, P.Radius, 3 })
 		R.shield = P.Shield
 		R.shieldMax = P.Shield
 		R.shieldT = P.ShieldTime
@@ -268,13 +311,14 @@ function Combat.update(R: Run, dt: number)
 		R.hp = math.min(s.maxHp, R.hp + regen * dt)
 	end
 
-	-- Ataque automatico.
+	-- Ataque principal automatico (Láser / Abanico / Mortero).
+	local mode = weaponModeOf(R)
 	R.atkT -= dt
 	if R.atkT <= 0 then
-		local target = nearestEnemy(R, H.Range)
+		local target = nearestEnemy(R, mode.range or H.Range)
 		if target then
 			fire(R, target)
-			R.atkT += s.atkInterval
+			R.atkT += s.atkInterval / (mode.rateMult or 1)
 			if R.atkT < 0 then
 				R.atkT = 0
 			end
@@ -282,6 +326,106 @@ function Combat.update(R: Run, dt: number)
 			R.atkT = 0
 		end
 	end
+
+	-- Armas automaticas de area y multiples objetivos.
+	if (s.novaLvl or 0) > 0 then
+		R.novaT -= dt
+		if R.novaT <= 0 then
+			local N = Balance.Upgrades.nova
+			local radius = N.radius + N.radiusPer * (s.novaLvl - 1)
+			if nearestEnemy(R, radius + 3) then
+				R.novaT = math.max(1.2, N.interval - N.intervalPer * (s.novaLvl - 1)) * math.max(0.75, s.cdMult)
+				local dmg = (N.baseDmg + N.per * (s.novaLvl - 1)) * s.dmgMult
+				Combat.areaDamage(R, R.px, R.pz, radius, dmg, N.knock)
+				table.insert(R.events, { "waveRing", math.round(R.px * 10) / 10, math.round(R.pz * 10) / 10, radius, 2 })
+			else
+				R.novaT = 0.25
+			end
+		end
+	end
+
+	if (s.missilesLvl or 0) > 0 then
+		R.missileT -= dt
+		if R.missileT <= 0 then
+			local M = Balance.Upgrades.missiles
+			local cands = {}
+			local maxR2 = M.range * M.range
+			for _, e in R.enemies do
+				if not e.dead then
+					local dx, dz = e.x - R.px, e.z - R.pz
+					local d2 = dx * dx + dz * dz
+					if d2 <= maxR2 then
+						table.insert(cands, { d2 = d2, e = e })
+					end
+				end
+			end
+			if #cands > 0 then
+				table.sort(cands, function(a, b)
+					return a.d2 < b.d2
+				end)
+				R.missileT = math.max(0.65, M.interval - M.intervalPer * (s.missilesLvl - 1))
+				local count = M.baseCount + (s.missilesLvl - 1)
+				local dmg = (H.Damage * M.dmgMult + M.per * (s.missilesLvl - 1)) * s.dmgMult
+				for i = 1, count do
+					local tgt = cands[((i - 1) % #cands) + 1].e
+					local dx, dz = tgt.x - R.px, tgt.z - R.pz
+					local d = math.max(0.01, math.sqrt(dx * dx + dz * dz))
+					dx, dz = dx / d, dz / d
+					local fan = if i > #cands then ((i - #cands) % 2 * 2 - 1) * 0.14 else 0
+					local c, sn = math.cos(fan), math.sin(fan)
+					spawnShot(R, R.px, R.pz, dx * c - dz * sn, dx * sn + dz * c, M.speed, math.min(M.range, d + 5), 0, dmg, false, "missile", s.crit, M.splash, 3, true, 4)
+				end
+			else
+				R.missileT = 0.25
+			end
+		end
+	end
+
+	if (s.arcLvl or 0) > 0 then
+		R.arcT -= dt
+		if R.arcT <= 0 then
+			local AR = Balance.Upgrades.arc
+			local cur = nearestEnemy(R, AR.range)
+			if cur then
+				R.arcT = math.max(0.55, AR.interval - AR.intervalPer * (s.arcLvl - 1))
+				local chains = AR.baseChains + (s.arcLvl - 1)
+				local dmg = (H.Damage * AR.dmgMult + AR.per * (s.arcLvl - 1)) * s.dmgMult
+				local visited: { [number]: boolean } = {}
+				local pts: { number } = { math.round(R.px * 10) / 10, math.round(R.pz * 10) / 10 }
+				local prevX, prevZ = cur.x, cur.z
+				local jump2 = AR.jumpRange * AR.jumpRange
+				for hop = 1, chains do
+					if not cur then
+						break
+					end
+					visited[cur.id] = true
+					table.insert(pts, math.round(cur.x * 10) / 10)
+					table.insert(pts, math.round(cur.z * 10) / 10)
+					prevX, prevZ = cur.x, cur.z
+					local crit = rng:NextNumber() < s.crit
+					Combat.damageEnemy(R, cur, dmg * (0.88 ^ (hop - 1)) * (if crit then H.CritMult else 1), crit)
+					local nxt: any = nil
+					local bestD2 = jump2
+					for _, e in R.enemies do
+						if not e.dead and not visited[e.id] then
+							local dx, dz = e.x - prevX, e.z - prevZ
+							local d2 = dx * dx + dz * dz
+							if d2 <= bestD2 then
+								nxt, bestD2 = e, d2
+							end
+						end
+					end
+					cur = nxt
+				end
+				if #pts >= 4 then
+					table.insert(R.events, { "arc", pts })
+				end
+			else
+				R.arcT = 0.25
+			end
+		end
+	end
+
 	stepShots(R, dt)
 
 	-- Drones orbitales.
@@ -309,7 +453,11 @@ function Combat.update(R: Run, dt: number)
 		if R.auraT <= 0 then
 			local A = Balance.Upgrades.aura
 			R.auraT = A.interval
+			local hadTarget = nearestEnemy(R, A.radius + 2) ~= nil
 			Combat.areaDamage(R, R.px, R.pz, A.radius, s.aura * s.dmgMult)
+			if hadTarget then
+				table.insert(R.events, { "waveRing", math.round(R.px * 10) / 10, math.round(R.pz * 10) / 10, A.radius, 3 })
+			end
 		end
 	end
 end

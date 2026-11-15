@@ -47,6 +47,7 @@ export type Checkpoint = {
 	scienceBonus: number,
 	px: number,
 	pz: number,
+	weaponMode: number?,
 	savedAt: number,
 }
 
@@ -209,6 +210,7 @@ local function reconcileCheckpoint(raw: any): Checkpoint?
 		scienceBonus = if type(raw.scienceBonus) == "number" then math.max(0, math.floor(raw.scienceBonus)) else 0,
 		px = if type(raw.px) == "number" then raw.px else 0,
 		pz = if type(raw.pz) == "number" then raw.pz else 34,
+		weaponMode = if type(raw.weaponMode) == "number" then math.clamp(math.floor(raw.weaponMode), 1, 3) else 1,
 		savedAt = if type(raw.savedAt) == "number" then raw.savedAt else os.time(),
 	}
 end
