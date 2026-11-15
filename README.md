@@ -29,11 +29,12 @@ Para arrancar el juego de Roblox (**ARES FORGE**), sigue [`roblox-blender/README
 
 ## Leer en este orden
 
-1. [Plan del juego y de los datos](docs/PLAN-JUEGO-Y-DATOS.md): idea, mecánicas, uso de datos, IA y cronograma.
-2. [API local y saneado](docs/API-LOCAL.md): endpoints reales, modo `live=1` vs `snapshot` y seguridad.
-3. [Pendientes manuales](docs/PENDIENTES-MANUALES.md): checklist consolidado de pendientes de `Outpost Run` y `ARES FORGE`.
-4. [Prompts de IA](docs/ia/PROMPTS.md) y [Registro de IA](docs/ia/REGISTRO.md): resúmenes infantiles, QA y trazabilidad.
-5. [Investigación de fuentes](docs/investigacion-recursos-nasa-csa.md): alcance, CORS y términos de NASA y CSA.
+1. [Guía para Claude Code](CLAUDE.md) y [traspaso completo de sesión](docs/HANDOFF-CLAUDE.md): contexto listo para retomar desarrollo sin re-auditar.
+2. [Plan del juego y de los datos](docs/PLAN-JUEGO-Y-DATOS.md): idea, mecánicas, uso de datos, IA y cronograma.
+3. [API local y saneado](docs/API-LOCAL.md): endpoints reales, modo `live=1` vs `snapshot` y seguridad.
+4. [Pendientes manuales](docs/PENDIENTES-MANUALES.md): checklist consolidado de pendientes de `Outpost Run` y `ARES FORGE`.
+5. [Prompts de IA](docs/ia/PROMPTS.md) y [Registro de IA](docs/ia/REGISTRO.md): resúmenes infantiles, QA y trazabilidad.
+6. [Investigación de fuentes](docs/investigacion-recursos-nasa-csa.md): alcance, CORS y términos de NASA y CSA.
 
 ## Estructura del repositorio
 
