@@ -355,6 +355,7 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 	end
 
 	Fx.update(dt)
+	Fx.kickUpdate(dt)
 	Scenery.update(dt)
 	Renderer.update(dt)
 	Hud.update(dt, if inRun() then Renderer.nearestChest() else nil)

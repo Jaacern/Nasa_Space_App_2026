@@ -255,6 +255,7 @@ function Renderer.shot(id: number, x: number, z: number, dx: number, dz: number,
 	end
 	mz.CFrame = CFrame.new(x + dx * 2, playerPos.Y + 0.3, z + dz * 2)
 	muzzleT = MUZZLE_TIME
+	Fx.kickBack(if boom then 0.22 else 0.1)
 	if boom then
 		Fx.shake(0.12)
 	end

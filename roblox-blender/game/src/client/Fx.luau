@@ -160,11 +160,25 @@ function Fx.shake(amount: number)
 	shake = math.min(Balance.Camera.ShakeMax, math.max(shake, amount))
 end
 
-function Fx.shakeOffset(): Vector3
-	if shake <= 0.001 then
-		return Vector3.zero
+-- Retroceso del heroe al disparar: empuje breve hacia atras de la camara que vuelve solo.
+local kick = 0
+
+function Fx.kickBack(amount: number)
+	kick = math.min(0.35, math.max(kick, amount))
+end
+
+function Fx.kickUpdate(dt: number)
+	if kick > 0 then
+		kick = math.max(0, kick - dt * 3)
 	end
-	return Vector3.new(rng:NextNumber(-shake, shake), rng:NextNumber(-shake, shake), 0)
+end
+
+function Fx.shakeOffset(): Vector3
+	local back = kick * 1.2
+	if shake <= 0.001 then
+		return Vector3.new(0, 0, back)
+	end
+	return Vector3.new(rng:NextNumber(-shake, shake), rng:NextNumber(-shake, shake), back)
 end
 
 function Fx.hitstop(t: number)

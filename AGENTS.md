@@ -44,6 +44,6 @@ Reparto sugerido si hay varios modelos: el más capaz orquesta, diseña y revisa
 
 1. Una persona escucha la mezcla de audio (el menú ya se verificó por captura).
 2. El lugar está en Roblox como «Núcleo de Ares»; guardar con `save_place` tras cada avance. No publicar sin pedirlo.
-3. Pulido pendiente: retroceso del héroe al disparar. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
+3. Pulido pendiente: ninguno de código. Lista: audio por una persona, tráiler al final. (Retroceso de enemigos, fuente de impacto y destello de boca ya hechos.)
 4. Pendientes `P-01` a `P-15` que dependen del equipo.
 5. Tráiler, al final.
