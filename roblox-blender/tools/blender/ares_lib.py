@@ -42,6 +42,9 @@ PALETA = {
     "MAT_HullGrey":    ((200, 205, 215), "Metal",         False, 0.0),
     "MAT_HullDark":    ((60, 66, 80),    "Metal",         False, 0.0),
     "MAT_Glass":       ((140, 200, 230), "Glass",         False, 0.5),
+    # Colores oficiales de la insignia NASA (azul #0B3D91, rojo #FC3D21)
+    "MAT_NasaBlue":    ((11, 61, 145),   "SmoothPlastic", False, 0.0),
+    "MAT_NasaRed":     ((252, 61, 33),   "SmoothPlastic", False, 0.0),
 }
 ORDEN_MAT = list(PALETA.keys())
 
@@ -80,6 +83,8 @@ ASSETS = [
     ("RockC",    "Entorno",  "Roca marciana 8",              300, 3, "suelo"),
     ("RidgeA",   "Entorno",  "Cresta/meseta del horizonte A", 400, 3, "suelo"),
     ("RidgeB",   "Entorno",  "Cresta/meseta del horizonte B", 400, 3, "suelo"),
+    ("Rover",    "Entorno",  "Rover Perseverance (medidas NASA/JPL-Caltech)", 900, 4, "suelo"),
+    ("Insignia", "Marca",    "Insignia NASA (menu principal)", 9000, 3, "centro"),
 ]
 ASSET_INFO = {a[0]: a for a in ASSETS}
 

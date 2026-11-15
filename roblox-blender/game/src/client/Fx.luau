@@ -15,6 +15,7 @@ local sounds: { [string]: Sound } = {}
 local lastPlay: { [string]: number } = {}
 local music: { [string]: Sound } = {}
 local musicTarget: { [string]: number } = { calm = 0, combat = 0, boss = 0 }
+local musicVol: { [string]: number } = {}
 local emitters: { [string]: { att: Attachment, em: ParticleEmitter } } = {}
 local shake = 0
 local low = false
@@ -44,24 +45,39 @@ local function makeEmitter(anchor: Part, name: string, color: Color3, size: numb
 end
 
 function Fx.init(folder: Instance)
+	-- Grupo de efectos con ecualizador: recorta agudos para que nada suene agresivo.
+	local sfxGroup = Instance.new("SoundGroup")
+	sfxGroup.Name = "AresSfx"
+	sfxGroup.Parent = SoundService
+	local eq = Instance.new("EqualizerSoundEffect")
+	eq.HighGain = -7
+	eq.MidGain = -1.5
+	eq.LowGain = 1
+	eq.Parent = sfxGroup
+	local musicGroup = Instance.new("SoundGroup")
+	musicGroup.Name = "AresMusic"
+	musicGroup.Parent = SoundService
 	for name, def in Balance.Audio.Sfx :: { [string]: any } do
 		local s = Instance.new("Sound")
 		s.Name = "Sfx_" .. name
 		s.SoundId = def.id
 		s.Volume = def.vol
+		s.SoundGroup = sfxGroup
 		s.Parent = SoundService
 		sounds[name] = s
 	end
-	for name, id in Balance.Audio.Music :: { [string]: string } do
-		if id ~= "" then
+	for name, def in Balance.Audio.Music :: { [string]: any } do
+		if def.id ~= "" then
 			local s = Instance.new("Sound")
 			s.Name = "Music_" .. name
-			s.SoundId = id
+			s.SoundId = def.id
 			s.Looped = true
 			s.Volume = 0
+			s.SoundGroup = musicGroup
 			s.Parent = SoundService
 			s:Play()
 			music[name] = s
+			musicVol[name] = def.vol
 		end
 	end
 
@@ -99,9 +115,9 @@ function Fx.init(folder: Instance)
 		local l = Instance.new("TextLabel")
 		l.BackgroundTransparency = 1
 		l.Size = UDim2.fromScale(1, 1)
-		l.Font = Enum.Font.GothamBlack
-		l.TextSize = 22
-		l.TextStrokeTransparency = 0.3
+		l.Font = Enum.Font.Bangers
+		l.TextSize = 26
+		l.TextStrokeTransparency = 0.15
 		l.TextStrokeColor3 = Color3.new(0, 0, 0)
 		l.Parent = bb
 		p.Parent = folder
@@ -170,16 +186,23 @@ function Fx.number(pos: Vector3, text: string, color: Color3, big: boolean?)
 	n.part.CFrame = CFrame.new(pos + Vector3.new(rng:NextNumber(-1, 1), 0, rng:NextNumber(-1, 1)))
 	n.label.Text = text
 	n.label.TextColor3 = color
-	n.label.TextSize = if big then 30 else 22
+	n.label.TextSize = if big then 38 else 26
 	n.label.TextTransparency = 0;
 	(n.label.Parent :: BillboardGui).Enabled = true
 	table.insert(numActive, n)
 end
 
+-- Celebracion visual en una posicion: chispas doradas y cian.
+function Fx.celebrate(pos: Vector3, strong: boolean?)
+	Fx.burst("gold", pos + Vector3.new(0, 2, 0), if strong then 46 else 22)
+	Fx.burst("cyan", pos + Vector3.new(0, 3, 0), if strong then 30 else 14)
+end
+
 -- intensidad: "calm" | "combat" | "boss"
 function Fx.setMusic(level: string)
 	for name in musicTarget do
-		musicTarget[name] = if name == level or (level == "boss" and name == "combat") or name == "calm" then 0.4 else 0
+		-- una sola pista a la vez, con fundido: son piezas distintas y no se mezclan
+		musicTarget[name] = if name == level then (musicVol[name] or 0.2) else 0
 	end
 end
 
@@ -200,6 +223,8 @@ function Fx.update(dt: number)
 		else
 			n.part.CFrame += Vector3.new(0, n.vy * dt, 0)
 			n.label.TextTransparency = math.max(0, n.t / n.life * 2 - 1)
+			-- entrada con rebote: nace inclinado y se asienta
+			n.label.Rotation = (1 - math.min(1, n.t / 0.12)) * -12
 		end
 	end
 	for name, s in music do

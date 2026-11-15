@@ -306,7 +306,7 @@ local function buildMainMenu(compact: boolean)
 	r.menuInfo = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(14, 30), Size = UDim2.new(1, -28, 0, 56), TextYAlignment = TOP, ZIndex = Z.content, TextScaled = true })
 	new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 18 }).Parent = r.menuInfo
 	r.menuInfo.Parent = info
-	label("Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto.", 18, { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, X, 1, -8), Size = UDim2.fromOffset(780, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false }).Parent = m
+	label("Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto.", 18, { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -8), Size = UDim2.fromOffset(780, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false, TextXAlignment = Enum.TextXAlignment.Right }).Parent = m
 end
 
 local function buildMenu()
@@ -437,6 +437,9 @@ local function buildOverlays()
 	button("CONTINUAR", click(function()
 		show(r.piece, false)
 		send("continue")
+		if choiceOpen then
+			show(r.level, true)
+		end
 	end), { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -18), Size = UDim2.fromOffset(280, 54), ZIndex = Z.content }).Parent = pp
 
 	local pa = overlay("Pause")
@@ -634,7 +637,7 @@ function Hud.setHud(h: { number })
 			end
 		end
 	end
-	if h[13] >= 0 then
+	if h[13] >= 0 and not (r.level.Visible or r.piece.Visible) then
 		r.bossWrap.Visible = true
 		r.bossFill.Size = UDim2.fromScale(h[13], 1)
 		r.bossName.Text = bossName
@@ -683,7 +686,7 @@ function Hud.levelUp(level: number, ids: { string }, levels: { number }, rars: {
 		end
 	end
 	task.delay(Balance.Juice.LevelUpPause, function()
-		if choiceOpen then
+		if choiceOpen and not r.piece.Visible then
 			show(r.level, true)
 			Fx.play("level")
 		end
@@ -708,6 +711,7 @@ function Hud.piece(idx: number)
 	r.pieceBonus.Text = "EN EL JUEGO: " .. p.bonus
 	r.pieceReal.Text = p.real
 	r.pieceRef.Text = if p.ntrs ~= "" then string.format("FUENTE · NASA Technical Reports Server (NTRS) %s\n%s", p.ntrs, p.ref) else p.ref
+	r.level.Visible = false -- las cartas pendientes vuelven al pulsar CONTINUAR
 	show(r.piece, true)
 	Fx.play("level", 0.8)
 end
@@ -766,6 +770,67 @@ end
 
 function Hud.paused(on: boolean)
 	show(r.pause, on)
+end
+
+-- Estimulos visuales: destello y rotulo grande al subir de nivel, y aviso al activar una mejora.
+local TweenService = game:GetService("TweenService")
+local stim: any = nil
+
+local function stimuli(): any
+	if stim then
+		return stim
+	end
+	local gui = r.hud.Parent :: Instance
+	local flash = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.cyanHi, BackgroundTransparency = 1, BorderSizePixel = 0, ZIndex = Z.hudTop, Active = false })
+	flash.Parent = gui
+	local big = new("TextLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.36), Size = UDim2.fromOffset(900, 120), BackgroundTransparency = 1, Font = Enum.Font.Bangers, TextSize = 96, TextColor3 = T.gold, TextStrokeColor3 = Color3.new(0, 0, 0), TextStrokeTransparency = 0.2, TextTransparency = 1, Text = "", ZIndex = Z.hudTop })
+	big.Parent = gui
+	local buff = new("Frame", { AnchorPoint = Vector2.new(0.5, 0), Position = UDim2.new(0.5, 0, 0, 178), Size = UDim2.fromOffset(460, 62), BackgroundColor3 = T.bg, BackgroundTransparency = 0.15, BorderSizePixel = 0, Visible = false, ZIndex = Z.hud })
+	new("UICorner", { CornerRadius = UDim.new(0, 8) }).Parent = buff
+	new("UIStroke", { Thickness = 2, Color = T.cyanHi }).Parent = buff
+	new("Frame", { Size = UDim2.new(0, 6, 1, 0), BackgroundColor3 = T.cyanHi, BorderSizePixel = 0, ZIndex = Z.hudTop }).Parent = buff
+	local tag = label("MEJORA ACTIVA", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(20, 6), Size = UDim2.new(1, -30, 0, 20), TextColor3 = T.cyanHi, ZIndex = Z.hudTop })
+	tag.Parent = buff
+	local name = label("", 24, { FontFace = F.bold, Position = UDim2.fromOffset(20, 26), Size = UDim2.new(1, -30, 0, 30), ZIndex = Z.hudTop, TextWrapped = false, TextTruncate = Enum.TextTruncate.AtEnd })
+	name.Parent = buff
+	buff.Parent = gui
+	stim = { flash = flash, big = big, buff = buff, buffName = name }
+	return stim
+end
+
+function Hud.levelFlash(level: number)
+	local s = stimuli()
+	s.flash.BackgroundTransparency = 0.72
+	TweenService:Create(s.flash, TweenInfo.new(0.45, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), { BackgroundTransparency = 1 }):Play()
+	s.big.Text = string.format("¡NIVEL %d!", level)
+	s.big.TextTransparency = 0
+	s.big.TextStrokeTransparency = 0.2
+	s.big.TextSize = 40
+	s.big.Rotation = -6
+	TweenService:Create(s.big, TweenInfo.new(0.28, Enum.EasingStyle.Back, Enum.EasingDirection.Out), { TextSize = 104, Rotation = 0 }):Play()
+	task.delay(0.75, function()
+		TweenService:Create(s.big, TweenInfo.new(0.3), { TextTransparency = 1, TextStrokeTransparency = 1 }):Play()
+	end)
+end
+
+local buffToken = 0
+function Hud.buff(id: string, level: number)
+	local txt = (Content.Upgrades :: any)[id]
+	if not txt then
+		return
+	end
+	local s = stimuli()
+	local def = (Balance.Upgrades :: any)[id]
+	s.buffName.Text = if def then string.format("%s  ·  NIVEL %s/%d", txt.name, Ui.num(level), def.max) else txt.name
+	s.buff.Visible = true
+	Ui.pop(s.buff)
+	buffToken += 1
+	local token = buffToken
+	task.delay(2.4, function()
+		if token == buffToken then
+			s.buff.Visible = false
+		end
+	end)
 end
 
 function Hud.hurt()

@@ -36,6 +36,8 @@ Materiales: sombreado plano facetado sin texturas; un objeto `SM_<nombre>_<MAT_x
 | `RockC` | Entorno | Roca marciana 8 | 160 | ≤ 300 | 2/3 | 8.4×4.4×7.5 | suelo | PASS |
 | `RidgeA` | Entorno | Cresta/meseta del horizonte A | 48 | ≤ 400 | 2/3 | 68.2×46.5×37.6 | suelo | PASS |
 | `RidgeB` | Entorno | Cresta/meseta del horizonte B | 48 | ≤ 400 | 2/3 | 52.3×32.2×58.0 | suelo | PASS |
+| `Rover` | Entorno | Rover Perseverance (medidas NASA/JPL-Caltech) | 800 | ≤ 900 | 4/4 | 9.6×8.0×14.4 | suelo | PASS |
+| `Insignia` | Marca | Insignia NASA (menu principal) | 6028 | ≤ 9000 | 3/3 | 13.1×10.0×0.8 | centro | PASS |
 
 ## 2. Posiciones de montaje en la nave (`SHIP_MOUNTS`)
 

@@ -14,7 +14,7 @@ Repositorio unificado con **dos subproyectos independientes**:
 ## Guardrails transversales
 
 - **Secretos y rutas locales fuera de Git:** nunca commitear `.env`, claves de API ni rutas `C:\Users\...`. En `roblox-blender/.mcp.json` y `roblox-blender/tools/blender_mcp/config.json`, los marcadores `<RUTA_...>` deben conservarse en Git (si los rellenas en local, no los subas).
-- **Integridad científica NASA/CSA:** usar snapshots en `data/curated/` (`mode: "snapshot"`); pasar toda respuesta externa por `src/api/sanitize.mjs`; nunca citar datos sin respaldo verificable (en `ARES FORGE`, `Antena` y `Oxígeno` mantienen `ntrs = ""` hasta verificar `P-06`).
+- **Integridad científica NASA/CSA:** usar snapshots en `data/curated/` (`mode: "snapshot"`); pasar toda respuesta externa por `src/api/sanitize.mjs`; nunca citar datos sin respaldo verificable (en `ARES FORGE`, las 4 piezas tienen ficha NTRS verificada; `P-06` cerrado el 14-11-2026).
 - **Licencia:** la raíz aún no tiene `LICENSE` definido.
 
 ## Rutas de trabajo (cargar bajo demanda)

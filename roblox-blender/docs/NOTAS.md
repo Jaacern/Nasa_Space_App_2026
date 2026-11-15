@@ -130,3 +130,11 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - Seguridad del puente de Blender: `docs/SEGURIDAD_MCP.md`
 - Procesos de los servidores MCP: `docs/PROCESOS_MCP.md`
 - Catálogo de APIs de NASA: `docs/NASA_APIS.md`
+
+## 9. Estado al 15-11-2026 (prueba en Studio)
+
+- Demo rápida con jugador automático: llegó a nivel 19 y a la pieza 2 de 4. Equipo visible, rótulo de nivel y sonidos cargados. Consola limpia salvo el aviso esperado de DataStore.
+- **Sin verificar:** las capturas automáticas del menú salieron con el fondo 3D en blanco de forma intermitente. Una captura sin interfaz mostró la escena correcta. Parece fallo de la captura con Studio sin foco. Una persona debe mirar el menú en Studio.
+- **Guardado en Studio:** el lugar `Place1` nunca se ha guardado. Hay que hacerlo una vez a mano (Archivo > Guardar en archivo o en Roblox). Después se puede guardar por MCP con `save_place`.
+- **Insignia NASA:** su uso requiere permiso de NASA. El equipo declaró tenerlo. Si no hay permiso escrito, pon `Balance.Branding.NasaInsignia = false`.
+- Cómo manejar Studio desde cualquier IA o terminal: `tools/studio/README.md`.

@@ -531,6 +531,117 @@ def build_RidgeB():
     return _ridge("RidgeB", 50.0, 60.0, 30.0, 505)
 
 
+# ----------------------------------------------------------------------------- Rover NASA (decorado)
+# Rover Perseverance (Mars 2020) en el estilo facetado del juego. Las proporciones y posiciones
+# (en studs, 1 stud = 0,28 m) se midieron del modelo oficial NASA/JPL-Caltech 25042_Perseverance.glb
+# (https://science.nasa.gov/resource/mars-perseverance-rover-3d-model/), guardado en assets/src/nasa/.
+# No se usa la malla original (199 307 tris): solo sus medidas.
+def build_Rover():
+    """Rover Perseverance low-poly: cuerpo, 6 ruedas, balancines, mastil, brazo con torreta, RTG y antenas."""
+    a = Asset("Rover")
+    with a.local(loc=(0, 1.1, 0)):  # centra el conjunto en Y; el frente mira a -Y
+        # Ruedas (radio 0,95; ancho 1,0) y balancines
+        for sx in (-1, 1):
+            for wy in (-3.85, 0.15, 4.15):
+                a.cyl(HD, 0.95, 1.0, seg=8, loc=(sx * 4.25, wy, 0.95), rot=(0, 90, 0))
+                a.cyl(HG, 0.5, 1.06, seg=6, loc=(sx * 4.25, wy, 0.95), rot=(0, 90, 0))
+            # Balancin delantero y bogie trasero
+            a.strut(HG, (sx * 3.7, -3.85, 1.1), (sx * 3.2, -0.6, 3.6), 0.2, seg=4)
+            a.strut(HG, (sx * 3.2, -0.6, 3.6), (sx * 3.7, 2.2, 2.3), 0.2, seg=4)
+            a.strut(HG, (sx * 3.7, 0.15, 1.1), (sx * 3.7, 2.2, 2.3), 0.18, seg=4)
+            a.strut(HG, (sx * 3.7, 2.2, 2.3), (sx * 3.7, 4.15, 1.1), 0.18, seg=4)
+            a.strut(HG, (sx * 3.2, -0.6, 3.6), (sx * 2.6, -0.6, 3.9), 0.22, seg=4)
+        # Cuerpo (caja de electronica caliente) y cubierta
+        a.box(HW, (5.4, 7.3, 2.0), loc=(0, 0.55, 3.9))
+        a.box(HD, (5.6, 7.5, 0.25), loc=(0, 0.55, 5.0))
+        a.box(HD, (1.5, 0.5, 0.6), loc=(-0.25, -3.25, 2.7))      # camaras de peligro frontales
+        # RTG trasero inclinado, con aletas
+        with a.local(loc=(0, 4.6, 4.3), rot=(-35, 0, 0)):
+            a.cyl(GOLD, 0.95, 3.2, seg=6, rot=(90, 0, 0))
+            for ang in (0, 60, 120):
+                a.box(HW, (2.9, 2.6, 0.1), rot=(0, ang, 0))
+        # Mastil de teledeteccion con cabeza (SuperCam / Mastcam-Z)
+        a.strut(HG, (-2.0, -2.6, 5.0), (-2.0, -2.6, 6.6), 0.28, seg=4)
+        a.box(HW, (2.0, 1.1, 1.3), loc=(-2.0, -2.5, 7.25))
+        a.cyl(HD, 0.36, 0.3, seg=6, loc=(-1.55, -3.1, 7.6), rot=(90, 0, 0))
+        a.box(HD, (1.2, 0.2, 0.3), loc=(-2.1, -3.1, 7.05))
+        # Brazo robotico recogido y torreta
+        a.strut(HG, (1.9, -3.2, 4.2), (2.1, -6.3, 3.3), 0.28, seg=4)
+        a.strut(HG, (2.1, -6.3, 3.3), (1.2, -7.0, 6.2), 0.28, seg=4)
+        a.octa(HD, 1.1, 1.2, seg=6, loc=(1.0, -7.1, 6.75))
+        a.box(GOLD, (0.6, 0.8, 0.7), loc=(0.1, -7.1, 6.75))       # PIXL
+        # Antena de alta ganancia (hexagonal) y antenas UHF / baja ganancia
+        a.strut(HG, (1.5, 1.4, 5.1), (1.5, 1.4, 5.5), 0.15, seg=4)
+        a.cyl(HD, 0.75, 0.16, seg=6, loc=(1.5, 1.4, 5.6), rot=(18, 0, 0))
+        a.cyl(HW, 0.24, 1.5, seg=5, loc=(-1.8, 3.85, 5.85))
+        a.cyl(HG, 0.1, 0.6, seg=4, loc=(1.8, 3.35, 5.4))
+        a.box(GOLD, (1.4, 1.4, 1.0), loc=(-1.5, 1.8, 5.6))        # MOXIE / caja de instrumentos
+    return a.finish()
+
+
+# ----------------------------------------------------------------------------- Insignia NASA (menu)
+# Extruye el vector oficial (assets/src/nasa/NASA_logo.svg) sin redibujarlo ni deformarlo.
+# El uso de la insignia requiere autorizacion de NASA; se activa con Balance.Branding.NasaInsignia.
+NASA_SVG = L.RAIZ / "assets" / "src" / "nasa" / "NASA_logo.svg"
+
+
+def build_Insignia():
+    """Insignia NASA en relieve por las dos caras: disco azul de 10 studs, vector rojo, orbita, letras y estrellas."""
+    import addon_utils
+    import bpy
+    addon_utils.enable("io_curve_svg")
+    a = Asset("Insignia")
+    antes = set(bpy.data.objects)
+    bpy.ops.import_curve.svg(filepath=str(NASA_SVG))
+    curvas = [o for o in bpy.data.objects if o not in antes and o.type == "CURVE"]
+    disco = max(curvas, key=lambda o: o.dimensions.x * o.dimensions.y if o.data.materials and o.data.materials[0].diffuse_color[2] > 0.2 and o.data.materials[0].diffuse_color[0] < 0.1 else 0)
+    k = 10.0 / disco.dimensions.x                      # unidades de Blender -> studs (disco de 10 studs)
+    bb = [disco.matrix_world @ Vector(c) for c in disco.bound_box]
+    cx = (min(v.x for v in bb) + max(v.x for v in bb)) / 2
+    cy = (min(v.y for v in bb) + max(v.y for v in bb)) / 2
+    GROSOR, RELIEVE = 0.5, 0.14
+    dg = bpy.context.evaluated_depsgraph_get()
+    for ob in curvas:
+        col = ob.data.materials[0].diffuse_color if ob.data.materials else (1, 1, 1, 1)
+        es_disco = ob is disco
+        if es_disco:
+            mat = "MAT_NasaBlue"
+        elif col[0] > 0.6 and col[1] < 0.4:
+            mat = "MAT_NasaRed"
+        else:
+            mat = HW
+        chico = max(ob.dimensions.x, ob.dimensions.y) * k < 0.35   # estrellas diminutas
+        ob.data.dimensions = "2D"
+        ob.data.fill_mode = "BOTH"
+        ob.data.resolution_u = 12 if es_disco else (1 if chico else 4)
+        ob.data.extrude = 0.5 / k                         # semiespesor 0,5 stud; se reescala abajo
+        dg.update()
+        me = bpy.data.meshes.new_from_object(ob.evaluated_get(bpy.context.evaluated_depsgraph_get()))
+        me.calc_loop_triangles()
+        M = ob.matrix_world
+        vs = [M @ v.co for v in me.vertices]
+        F = [tuple(t.vertices) for t in me.loop_triangles]
+        if es_disco:
+            V = [((v.x - cx) * k, v.z * k * GROSOR, (v.y - cy) * k) for v in vs]
+            a.put(mat, V, F)
+        else:
+            # relieve sobre la cara frontal (-Y) y copia girada 180 grados para la cara trasera
+            y0 = GROSOR / 2 + RELIEVE / 2
+            V1 = [((v.x - cx) * k, -y0 + v.z * k * RELIEVE, (v.y - cy) * k) for v in vs]
+            V2 = [(-x, -y, z) for (x, y, z) in V1]
+            a.put(mat, V1, F)
+            a.put(mat, V2, F)
+        bpy.data.meshes.remove(me)
+    for o in curvas:
+        cu = o.data
+        bpy.data.objects.remove(o, do_unlink=True)
+        bpy.data.curves.remove(cu)
+    for m in list(bpy.data.materials):
+        if m.users == 0 and m.name not in L.PALETA:
+            bpy.data.materials.remove(m)
+    return a.finish()
+
+
 BUILDERS = {
     "chaser": build_chaser,
     "tank": build_tank,
@@ -560,6 +671,8 @@ BUILDERS = {
     "RockC": build_RockC,
     "RidgeA": build_RidgeA,
     "RidgeB": build_RidgeB,
+    "Rover": build_Rover,
+    "Insignia": build_Insignia,
 }
 
 

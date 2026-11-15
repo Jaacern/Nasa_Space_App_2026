@@ -6,3 +6,10 @@ __pycache__/
 # Secretos: nunca en el repositorio
 .env
 *.token
+
+# Permisos MCP locales (rutas y reglas de este equipo): no se suben
+.claude/settings.json
+.claude/settings.local.json
+
+# Modelo NASA original (11 MB): se descarga desde la fuente, ver docs/assets/NASA_ROVER.md
+assets/src/nasa/*.glb

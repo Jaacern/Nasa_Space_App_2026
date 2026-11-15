@@ -27,7 +27,8 @@ Los 28 modelos low-poly facetados de Blender están integrados en el cliente con
 | Pieza 2: antena de alta ganancia (`Piece2`) | Hecho | `game/src/shared/Meshes/Piece2.luau` | 432 tris |
 | Pieza 3: generador de oxígeno (`Piece3`) | Hecho | `game/src/shared/Meshes/Piece3.luau` | 128 tris |
 | Pieza 4: propulsor de retorno (`Piece4`) | Hecho | `game/src/shared/Meshes/Piece4.luau` | 560 tris |
-| Pipeline Blender (28 modelos, previews PNG y catálogo) | Hecho | `tools/blender/`, `assets/blend/ares_assets.blend`, `docs/assets/previews/` | Ver `docs/assets/CATALOGO_BLENDER.md` (28/28 PASS) |
+| Rover Perseverance (`Rover`) | Hecho (carga verificada en Studio el 15-11-2026) | `game/src/shared/Meshes/Rover.luau`, colocado por `Scenery.luau` (`refreshRover`) | 800 tris, 4 materiales. Hito visual fuera del borde jugable. Modelado propio con medidas del GLB oficial; ver `docs/assets/NASA_ROVER.md` |
+| Pipeline Blender (29 modelos, previews PNG y catálogo) | Hecho | `tools/blender/`, `assets/blend/ares_assets.blend`, `docs/assets/previews/` | Ver `docs/assets/CATALOGO_BLENDER.md` (28/28 PASS) |
 | FBX exportados | Hecho | `assets/export/*.fbx` | 28 archivos FBX del flujo clásico (no se suben a Roblox) |
 
 Plantillas en tiempo de ejecución: `ReplicatedStorage/Templates` (creadas por `WorldBuilder.build()`).
@@ -77,9 +78,8 @@ La tabla de sonidos está en `game/src/shared/Balance.luau`, grupo `Audio`, y su
 
 | Asset | Estado | Dónde vive | Notas |
 |---|---|---|---|
-| Efectos: `shoot`, `hit`, `kill`, `boom`, `hurt`, `gem`, `level`, `chest`, `ui`, `skill`, `warn` | Provisional | `Balance.Audio.Sfx` | Sonidos integrados de Roblox (`rbxasset://sounds/...`). Variación de tono ±5 % |
-| Música calma, combate y jefe (3 capas por intensidad) | Pendiente | `Balance.Audio.Music` | Hay 3 ranuras con Id vacío; en silencio. La mezcla por intensidad está en `Fx.setMusic` |
-| Efectos propios (disparo, explosión, pieza recuperada) | Pendiente | | |
+| Efectos: 12 claves (`shoot` … `warn`, más `buff`) | Hecho (falta escucha humana) | `Balance.Audio.Sfx` | Catálogo con licencia de Roblox e integrados. Grupo `AresSfx` con ecualizador suave |
+| Música calma, combate y jefe | Hecho (falta escucha humana) | `Balance.Audio.Music` | Una pista a la vez con fundido. Grupo `AresMusic` |
 
 ## 6. Datos de NASA en el juego
 
@@ -100,3 +100,13 @@ La tabla de sonidos está en `game/src/shared/Balance.luau`, grupo `Audio`, y su
 | Puente de Blender (código propio) | Hecho | `tools/blender_mcp/` |
 | Scripts de modelado y exportación de Blender | Hecho | `tools/blender/` (`ares_lib.py`, `build_assets.py`, `export_assets.py`) |
 | Mediciones de rendimiento en Studio | Hecho | `docs/perf/RENDIMIENTO.md` (PC Studio; móvil pendiente) |
+
+## 8. Añadidos del 15-11-2026
+
+| Asset | Estado | Dónde vive | Notas |
+|---|---|---|---|
+| `Insignia` (asset 30) | Hecho | `tools/blender/build_assets.py` (`build_Insignia`), `Meshes/Insignia.luau` | Insignia NASA extruida desde `assets/src/nasa/NASA_logo.svg`, 6028 tris. Gira a 0,3 rad/s sobre la nave solo en el menú (`Scenery.setMenu`, `INSIGNIA_HEIGHT = 29`). Se apaga con `Balance.Branding.NasaInsignia = false` |
+| Lunas Fobos y Deimos | Hecho | `client/Scenery.luau` (`refreshMoons`) | Reutilizan `RockB` y `RockC` a gran escala en el cielo |
+| Equipo visible | Hecho | `client/Scenery.luau` (`buildGear`, `Scenery.gear`) | Cada mejora elegida añade piezas `Gear_<id>` al personaje: blaster, damage, rate, multishot, pierce, armor, speed, magnet, cooldown, crit, aura |
+| Estímulos de nivel y mejora | Hecho | `client/Hud.luau` (`Hud.levelFlash`, `Hud.buff`), `client/Fx.luau` (`Fx.celebrate`) | Destello cian, rótulo «¡NIVEL N!» en fuente Bangers y cartel «MEJORA ACTIVA» |
+| Color y cielo | Hecho | `server/WorldBuilder.luau` | Contraste 0,17, saturación 0,26, rayos de sol suaves, cielo ocre |

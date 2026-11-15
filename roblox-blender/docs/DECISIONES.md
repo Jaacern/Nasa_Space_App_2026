@@ -139,7 +139,7 @@ Los dueños son roles. Las fechas objetivo son una propuesta del 14-11-2026 y el
 | P-03 | Verificar DataStore en el lugar publicado (guardar, reiniciar, cargar) | Programación Roblox | 16-11-2026 |
 | P-04 | Rotar la clave de NASA expuesta en una sesión anterior y crear una clave propia en el entorno del servidor | Arquitectura web | 15-11-2026 |
 | P-05 | Medir rendimiento con 100 enemigos en PC y móvil; guardar en `docs/perf/` | Programación Roblox | En progreso (`docs/perf/RENDIMIENTO.md` creado en Studio PC con 92–98 enemigos; falta medición sin capado 15 FPS y móvil real) |
-| P-06 | Referencia NTRS de la antena de alta ganancia y del generador de oxígeno | Arquitectura web | 18-11-2026 |
+| P-06 | Referencia NTRS de la antena de alta ganancia y del generador de oxígeno | Arquitectura web | **Hecho** el 14-11-2026: antena `20040084278` (*High Gain Antenna Gimbal for the 2003-2004 Mars Exploration Rover Program*) y oxígeno `20205007222` (*MOXIE*, Hecht y Mellstrom), verificadas en la API de `ntrs.nasa.gov` |
 | P-07 | Llamada en vivo a NASA: activar HttpService y montar un proxy del equipo (o dejar solo snapshot) | Arquitectura web | 19-11-2026 |
 | P-08 | Decidir el alcance de la meta-progresión (Q10): héroes y objetos desbloqueables o solo mejoras | Diseño y arte, con dirección | 16-11-2026 |
 | P-09 | Hacer que el sincronizador entre en subcarpetas (`shared/Meshes/`) y crear `tools/blender/`, `assets/export/` y las mallas | Programación Roblox y diseño y arte | **Hecho** el 14-11-2026 (28/28 mallas integradas en Studio) |

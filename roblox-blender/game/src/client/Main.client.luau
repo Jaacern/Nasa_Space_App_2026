@@ -73,7 +73,7 @@ end
 
 -- ------------------------------------------------------------ Biomas (solo visual)
 local BIOMES = {
-	{ ground = Color3.fromRGB(150, 85, 55), atm = Color3.fromRGB(214, 150, 110), decay = Color3.fromRGB(150, 80, 50), tint = Color3.fromRGB(255, 240, 228), clock = 15.2, density = 0.36, bright = 2.4 },
+	{ ground = Color3.fromRGB(150, 85, 55), atm = Color3.fromRGB(222, 170, 120), decay = Color3.fromRGB(168, 104, 62), tint = Color3.fromRGB(255, 240, 228), clock = 15.2, density = 0.36, bright = 2.4 },
 	{ ground = Color3.fromRGB(74, 84, 108), atm = Color3.fromRGB(120, 140, 185), decay = Color3.fromRGB(40, 50, 90), tint = Color3.fromRGB(215, 228, 255), clock = 18.4, density = 0.42, bright = 1.6 },
 	{ ground = Color3.fromRGB(88, 44, 38), atm = Color3.fromRGB(255, 150, 80), decay = Color3.fromRGB(190, 60, 30), tint = Color3.fromRGB(255, 222, 200), clock = 12.5, density = 0.46, bright = 3.2 },
 }
@@ -102,6 +102,10 @@ local function onPhase(newPhase: string, meta: any, extra: any)
 	local old = phase
 	phase = newPhase
 	Renderer.clearAll()
+	Scenery.setMenu(newPhase == "menu")
+	if newPhase == "run" or newPhase == "tutorial" or newPhase == "menu" then
+		Scenery.clearGear()
+	end
 	if newPhase == "run" or newPhase == "tutorial" then
 		Scenery.resetShip()
 		applyBiome(1, old == "menu")
@@ -193,7 +197,21 @@ local handlers: { [string]: (ev: { any }) -> () } = {
 		end
 	end,
 	levelup = function(ev)
+		Hud.levelFlash(ev[2])
+		local hrp = rootPart()
+		if hrp then
+			Fx.celebrate(hrp.Position, true)
+		end
 		Hud.levelUp(ev[2], ev[3], ev[4], ev[5])
+	end,
+	chosen = function(ev)
+		Hud.buff(ev[2], ev[3])
+		Scenery.gear(ev[2], ev[3])
+		Fx.play("buff")
+		local hrp = rootPart()
+		if hrp then
+			Fx.celebrate(hrp.Position)
+		end
 	end,
 	piece = function(ev)
 		Scenery.showPiece(ev[2])
@@ -337,6 +355,7 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 	end
 
 	Fx.update(dt)
+	Scenery.update(dt)
 	Renderer.update(dt)
 	Hud.update(dt, if inRun() then Renderer.nearestChest() else nil)
 

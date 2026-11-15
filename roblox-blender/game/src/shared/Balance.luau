@@ -193,23 +193,32 @@ Balance.Juice = {
 	DamageNumberLife = 0.6,
 }
 
--- Audio. Los Id vacios quedan en silencio; ver docs/assets/AUDIO.md.
+-- Audio. Todo sale de catalogos con licencia de Roblox (APM, DistroKid, ProSoundEffects) o del cliente.
+-- Los volumenes se igualaron midiendo PlaybackLoudness en Studio; ver docs/assets/AUDIO.md.
 Balance.Audio = {
-	Music = { calm = "", combat = "", boss = "" },
+	Music = {
+		calm = { id = "rbxassetid://140533822783920", vol = 0.10 }, -- "Space Ambient" (DistroKid)
+		combat = { id = "rbxassetid://1837839878", vol = 0.20 }, -- "Terminal Velocity (Perc)" (APM)
+		boss = { id = "rbxassetid://9042593925", vol = 0.28 }, -- "Final Outcome" (APM)
+	},
 	Sfx = {
-		shoot = { id = "rbxasset://sounds/action_jump.mp3", vol = 0.12, pitch = 2.2 },
-		hit = { id = "rbxasset://sounds/action_jump_land.mp3", vol = 0.25, pitch = 1.6 },
-		kill = { id = "rbxasset://sounds/impact_water.mp3", vol = 0.2, pitch = 1.8 },
-		boom = { id = "rbxasset://sounds/impact_explosion_03.mp3", vol = 0.5, pitch = 1 },
-		hurt = { id = "rbxasset://sounds/action_falling.ogg", vol = 0.5, pitch = 1.4 },
-		gem = { id = "rbxasset://sounds/volume_slider.ogg", vol = 0.35, pitch = 1.5 },
-		level = { id = "rbxasset://sounds/action_get_up.mp3", vol = 0.6, pitch = 1.5 },
-		chest = { id = "rbxasset://sounds/action_get_up.mp3", vol = 0.6, pitch = 1.1 },
-		ui = { id = "rbxasset://sounds/volume_slider.ogg", vol = 0.4, pitch = 1 },
-		skill = { id = "rbxasset://sounds/action_jump.mp3", vol = 0.5, pitch = 0.8 },
-		warn = { id = "rbxasset://sounds/volume_slider.ogg", vol = 0.5, pitch = 0.6 },
+		shoot = { id = "rbxasset://sounds/action_jump.mp3", vol = 0.09, pitch = 1.7 },
+		hit = { id = "rbxassetid://9113485712", vol = 0.10, pitch = 1.25 },
+		kill = { id = "rbxassetid://9118172604", vol = 0.12, pitch = 1.3 },
+		boom = { id = "rbxassetid://9119378289", vol = 0.28, pitch = 1 },
+		hurt = { id = "rbxasset://sounds/action_falling.ogg", vol = 0.4, pitch = 1.3 },
+		gem = { id = "rbxassetid://9126073001", vol = 0.12, pitch = 1 },
+		level = { id = "rbxassetid://9126071775", vol = 0.26, pitch = 0.9 },
+		chest = { id = "rbxassetid://9126072453", vol = 0.24, pitch = 0.8 },
+		buff = { id = "rbxassetid://9126076030", vol = 0.2, pitch = 0.85 },
+		ui = { id = "rbxasset://sounds/volume_slider.ogg", vol = 0.25, pitch = 1 },
+		skill = { id = "rbxassetid://9125442175", vol = 0.26, pitch = 1.3 },
+		warn = { id = "rbxassetid://9117955911", vol = 0.22, pitch = 1 },
 	},
 }
+
+-- Insignia de NASA en el menu. Su uso exige autorizacion escrita de NASA: ponlo en false si no la tienes.
+Balance.Branding = { NasaInsignia = true }
 
 Balance.Tutorial = { MoveDistance = 20, Dummies = 3, TelegraphDelay = 2 }
 

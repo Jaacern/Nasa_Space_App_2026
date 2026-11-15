@@ -156,10 +156,12 @@ function WorldBuilder.build()
 	local atm: Atmosphere = fx("Atmosphere", "Atmosphere", Lighting)
 	atm.Density = 0.36
 	atm.Offset = 0.2
-	atm.Color = Color3.fromRGB(214, 150, 110)
-	atm.Decay = Color3.fromRGB(150, 80, 50)
-	atm.Glare = 0.2
-	atm.Haze = 1.6
+	-- Cielo diurno de Marte: ocre por el polvo en suspension (el azul queda para el atardecer del bioma 2).
+	-- Haze alto tine el cielo hasta el cenit sin cerrar la visibilidad del combate (eso lo controla Density).
+	atm.Color = Color3.fromRGB(222, 170, 120)
+	atm.Decay = Color3.fromRGB(168, 104, 62)
+	atm.Glare = 0.35
+	atm.Haze = 2.6
 
 	local bloom: BloomEffect = fx("BloomEffect", "Bloom", Lighting)
 	bloom.Intensity = 0.55
@@ -167,9 +169,13 @@ function WorldBuilder.build()
 	bloom.Threshold = 1.1
 
 	local cc: ColorCorrectionEffect = fx("ColorCorrectionEffect", "ColorCorrection", Lighting)
-	cc.Contrast = 0.12
-	cc.Saturation = 0.1
+	cc.Contrast = 0.17
+	cc.Saturation = 0.26
 	cc.TintColor = Color3.fromRGB(255, 240, 228)
+
+	local rays: SunRaysEffect = fx("SunRaysEffect", "SunRays", Lighting)
+	rays.Intensity = 0.09
+	rays.Spread = 0.7
 
 	local sky = Lighting:FindFirstChildOfClass("Sky")
 	if sky then

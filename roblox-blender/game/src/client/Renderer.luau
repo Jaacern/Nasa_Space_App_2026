@@ -17,7 +17,7 @@ local Renderer = {}
 local MESH_ORDER = {
 	"chaser", "tank", "ranged", "kamikaze", "elite1", "elite2", "elite3", "boss1", "boss2", "boss3", "final",
 	"gem", "chest", "shot", "eshot", "drone",
-	"Ship", "Piece1", "Piece2", "Piece3", "Piece4", "RockA", "RockB", "RockC", "RidgeA", "RidgeB", "Helmet", "Backpack",
+	"Ship", "Piece1", "Piece2", "Piece3", "Piece4", "RockA", "RockB", "RockC", "RidgeA", "RidgeB", "Helmet", "Backpack", "Rover", "Insignia",
 }
 
 local C = Visuals.Colors

@@ -462,6 +462,7 @@ local function attachMesh(char: Model, name: string, to: BasePart, offset: CFram
 end
 
 local dressing: { [Model]: boolean } = {}
+local applyGear: () -> () -- se define mas abajo, en Equipo visible
 local function dress(char: Model)
 	if not (meshes.Helmet and meshes.Backpack) or dressing[char] then
 		return
@@ -487,6 +488,7 @@ local function dress(char: Model)
 			end
 			attachMesh(char, "Helmet", head, CFrame.new(0, 0.1, 0))
 			attachMesh(char, "Backpack", torso, CFrame.new(0, 0.1, 0.9))
+			applyGear()
 		end
 		dressing[char] = nil
 	end)
@@ -496,6 +498,226 @@ local function redress()
 	local char = Players.LocalPlayer.Character
 	if char then
 		dress(char)
+	end
+end
+
+-- ------------------------------------------------------------ Rover (hito del paisaje)
+-- Rover Perseverance como hito visual. Va justo fuera del borde jugable (ArenaRadius = 210)
+-- porque es solo decorado y no tiene colision en la simulacion.
+local ROVER_POS = Vector3.new(150, 0, 172)
+local ROVER_YAW = math.rad(215)
+local ROVER_SCALE = 1.6
+local roverVisual: Model? = nil
+
+local function refreshRover()
+	if roverVisual then
+		roverVisual:Destroy()
+		roverVisual = nil
+	end
+	local src = meshes.Rover
+	if not src then
+		return
+	end
+	local m = src:Clone()
+	m.Name = "RoverVisual"
+	m.Parent = Workspace
+	m:ScaleTo(ROVER_SCALE)
+	m:PivotTo(CFrame.new(ROVER_POS) * CFrame.Angles(0, ROVER_YAW, 0))
+	roverVisual = m
+end
+
+-- ------------------------------------------------------------ Lunas (fondo)
+-- Fobos y Deimos, las dos lunas de Marte, como rocas facetadas lejanas. Fobos se ve mayor que Deimos.
+local moons: Folder? = nil
+
+local function refreshMoons()
+	if moons or not meshes.RockB or not meshes.RockC then
+		return
+	end
+	local folder = Instance.new("Folder")
+	folder.Name = "Moons"
+	folder.Parent = Workspace
+	moons = folder
+	local function moon(src: Model, name: string, size: number, pos: Vector3, rot: CFrame)
+		local m = src:Clone()
+		m.Name = name
+		m.Parent = folder
+		local e = m:GetExtentsSize()
+		m:ScaleTo(size / math.max(0.1, math.max(e.X, e.Y, e.Z)))
+		m:PivotTo(CFrame.new(pos) * rot)
+	end
+	moon(meshes.RockB, "Fobos", 78, Vector3.new(-430, 300, -560), CFrame.Angles(0.5, 0.8, 0.2))
+	moon(meshes.RockC, "Deimos", 34, Vector3.new(470, 380, -610), CFrame.Angles(1.1, 0.3, 0.7))
+end
+
+-- ------------------------------------------------------------ Insignia del menu
+local BalanceS = require(ReplicatedStorage.Shared.Balance)
+local menuOn = true
+local insignia: Model? = nil
+local insigniaYaw = 0
+local INSIGNIA_HEIGHT = 29
+local INSIGNIA_SPIN = 0.3 -- rad/s: giro lento y continuo
+
+local function refreshInsignia()
+	if insignia then
+		insignia:Destroy()
+		insignia = nil
+	end
+	if not (ready and menuOn and meshes.Insignia and (BalanceS :: any).Branding.NasaInsignia) then
+		return
+	end
+	local m = meshes.Insignia:Clone()
+	m.Name = "InsigniaVisual"
+	m.Parent = Workspace
+	m:ScaleTo(1.5)
+	insignia = m
+end
+
+function Scenery.setMenu(on: boolean)
+	if menuOn ~= on then
+		menuOn = on
+		refreshInsignia()
+	end
+end
+
+function Scenery.update(dt: number)
+	local m = insignia
+	if m then
+		insigniaYaw += dt * INSIGNIA_SPIN
+		m:PivotTo(CFrame.new(Scenery.shipPosition() + Vector3.new(0, INSIGNIA_HEIGHT, 0)) * CFrame.Angles(0, insigniaYaw, 0))
+	end
+end
+
+-- ------------------------------------------------------------ Equipo visible
+-- Cada mejora elegida deja una pieza visible en el traje: el jugador ve como crece su equipo.
+local gearState: { [string]: number } = {}
+local G_CYAN = Color3.fromRGB(0, 210, 255)
+local G_GOLD = Color3.fromRGB(212, 160, 40)
+local G_ORANGE = Color3.fromRGB(255, 107, 53)
+local G_MAGENTA = Color3.fromRGB(255, 0, 170)
+local G_RED = Color3.fromRGB(255, 45, 85)
+local G_DARK = Color3.fromRGB(60, 66, 80)
+local NEON, METAL = Enum.Material.Neon, Enum.Material.Metal
+
+local function gearPart(char: Model, tag: string, to: BasePart, size: Vector3, offset: CFrame, color: Color3, material: Enum.Material, shape: Enum.PartType?, transparency: number?)
+	local p = Instance.new("Part")
+	p.Name = "Gear_" .. tag
+	p.Shape = shape or Enum.PartType.Block
+	p.Size = size
+	p.Color = color
+	p.Material = material
+	p.Transparency = transparency or 0
+	p.CanCollide = false
+	p.CanQuery = false
+	p.CanTouch = false
+	p.Massless = true
+	p.CastShadow = false
+	p.CFrame = to.CFrame * offset
+	local w = Instance.new("WeldConstraint")
+	w.Part0 = to
+	w.Part1 = p
+	w.Parent = p
+	p.Parent = char
+end
+
+local function bodyPart(char: Model, ...: string): BasePart?
+	for _, n in { ... } do
+		local p = char:FindFirstChild(n)
+		if p and p:IsA("BasePart") then
+			return p
+		end
+	end
+	return nil
+end
+
+local function buildGear(char: Model, id: string, lvl: number)
+	for _, d in char:GetChildren() do
+		if d.Name == "Gear_" .. id then
+			d:Destroy()
+		end
+	end
+	local torso = bodyPart(char, "UpperTorso", "Torso")
+	local arm = bodyPart(char, "RightLowerArm", "Right Arm") or torso
+	local head = bodyPart(char, "Head")
+	if not torso or not arm then
+		return
+	end
+	local n = math.clamp(math.ceil(lvl), 1, 4)
+	local ring = CFrame.Angles(0, 0, math.pi / 2)
+	if id == "blaster" then
+		-- arma base: siempre visible en el antebrazo derecho
+		gearPart(char, id, arm, Vector3.new(0.5, 0.5, 1.5), CFrame.new(0, -0.5, -0.55), G_DARK, METAL)
+		gearPart(char, id, arm, Vector3.new(0.26, 0.26, 0.5), CFrame.new(0, -0.5, -1.5), G_CYAN, NEON)
+	elseif id == "damage" then
+		for i = 1, n do
+			gearPart(char, id, arm, Vector3.new(0.66, 0.66, 0.12), CFrame.new(0, -0.5, -0.15 - 0.3 * i), G_ORANGE, NEON)
+		end
+	elseif id == "rate" then
+		gearPart(char, id, arm, Vector3.new(0.28, 0.28, 1.1 + 0.15 * n), CFrame.new(0, -0.95, -0.6), G_DARK, METAL)
+		gearPart(char, id, arm, Vector3.new(0.16, 0.16, 0.3), CFrame.new(0, -0.95, -1.3 - 0.08 * n), G_GOLD, NEON)
+	elseif id == "multishot" then
+		for i = 1, n do
+			local side = if i % 2 == 1 then 1 else -1
+			gearPart(char, id, arm, Vector3.new(0.18, 0.18, 1.3), CFrame.new(side * (0.36 + 0.1 * ((i - 1) // 2)), -0.5, -0.75), G_CYAN, NEON)
+		end
+	elseif id == "pierce" then
+		gearPart(char, id, arm, Vector3.new(0.1, 0.1, 1.0 + 0.35 * n), CFrame.new(0, -0.5, -2.1 - 0.17 * n), G_CYAN, NEON)
+	elseif id == "armor" then
+		for _, sx in { -1, 1 } do
+			gearPart(char, id, torso, Vector3.new(0.95, 0.28 + 0.08 * n, 1.1), CFrame.new(sx * 1.3, 0.8, 0), G_GOLD, METAL)
+		end
+	elseif id == "speed" then
+		for _, legName in { { "LeftLowerLeg", "Left Leg" }, { "RightLowerLeg", "Right Leg" } } do
+			local leg = bodyPart(char, legName[1], legName[2])
+			if leg then
+				gearPart(char, id, leg, Vector3.new(0.3 + 0.05 * n, 0.5 + 0.1 * n, 0.3 + 0.05 * n), CFrame.new(0, -0.1, 0.5), G_ORANGE, NEON)
+			end
+		end
+	elseif id == "magnet" then
+		local d = 3 + 0.5 * n
+		gearPart(char, id, torso, Vector3.new(0.1, d, d), CFrame.new(0, -0.9, 0) * ring, G_CYAN, NEON, Enum.PartType.Cylinder, 0.6)
+	elseif id == "cooldown" then
+		for _, sx in { -1, 1 } do
+			gearPart(char, id, torso, Vector3.new(0.12, 0.9 + 0.2 * n, 0.5), CFrame.new(sx * 0.6, 1.0, 1.35), G_CYAN, NEON)
+		end
+	elseif id == "crit" and head then
+		gearPart(char, id, head, Vector3.new(0.3, 0.3, 0.45 + 0.08 * n), CFrame.new(0.6, 0.25, -0.6), G_RED, NEON)
+	elseif id == "aura" then
+		local d = 5 + 0.8 * n
+		gearPart(char, id, torso, Vector3.new(0.12, d, d), CFrame.new(0, -2.6, 0) * ring, G_MAGENTA, NEON, Enum.PartType.Cylinder, 0.55)
+	end
+end
+
+applyGear = function()
+	local char = Players.LocalPlayer.Character
+	if not char then
+		return
+	end
+	buildGear(char, "blaster", 1)
+	for id, lvl in gearState do
+		buildGear(char, id, lvl)
+	end
+end
+
+function Scenery.gear(id: string, lvl: number)
+	gearState[id] = lvl
+	local char = Players.LocalPlayer.Character
+	if char then
+		buildGear(char, "blaster", 1)
+		buildGear(char, id, lvl)
+	end
+end
+
+function Scenery.clearGear()
+	gearState = {}
+	local char = Players.LocalPlayer.Character
+	if char then
+		for _, d in char:GetChildren() do
+			if d.Name:sub(1, 5) == "Gear_" then
+				d:Destroy()
+			end
+		end
+		buildGear(char, "blaster", 1)
 	end
 end
 
@@ -517,8 +739,13 @@ function Scenery.onMesh(name: string, model: Model)
 		refreshShip()
 	elseif name:match("^Rock") or name:match("^Ridge") then
 		scheduleDecor()
+		refreshMoons()
 	elseif name == "Helmet" or name == "Backpack" then
 		redress()
+	elseif name == "Rover" then
+		refreshRover()
+	elseif name == "Insignia" then
+		refreshInsignia()
 	end
 end
 
@@ -538,6 +765,10 @@ function Scenery.init()
 		Scenery.resetShip()
 		scheduleDecor()
 		redress()
+		refreshRover()
+		refreshInsignia()
+		refreshMoons()
+		applyGear()
 	end)
 end
 
