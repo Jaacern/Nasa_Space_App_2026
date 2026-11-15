@@ -149,7 +149,7 @@ local function buildHud()
 		stroke.Parent = b
 		label(sk.short, 20, { FontFace = F.bold, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 24), Size = UDim2.new(1, 0, 0, 26), TextColor3 = T.cyanHi, ZIndex = Z.hudTop }).Parent = b
 		label(if touch then "" else "[" .. sk.key .. "]", 18, { FontFace = F.mono, TextXAlignment = CENTER, Position = UDim2.fromOffset(0, 52), Size = UDim2.new(1, 0, 0, 22), TextColor3 = T.dim, ZIndex = Z.hudTop }).Parent = b
-		local cdOverlay = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.bg, BackgroundTransparency = 0.2, BorderSizePixel = 0, Visible = false, ZIndex = Z.hudTop + 1 })
+		local cdOverlay = new("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = T.bg, BackgroundTransparency = 0.05, BorderSizePixel = 0, Visible = false, ZIndex = Z.hudTop + 1 })
 		Ui.corner(50).Parent = cdOverlay
 		cdOverlay.Parent = b
 		local cdText = label("", 28, { FontFace = F.monoBold, TextXAlignment = CENTER, Size = UDim2.fromScale(1, 1), ZIndex = Z.hudTop + 2 })
@@ -273,7 +273,8 @@ local function buildMainMenu(compact: boolean)
 		new("UIPadding", { PaddingLeft = UDim.new(0, 18) }).Parent = b
 		b.Parent = m
 		if sub and not compact then
-			label(sub, 18, { FontFace = F.mono, Position = UDim2.fromOffset(bx + bw + 14, by), Size = UDim2.fromOffset(280, bh), TextColor3 = T.dim, ZIndex = Z.content }).Parent = m
+			-- el subtitulo vive dentro del boton, a la derecha: no choca con el paisaje ni con el boton vecino
+			label(sub, 14, { FontFace = F.mono, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -16, 0.5, 0), Size = UDim2.new(0.5, 0, 0, 20), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = if kind == "primary" or kind == "gold" then T.bg else T.dim, ZIndex = Z.content + 1 }).Parent = b
 		end
 		n += 1
 		return b
@@ -281,17 +282,17 @@ local function buildMainMenu(compact: boolean)
 	mb("INICIAR MISIÓN", function()
 		lastMode = "full"
 		send("start", "full")
-	end, "primary", "18 oleadas · ≈ 17 min")
+	end, "primary", "18 oleadas · 17 min")
 	mb("DEMO RÁPIDA", function()
 		lastMode = "demo"
 		send("start", "demo")
-	end, "ghost", "misión comprimida · ≈ 4 min")
+	end, "ghost", "4 min · comprimida")
 	mb("TUTORIAL Y PRÁCTICA", function()
 		send("tutorial")
-	end, "gold", "7 pasos · recomendado")
+	end, "gold", "7 pasos")
 	mb("HANGAR · MEJORAS", function()
 		show(r.shop, true)
-	end, "ghost", "mejoras permanentes")
+	end, "ghost", "permanentes")
 	mb("AJUSTES", function()
 		show(r.settings, true)
 	end, "ghost")
