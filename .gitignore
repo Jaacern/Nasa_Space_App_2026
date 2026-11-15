@@ -17,3 +17,5 @@ logs/
 *.token
 cap*.png
 push.json
+trailer/build60/
+trailer/qc60/

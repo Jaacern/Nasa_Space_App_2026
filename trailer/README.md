@@ -1,6 +1,8 @@
 # Tráiler de ARES FORGE (demo oficial de 30 s)
 
-Entregable: `ARES_FORGE_trailer_30s_1080p.mp4` (no está en Git por tamaño; copia en el Escritorio).
+**Entregable vigente (máster final):** `ARES_FORGE_Trailer_4K60.mp4` (para YouTube) y `ARES_FORGE_Trailer_1080p60.mp4` (respaldo), ambos de 29,9 s y 60 fps, con rótulos animados y diseño sonoro; se generan con `render_master.py` y se copian al Escritorio. Cómo subir y entregar: [`SUBIR_Y_ENTREGAR.md`](SUBIR_Y_ENTREGAR.md).
+
+Versión anterior (reemplazada por la de 60 fps): `ARES_FORGE_trailer_30s_1080p.mp4`, de `render_trailer.py`.
 Especificación medida el 15-11-2026: 30,000 s (900 cuadros), 1920×1080, 30 fps, H.264 High, AAC 48 kHz estéreo, −13,1 LUFS integrado, pico −1,0 dBTP, sin cuadros negros.
 
 ## Reglas que cumple (Project Submission Guide 2026, leída el 15-11-2026)
