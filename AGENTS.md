@@ -10,6 +10,8 @@ Este archivo sirve a cualquier modelo (Claude, GPT, Gemini, DeepSeek u otro). No
 
 ## Leer primero (en este orden, solo lo necesario)
 
+0. Si estás en un equipo nuevo: `docs/CONTINUAR-EN-OTRO-EQUIPO.md`.
+
 1. `CLAUDE.md` (reglas del repositorio; valen para cualquier IA).
 2. `roblox-blender/docs/NOTAS.md` sección 9 (estado más reciente y cosas sin verificar).
 3. `roblox-blender/docs/DECISIONES.md` (pendientes `P-01` a `P-17`).
