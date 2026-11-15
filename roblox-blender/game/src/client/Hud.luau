@@ -4,6 +4,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
 
@@ -236,133 +237,236 @@ local function virtualSize(): Vector2
 	return vp / uiScale.Scale
 end
 
--- Menú principal. compact = pantallas bajas (móvil): botones en dos columnas.
-local function buildMainMenu(compact: boolean)
-	local old = r.menu
-	local wasVisible = old ~= nil and old.Visible
-	if old then
-		local idx = table.find(overlays, old)
-		if idx then
-			table.remove(overlays, idx)
-		end
-		old:Destroy()
-	end
-	local m = new("Frame", { Name = "Menu", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = wasVisible, ZIndex = Z.overlay })
+-- Menú principal en columna izquierda: deja despejado el mundo 3D, la nave y el logo de NASA.
+local HOVER_TWEEN = TweenInfo.new(0.15, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+
+local function buildMainMenu()
+	local m = new("Frame", { Name = "Menu", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = Z.overlay })
 	m.Parent = gui
 	table.insert(overlays, m)
 	r.menu = m
-	r.menuCompact = compact
-	-- Columna izquierda con degradado: deja ver la nave a la derecha.
-	local shade = new("Frame", { Size = UDim2.new(0, 820, 1, 0), BackgroundColor3 = T.bg, BorderSizePixel = 0, ZIndex = Z.overlay })
-	new("UIGradient", { Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.05), NumberSequenceKeypoint.new(0.6, 0.25), NumberSequenceKeypoint.new(1, 1) }) }).Parent = shade
+
+	-- Sombra lateral suave solo sobre el tercio izquierdo (el resto de la escena queda intacto).
+	local shade = new("Frame", { Size = UDim2.new(0.36, 0, 1, 0), BackgroundColor3 = T.bg, BackgroundTransparency = 0.25, BorderSizePixel = 0, ZIndex = Z.overlay })
+	new("UIGradient", {
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.15),
+			NumberSequenceKeypoint.new(0.65, 0.55),
+			NumberSequenceKeypoint.new(1, 1),
+		}),
+	}).Parent = shade
 	shade.Parent = m
 
-	local X = 48
-	local y: number
-	if compact then
-		label(Content.Title, 44, { FontFace = F.title, Position = UDim2.fromOffset(X - 3, 12), Size = UDim2.fromOffset(340, 48), TextStrokeTransparency = 0.25, ZIndex = Z.content }).Parent = m
-		label(Content.Subtitle, 24, { FontFace = F.impact, Position = UDim2.fromOffset(X + 350, 20), Size = UDim2.fromOffset(360, 32), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
-		new("Frame", { Position = UDim2.fromOffset(X, 62), Size = UDim2.fromOffset(120, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
-		label("ETAPA 1 · LLANURA DE REGOLITO · MARTE", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 70), Size = UDim2.fromOffset(700, 22), TextColor3 = T.orange, ZIndex = Z.content, TextWrapped = false }).Parent = m
-		y = 100
-	else
-		label("MISIÓN DE SUPERFICIE · EXPEDIENTE AF-2026", 18, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 28), Size = UDim2.fromOffset(580, 24), TextColor3 = T.cyanHi, ZIndex = Z.content }).Parent = m
-		label(Content.Title, 68, { FontFace = F.title, Position = UDim2.fromOffset(X - 4, 52), Size = UDim2.fromOffset(640, 82), TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
-		new("Frame", { Position = UDim2.fromOffset(X, 138), Size = UDim2.fromOffset(140, 4), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content }).Parent = m
-		label(Content.Subtitle, 32, { FontFace = F.impact, Position = UDim2.fromOffset(X, 146), Size = UDim2.fromOffset(620, 38), TextColor3 = T.gold, TextStrokeTransparency = 0.2, ZIndex = Z.content }).Parent = m
-		label("ETAPA 1 · LLANURA DE REGOLITO · MARTE", 16, { FontFace = F.monoBold, Position = UDim2.fromOffset(X, 186), Size = UDim2.fromOffset(620, 22), TextColor3 = T.orange, ZIndex = Z.content, TextWrapped = false }).Parent = m
-		label(Content.Tagline, 18, { FontFace = F.semi, Position = UDim2.fromOffset(X, 208), Size = UDim2.fromOffset(620, 24), TextColor3 = T.text, ZIndex = Z.content }).Parent = m
-		y = 240
+	local col = new("Frame", {
+		Name = "MenuColumn",
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0, 28, 0.5, 16),
+		Size = UDim2.fromOffset(368, 504),
+		BackgroundTransparency = 1,
+		ZIndex = Z.panel,
+	})
+	col.Parent = m
+	local colScale = new("UIScale", { Name = "Pop", Scale = 1 })
+	colScale.Parent = col
+	r.menuCol = col
+	r.menuColScale = colScale
+
+	-- 1. Cabecera de marca (limpia, debajo de la barra superior de Roblox).
+	local dot = new("Frame", { Position = UDim2.fromOffset(0, 5), Size = UDim2.fromOffset(7, 7), BackgroundColor3 = T.orange, BorderSizePixel = 0, ZIndex = Z.content })
+	Ui.corner(4).Parent = dot
+	dot.Parent = col
+	local kicker = label("CRÁTER JEZERO · SOL 01", 14, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 0), Size = UDim2.fromOffset(354, 18), TextColor3 = T.orange, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 14 }).Parent = kicker
+	kicker.Parent = col
+
+	local titleLbl = label(Content.Title, 42, { FontFace = F.title, Position = UDim2.fromOffset(-2, 18), Size = UDim2.fromOffset(370, 46), TextColor3 = T.text, TextStrokeTransparency = 0.35, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 24, MaxTextSize = 42 }).Parent = titleLbl
+	titleLbl.Parent = col
+
+	new("Frame", { Position = UDim2.fromOffset(0, 74), Size = UDim2.fromOffset(36, 3), BackgroundColor3 = T.gold, BorderSizePixel = 0, ZIndex = Z.content }).Parent = col
+	label("SUPERVIVENCIA EN MARTE", 15, { FontFace = F.bold, Position = UDim2.fromOffset(46, 65), Size = UDim2.fromOffset(322, 20), TextColor3 = T.gold, TextStrokeTransparency = 0.4, TextWrapped = false, ZIndex = Z.content }).Parent = col
+	local hook = label("Recupera las 4 piezas de tu módulo y despega.", 15, { FontFace = F.semi, Position = UDim2.fromOffset(0, 86), Size = UDim2.fromOffset(368, 22), TextColor3 = Color3.fromHex("#DCE6F5"), TextStrokeTransparency = 0.45, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 15 }).Parent = hook
+	hook.Parent = col
+
+	local function bindHover(btn: TextButton, baseBg: Color3, baseT: number, hoverBg: Color3, hoverT: number, stroke: UIStroke, sBase: number, sHover: number, sBaseCol: Color3?, sHoverCol: Color3?)
+		local function over()
+			TweenService:Create(btn, HOVER_TWEEN, { BackgroundColor3 = hoverBg, BackgroundTransparency = hoverT }):Play()
+			TweenService:Create(stroke, HOVER_TWEEN, { Transparency = sHover, Color = sHoverCol or stroke.Color }):Play()
+		end
+		local function out()
+			TweenService:Create(btn, HOVER_TWEEN, { BackgroundColor3 = baseBg, BackgroundTransparency = baseT }):Play()
+			TweenService:Create(stroke, HOVER_TWEEN, { Transparency = sBase, Color = sBaseCol or stroke.Color }):Play()
+		end
+		btn.MouseEnter:Connect(over)
+		btn.SelectionGained:Connect(over)
+		btn.MouseLeave:Connect(out)
+		btn.SelectionLost:Connect(out)
 	end
 
-	local n = 0
-	local bw, bh, gap = if compact then 340 else 440, if compact then 48 else 52, if compact then 6 else 7
-	local function mb(text: string, fn: () -> (), kind: string?, sub: string?, accent: Color3?): TextButton
-		local col, row = 0, n
-		if compact then
-			col, row = n % 2, n // 2
-		end
-		local bx, by = X + col * (bw + 10), y + row * (bh + gap)
-		local b = button(text, click(fn), { Position = UDim2.fromOffset(bx, by), Size = UDim2.fromOffset(bw, bh), ZIndex = Z.content, TextXAlignment = Enum.TextXAlignment.Left }, kind)
-		local ac = accent or (if kind == "primary" or kind == "gold" then T.gold else T.cyanHi)
-		-- El texto va en una etiqueta propia: un UIPadding desplazaría también al número y al labio.
-		b.Text = ""
-		label(text, 19, {
-			FontFace = F.bold,
-			Position = UDim2.fromOffset(58, 0),
-			Size = UDim2.new(1, if sub and not compact then -195 else -76, 1, 0),
-			TextXAlignment = Enum.TextXAlignment.Left,
-			TextColor3 = if kind == "ghost" then T.text else T.bg,
-			TextWrapped = false,
-			TextTruncate = Enum.TextTruncate.AtEnd,
-			ZIndex = Z.content + 1,
-		}).Parent = b
-		-- Forma humana: esquinas redondeadas, chip numérico 01..06, acento y labio inferior.
-		local corner = b:FindFirstChildOfClass("UICorner")
-		if corner then
-			corner.CornerRadius = UDim.new(0, 10)
-		end
-		local stroke = b:FindFirstChildOfClass("UIStroke")
-		if stroke and kind == "ghost" then
-			stroke.Color = ac
-			stroke.Transparency = 0.25
-			stroke.Thickness = 1.4
-		end
-		local chip = new("Frame", { Position = UDim2.fromOffset(8, 8), Size = UDim2.fromOffset(40, bh - 16), BackgroundColor3 = T.bg, BackgroundTransparency = if kind == "ghost" then 0.2 else 0.35, BorderSizePixel = 0, ZIndex = Z.content + 1 })
-		new("UICorner", { CornerRadius = UDim.new(0, 7) }).Parent = chip
-		if kind == "ghost" then
-			Ui.stroke(ac, 1, 0.45).Parent = chip
-		end
-		label(string.format("%02d", n + 1), 16, { FontFace = F.monoBold, TextXAlignment = CENTER, Size = UDim2.fromScale(1, 1), TextColor3 = ac, ZIndex = Z.content + 2 }).Parent = chip
-		chip.Parent = b
-		if kind == "primary" or kind == "gold" then
-			local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 5), BackgroundColor3 = if kind == "gold" then Color3.fromHex("#B07F0E") else Color3.fromHex("#0086A6"), BorderSizePixel = 0, ZIndex = Z.content })
-			new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
-			lip.Parent = b
-		else
-			local lip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 3), BackgroundColor3 = ac, BackgroundTransparency = 0.35, BorderSizePixel = 0, ZIndex = Z.content })
-			new("UICorner", { CornerRadius = UDim.new(0, 10) }).Parent = lip
-			lip.Parent = b
-		end
-		b.Parent = m
-		if sub and not compact then
-			-- el subtítulo vive dentro del botón, a la derecha y acotado para no chocar con el título
-			local subLbl = label(sub, 14, { FontFace = F.monoBold, AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(124, 20), TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = if kind == "primary" or kind == "gold" then T.bg else ac, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
-			new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 14 }).Parent = subLbl
-			subLbl.Parent = b
-		end
-		n += 1
-		return b
-	end
-	mb("INICIAR MISIÓN", function()
+	-- 2. Acciones de juego: boton principal prominente + fila de modos rapidos.
+	local heroBg = Color3.fromHex("#FF6B35")
+	local heroHover = Color3.fromHex("#FF8552")
+	local hero = new("TextButton", {
+		Name = "BtnPlay",
+		Position = UDim2.fromOffset(0, 114),
+		Size = UDim2.fromOffset(368, 62),
+		BackgroundColor3 = heroBg,
+		BackgroundTransparency = 0,
+		ClipsDescendants = true,
+		Text = "",
+		AutoButtonColor = false,
+		BorderSizePixel = 0,
+		ZIndex = Z.content,
+	})
+	Ui.corner(8).Parent = hero
+	local heroStroke = Ui.stroke(Color3.fromHex("#FFB899"), 1.2, 0.55)
+	heroStroke.Parent = hero
+	local heroLip = new("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 0), Size = UDim2.new(1, 0, 0, 4), BackgroundColor3 = Color3.fromHex("#B84318"), BorderSizePixel = 0, ZIndex = Z.content })
+	heroLip.Parent = hero
+	label("INICIAR MISIÓN", 22, { FontFace = F.bold, Position = UDim2.fromOffset(18, 7), Size = UDim2.fromOffset(286, 26), TextColor3 = Color3.new(1, 1, 1), TextStrokeTransparency = 0.65, TextWrapped = false, ZIndex = Z.content + 1 }).Parent = hero
+	local heroSub = label("Partida completa · 18 oleadas en 3 etapas", 14, { FontFace = F.semi, Position = UDim2.fromOffset(18, 33), Size = UDim2.fromOffset(286, 20), TextColor3 = Color3.fromHex("#FFE4D6"), TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+	new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 14 }).Parent = heroSub
+	heroSub.Parent = hero
+	local playPill = new("Frame", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -14, 0.5, 0), Size = UDim2.fromOffset(34, 34), BackgroundColor3 = T.bg, BackgroundTransparency = 0.65, BorderSizePixel = 0, ZIndex = Z.content + 1 })
+	Ui.corner(8).Parent = playPill
+	label(">", 22, { FontFace = F.monoBold, Size = UDim2.fromScale(1, 1), TextXAlignment = CENTER, TextColor3 = Color3.new(1, 1, 1), ZIndex = Z.content + 2 }).Parent = playPill
+	playPill.Parent = hero
+	bindHover(hero, heroBg, 0, heroHover, 0, heroStroke, 0.55, 0.2)
+	hero.Activated:Connect(click(function()
 		lastMode = "full"
 		send("start", "full")
-	end, "primary", "18 oleadas · 17 min", T.gold)
-	mb("DEMO RÁPIDA", function()
+	end))
+	hero.Parent = col
+
+	local function darkCard(name: string, x: number, py: number, w: number, h: number, titleTxt: string, subTxt: string?, accent: Color3, fn: () -> ()): TextButton
+		local b = new("TextButton", {
+			Name = name,
+			Position = UDim2.fromOffset(x, py),
+			Size = UDim2.fromOffset(w, h),
+			BackgroundColor3 = T.panel,
+			BackgroundTransparency = 0.12,
+			Text = "",
+			AutoButtonColor = false,
+			BorderSizePixel = 0,
+			ZIndex = Z.content,
+		})
+		Ui.corner(8).Parent = b
+		local st = Ui.stroke(accent, 1.2, 0.4)
+		st.Parent = b
+		local bar = new("Frame", { Position = UDim2.fromOffset(4, 10), Size = UDim2.new(0, 3, 1, -20), BackgroundColor3 = accent, BorderSizePixel = 0, ZIndex = Z.content + 1 })
+		Ui.corner(2).Parent = bar
+		bar.Parent = b
+		local titleW = if titleTxt == "HANGAR DEL TRAJE" then 212 else (w - 22)
+		local tLbl = label(titleTxt, if subTxt then 16 else 15, { FontFace = F.bold, Position = UDim2.fromOffset(14, 7), Size = UDim2.fromOffset(titleW, 20), TextColor3 = T.text, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 12, MaxTextSize = 17 }).Parent = tLbl
+		tLbl.Parent = b
+		if subTxt then
+			local sLbl = label(subTxt, 13, { FontFace = F.body, Position = UDim2.fromOffset(14, 28), Size = UDim2.fromOffset(titleW, 18), TextColor3 = accent, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+			new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = sLbl
+			sLbl.Parent = b
+		end
+		bindHover(b, T.panel, 0.12, T.panelHi, 0.04, st, 0.4, 0.08)
+		b.Activated:Connect(click(fn))
+		b.Parent = col
+		return b
+	end
+
+	darkCard("BtnDemo", 0, 186, 178, 52, "DEMO RÁPIDA", "Partida de 4 min", T.cyanHi, function()
 		lastMode = "demo"
 		send("start", "demo")
-	end, "ghost", "4 min · comprimida", T.orange)
-	mb("TUTORIAL Y PRÁCTICA", function()
+	end)
+	darkCard("BtnTutorial", 190, 186, 178, 52, "TUTORIAL", "Práctica guiada", T.gold, function()
 		send("tutorial")
-	end, "gold", "7 pasos guiados", T.cyanHi)
-	mb("HANGAR · MEJORAS", function()
-		show(r.shop, true)
-	end, "ghost", "8 mejoras", T.violet)
-	mb("AJUSTES Y CONTROLES", function()
-		show(r.settings, true)
-	end, "ghost", "WASD · Flechas", T.green)
-	mb("CRÉDITOS Y FUENTES", function()
-		show(r.credits, true)
-	end, "ghost", "NASA · NTRS", T.cyanHi)
+	end)
 
-	local rows = if compact then 3 else 6
-	local iy = y + rows * (bh + gap) + 6
-	local info = panel({ Position = UDim2.fromOffset(X, iy), Size = UDim2.fromOffset(if compact then 690 else 580, 84), ZIndex = Z.panel, TagColor = T.gold }, "REGISTRO DEL PILOTO")
-	info.Parent = m
-	r.menuInfo = label("", 18, { FontFace = F.mono, Position = UDim2.fromOffset(14, 32), Size = UDim2.new(1, -28, 0, 48), TextYAlignment = TOP, TextColor3 = T.text, ZIndex = Z.content, TextScaled = true })
-	new("UITextSizeConstraint", { MinTextSize = 14, MaxTextSize = 18 }).Parent = r.menuInfo
-	r.menuInfo.Parent = info
-	label("Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto.", 18, { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -24, 1, -8), Size = UDim2.fromOffset(780, 24), TextColor3 = T.dim, ZIndex = Z.content, TextWrapped = false, TextXAlignment = Enum.TextXAlignment.Right }).Parent = m
+	-- 3. Progresion y utilidades.
+	new("Frame", { Position = UDim2.fromOffset(0, 248), Size = UDim2.fromOffset(368, 1), BackgroundColor3 = T.line, BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = Z.content }).Parent = col
+
+	local hangar = darkCard("BtnHangar", 0, 258, 368, 50, "HANGAR DEL TRAJE", "Mejoras permanentes", T.violet, function()
+		show(r.shop, true)
+	end)
+	local sciPill = new("Frame", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(116, 26), BackgroundColor3 = T.bg, BackgroundTransparency = 0.15, BorderSizePixel = 0, ZIndex = Z.content + 1 })
+	Ui.corner(6).Parent = sciPill
+	Ui.stroke(T.gold, 1, 0.3).Parent = sciPill
+	sciPill.Parent = hangar
+	r.menuScience = label("0 CIENCIA", 13, { FontFace = F.monoBold, Size = UDim2.new(1, -8, 1, 0), Position = UDim2.fromOffset(4, 0), TextXAlignment = CENTER, TextColor3 = T.gold, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 2 })
+	new("UITextSizeConstraint", { MinTextSize = 10, MaxTextSize = 13 }).Parent = r.menuScience
+	r.menuScience.Parent = sciPill
+
+	local function utilBtn(name: string, x: number, txt: string, fn: () -> ())
+		local b = new("TextButton", {
+			Name = name,
+			Position = UDim2.fromOffset(x, 316),
+			Size = UDim2.fromOffset(178, 40),
+			BackgroundColor3 = T.panel,
+			BackgroundTransparency = 0.18,
+			Text = "",
+			AutoButtonColor = false,
+			BorderSizePixel = 0,
+			ZIndex = Z.content,
+		})
+		Ui.corner(8).Parent = b
+		local st = Ui.stroke(T.line, 1, 0.25)
+		st.Parent = b
+		local l = label(txt, 14, { FontFace = F.semi, Position = UDim2.fromOffset(8, 0), Size = UDim2.new(1, -16, 1, 0), TextXAlignment = CENTER, TextColor3 = T.text, TextWrapped = false, TextScaled = true, ZIndex = Z.content + 1 })
+		new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 14 }).Parent = l
+		l.Parent = b
+		bindHover(b, T.panel, 0.18, T.panelHi, 0.04, st, 0.25, 0.15, T.line, T.cyanHi)
+		b.Activated:Connect(click(fn))
+		b.Parent = col
+	end
+	utilBtn("BtnSettings", 0, "AJUSTES Y MANDOS", function()
+		show(r.settings, true)
+	end)
+	utilBtn("BtnCredits", 190, "CRÉDITOS Y FUENTES", function()
+		show(r.credits, true)
+	end)
+
+	-- 4. Hoja de servicio compacta en 3 columnas limpias (sin cajones ruidosos).
+	local sheet = new("Frame", {
+		Name = "ServiceSheet",
+		Position = UDim2.fromOffset(0, 368),
+		Size = UDim2.fromOffset(368, 84),
+		BackgroundColor3 = T.panel,
+		BackgroundTransparency = 0.22,
+		BorderSizePixel = 0,
+		ZIndex = Z.panel,
+	})
+	Ui.corner(8).Parent = sheet
+	Ui.stroke(T.line, 1, 0.35).Parent = sheet
+	sheet.Parent = col
+
+	label("HOJA DE SERVICIO", 12, { FontFace = F.monoBold, Position = UDim2.fromOffset(14, 6), Size = UDim2.fromOffset(152, 18), TextColor3 = T.dim, TextWrapped = false, ZIndex = Z.content }).Parent = sheet
+	r.menuStatus = label("GUARDADO ACTIVO", 12, { FontFace = F.monoBold, Position = UDim2.fromOffset(168, 6), Size = UDim2.fromOffset(186, 18), TextXAlignment = RIGHT, TextColor3 = T.green, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+	new("UITextSizeConstraint", { MinTextSize = 9, MaxTextSize = 12 }).Parent = r.menuStatus
+	r.menuStatus.Parent = sheet
+
+	new("Frame", { Position = UDim2.fromOffset(12, 27), Size = UDim2.fromOffset(344, 1), BackgroundColor3 = T.line, BackgroundTransparency = 0.55, BorderSizePixel = 0, ZIndex = Z.content }).Parent = sheet
+	new("Frame", { Position = UDim2.fromOffset(123, 34), Size = UDim2.fromOffset(1, 38), BackgroundColor3 = T.line, BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = Z.content }).Parent = sheet
+	new("Frame", { Position = UDim2.fromOffset(245, 34), Size = UDim2.fromOffset(1, 38), BackgroundColor3 = T.line, BackgroundTransparency = 0.45, BorderSizePixel = 0, ZIndex = Z.content }).Parent = sheet
+
+	local function statCol(x: number, hdr: string, colr: Color3, font: Font): TextLabel
+		label(hdr, 11, { FontFace = F.monoBold, Position = UDim2.fromOffset(x, 32), Size = UDim2.fromOffset(110, 16), TextXAlignment = CENTER, TextColor3 = T.dim, TextWrapped = false, ZIndex = Z.content }).Parent = sheet
+		local val = label("—", 16, { FontFace = font, Position = UDim2.fromOffset(x, 49), Size = UDim2.fromOffset(110, 24), TextXAlignment = CENTER, TextColor3 = colr, TextWrapped = false, TextScaled = true, ZIndex = Z.content })
+		new("UITextSizeConstraint", { MinTextSize = 11, MaxTextSize = 16 }).Parent = val
+		val.Parent = sheet
+		return val
+	end
+	r.statRuns = statCol(8, "MISIONES (VICT.)", T.text, F.monoBold)
+	r.statTime = statCol(129, "MEJOR TIEMPO", T.cyanHi, F.monoBold)
+	r.statBest = statCol(250, "NIVEL / BAJAS", T.gold, F.monoBold)
+
+	-- 5. Nota legal discreta al pie de la columna.
+	label("Este proyecto usa datos públicos de NASA. NASA no patrocina ni respalda este producto.", 13, {
+		Position = UDim2.fromOffset(0, 462),
+		Size = UDim2.fromOffset(368, 38),
+		TextColor3 = T.dim,
+		TextTransparency = 0.05,
+		TextStrokeTransparency = 0.65,
+		TextYAlignment = TOP,
+		ZIndex = Z.content,
+	}).Parent = col
 end
 
 local function buildMenu()
@@ -579,10 +683,10 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 	end
 	rescale()
 	buildHud()
-	buildMainMenu(virtualSize().Y < 640)
+	buildMainMenu()
 	buildMenu()
 	buildOverlays()
-	-- Ajusta los paneles grandes y el menú a pantallas bajas.
+	-- Ajusta los paneles grandes y mantiene el menu izquierdo bajo la barra superior de Roblox.
 	local function refit()
 		rescale()
 		local v = virtualSize()
@@ -591,10 +695,13 @@ function Hud.init(sendFn: (...any) -> (), skillFn: (number) -> (), settingsFn: (
 			e.p:SetAttribute("Fit", s)
 			Ui.pop(e.p, true)
 		end
-		local compact = v.Y < 640
-		if compact ~= r.menuCompact then
-			buildMainMenu(compact)
-			refreshMeta()
+		if r.menuCol and r.menuColScale then
+			local topSafe = 64 / uiScale.Scale
+			local availH = math.max(120, v.Y - topSafe - 18)
+			local availW = math.max(180, v.X * 0.35)
+			local colScale = math.clamp(math.min(1, availH / 504, availW / 368), 0.5, 1)
+			r.menuColScale.Scale = colScale
+			r.menuCol.Position = UDim2.new(0, 28, 0, topSafe + availH * 0.5)
 		end
 	end
 	refit()
@@ -609,13 +716,26 @@ refreshMeta = function()
 		return
 	end
 	local best = meta.best
-	local info = string.format("DATOS CIENTÍFICOS %d · MISIONES %d · VICTORIAS %d\nMEJOR MARCA %s · NIVEL %d · %d BAJAS", meta.science, meta.runs, meta.wins, Ui.time(best.time), best.level, best.kills)
 	if not meta.loaded then
-		info = "Cargando progreso..."
-	elseif meta.offline then
-		info ..= "\nSIN GUARDADO: el progreso de esta sesión no se conserva."
+		r.menuScience.Text = "... CIENCIA"
+		r.menuStatus.Text = "CARGANDO..."
+		r.menuStatus.TextColor3 = T.dim
+		r.statRuns.Text = "—"
+		r.statTime.Text = "—"
+		r.statBest.Text = "—"
+	else
+		r.menuScience.Text = string.format("%d CIENCIA", meta.science)
+		if meta.offline then
+			r.menuStatus.Text = "MODO LOCAL"
+			r.menuStatus.TextColor3 = T.orange
+		else
+			r.menuStatus.Text = "GUARDADO ACTIVO"
+			r.menuStatus.TextColor3 = T.green
+		end
+		r.statRuns.Text = string.format("%d (%d)", meta.runs, meta.wins)
+		r.statTime.Text = Ui.time(best.time)
+		r.statBest.Text = string.format("Nv.%d · %d", best.level, best.kills)
 	end
-	r.menuInfo.Text = info
 	r.shopScience.Text = string.format("DATOS CIENTÍFICOS DISPONIBLES: %d", meta.science)
 	for _, id in Balance.Meta.Order do
 		local def = (Balance.Meta :: any)[id]
@@ -864,7 +984,6 @@ function Hud.paused(on: boolean)
 end
 
 -- Estimulos visuales: destello y rotulo grande al subir de nivel, y aviso al activar una mejora.
-local TweenService = game:GetService("TweenService")
 local stim: any = nil
 
 local function stimuli(): any

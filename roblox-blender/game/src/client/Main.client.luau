@@ -382,12 +382,12 @@ RunService:BindToRenderStep("AresMain", Enum.RenderPriority.Camera.Value + 1, fu
 			player:Move(Vector3.zero, true)
 			wasArrowMoving = false
 		end
-		-- Órbita lenta alrededor de la nave; la nave queda a la derecha del menú.
+		-- Órbita lenta alrededor de la nave; nave y logo NASA quedan despejados a la derecha del menú.
 		menuYaw += dt * 0.06
 		local ship = Scenery.shipPosition()
-		local eye = ship + Vector3.new(math.sin(menuYaw) * 58, 16, math.cos(menuYaw) * 58)
-		local cf = CFrame.lookAt(eye, ship + Vector3.new(0, 4, 0))
-		camera.CFrame = cf * CFrame.new(-17, 0, 0)
+		local eye = ship + Vector3.new(math.sin(menuYaw) * 60, 17, math.cos(menuYaw) * 60)
+		local cf = CFrame.lookAt(eye, ship + Vector3.new(0, 11, 0))
+		camera.CFrame = cf * CFrame.new(-14, 0, 0)
 		return
 	end
 	if phase == "victory" then
