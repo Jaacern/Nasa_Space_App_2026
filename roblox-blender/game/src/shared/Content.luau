@@ -10,18 +10,18 @@ Content.Tagline = "Tu nave cayó. Recupera sus 4 piezas y vuelve a casa."
 -- fmt recibe el valor de la carta (per × rareza × scale). Sin fmt = texto fijo.
 -- fact: dato real breve que se muestra en la carta; fuentes en docs/NASA_APIS.md (seccion Datos de cartas).
 Content.Upgrades = {
-	damage = { name = "Láser de mayor potencia", fmt = "+%d %% de daño del láser.", scale = 100, fact = "El láser de SuperCam, en Perseverance, vaporiza roca a distancia para leer su composición." },
-	rate = { name = "Disparo más rápido", fmt = "+%d %% de cadencia de disparo.", scale = 100, fact = "ChemCam, en Curiosity, dispara ráfagas de pulsos láser sobre cada punto de roca que analiza." },
+	damage = { name = "Láser de mayor potencia", fmt = "+%d %% de daño del láser.", scale = 100, fact = "SuperCam, en Perseverance, identifica la composición de la roca a más de 7 metros de distancia." },
+	rate = { name = "Disparo más rápido", fmt = "+%d %% de cadencia de disparo.", scale = 100, fact = "ChemCam, en Curiosity, analiza con un láser la composición química de rocas y suelo." },
 	multishot = { name = "Haz dividido", desc = "+1 proyectil por disparo.", fact = "Marte tiene dos lunas pequeñas: Fobos y Deimos." },
-	pierce = { name = "Haz perforante", desc = "El láser atraviesa +1 enemigo.", fact = "El radar RIMFAX de Perseverance estudia las capas de roca que hay bajo el suelo." },
-	armor = { name = "Traje reforzado", fmt = "+%d de vida máxima.", scale = 1, fact = "Marte no tiene campo magnético global. El instrumento RAD de Curiosity mide la radiación en superficie." },
+	pierce = { name = "Haz perforante", desc = "El láser atraviesa +1 enemigo.", fact = "El radar RIMFAX de Perseverance sondea el suelo bajo el rover para ver su geología." },
+	armor = { name = "Traje reforzado", fmt = "+%d de vida máxima.", scale = 1, fact = "El instrumento RAD de Curiosity mide la radiación de alta energía en la superficie de Marte." },
 	speed = { name = "Servos de movilidad", fmt = "+%d %% de velocidad.", scale = 100, fact = "Perseverance avanza despacio: su velocidad máxima ronda los 152 metros por hora." },
-	magnet = { name = "Imán de muestras", fmt = "+%d %% de radio de recogida.", scale = 100, fact = "Perseverance guarda núcleos de roca en tubos sellados para traerlos algún día a la Tierra." },
-	drone = { name = "Dron orbital", desc = "+1 dron que gira a tu alrededor y golpea.", fact = "El helicóptero Ingenuity logró en 2021 el primer vuelo con motor en otro planeta." },
-	cooldown = { name = "Recarga eficiente", fmt = "-%d %% de espera de habilidades.", scale = 100, fact = "El generador MMRTG convierte en electricidad el calor del plutonio-238." },
-	crit = { name = "Puntería de precisión", fmt = "+%d %% de golpe crítico.", scale = 100, fact = "Perseverance aterrizó comparando fotos del suelo con mapas a bordo para elegir un punto seguro." },
-	aura = { name = "Campo electrostático", fmt = "+%d de daño por pulso a los enemigos cercanos.", scale = 1, fact = "El polvo marciano se carga de electricidad estática y se adhiere a los equipos." },
-	heal = { name = "Reparación de campo", desc = "Recupera 30 de vida.", fact = "El experimento MOXIE produjo oxígeno a partir del dióxido de carbono del aire marciano." },
+	magnet = { name = "Imán de muestras", fmt = "+%d %% de radio de recogida.", scale = 100, fact = "Perseverance guarda los núcleos de roca que perfora en tubos de muestra." },
+	drone = { name = "Dron orbital", desc = "+1 dron que gira a tu alrededor y golpea.", fact = "El 19 de abril de 2021, Ingenuity hizo el primer vuelo propulsado y controlado en Marte." },
+	cooldown = { name = "Recarga eficiente", fmt = "-%d %% de espera de habilidades.", scale = 100, fact = "El generador MMRTG convierte en electricidad el calor de la desintegración del plutonio." },
+	crit = { name = "Puntería de precisión", fmt = "+%d %% de golpe crítico.", scale = 100, fact = "SuperCam puede analizar zonas de roca tan pequeñas como la punta de un lápiz." },
+	aura = { name = "Campo electrostático", fmt = "+%d de daño por pulso a los enemigos cercanos.", scale = 1, fact = "El láser de ChemCam vaporiza la superficie de la roca y crea un plasma que el instrumento analiza." },
+	heal = { name = "Reparación de campo", desc = "Recupera 30 de vida.", fact = "MOXIE probó cómo producir oxígeno a partir de la atmósfera de Marte." },
 }
 Content.CardRarities = { "COMÚN", "RARA", "ÉPICA", "LEGENDARIA" }
 

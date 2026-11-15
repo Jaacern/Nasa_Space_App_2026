@@ -114,19 +114,28 @@ curl -s "https://ssd-api.jpl.nasa.gov/cad.api?dist-max=0.05&date-min=now&date-ma
 
 ## 10. Datos de cartas de mejora (`Content.Upgrades[*].fact`)
 
-Añadidos el 15-11-2026. Son frases generales, casi sin cifras. **Se escribieron desde conocimiento del modelo de IA y no se contrastaron ese día contra la página oficial.** Una persona debe revisarlas antes del pitch.
+Verificados el 15-11-2026 contra páginas de `science.nasa.gov`. Cada frase del juego se ajustó a lo que dice la página. Las frases que no se pudieron respaldar se cambiaron por otras verificadas.
 
-| Carta | Tema del dato | Dónde verificar |
-|---|---|---|
-| `damage` | SuperCam (láser LIBS) de Perseverance | science.nasa.gov/mission/mars-2020-perseverance (instrumentos) |
-| `rate` | ChemCam de Curiosity | science.nasa.gov/mission/msl-curiosity (instrumentos) |
-| `multishot` | Lunas Fobos y Deimos | science.nasa.gov/mars/moons |
-| `pierce` | Radar RIMFAX de Perseverance | science.nasa.gov/mission/mars-2020-perseverance (instrumentos) |
-| `armor` | Sin campo magnético global; instrumento RAD | science.nasa.gov/mission/msl-curiosity (instrumentos) |
-| `speed` | Velocidad máxima de Perseverance, 152 m/h (**única cifra; revisar**) | science.nasa.gov/mission/mars-2020-perseverance (rover) |
-| `magnet` | Tubos de muestras de Perseverance | science.nasa.gov/mission/mars-2020-perseverance |
-| `drone` | Ingenuity, primer vuelo con motor en otro planeta, 2021 | science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter |
-| `cooldown` | MMRTG y plutonio-238 | science.nasa.gov/planetary-science/programs/radioisotope-power-systems |
-| `crit` | Navegación relativa al terreno en el aterrizaje | science.nasa.gov/mission/mars-2020-perseverance |
-| `aura` | Polvo marciano con carga electrostática | ntrs.nasa.gov (buscar "Mars dust electrostatic") |
-| `heal` | MOXIE produce oxígeno del CO2 | science.nasa.gov/mission/mars-2020-perseverance (MOXIE) |
+| Carta | Dato en el juego | Respaldo en la página | Página |
+|---|---|---|---|
+| `damage` | SuperCam identifica la composición a más de 7 m | "from a distance of more than 20 feet (7 meters)" | A |
+| `crit` | SuperCam analiza zonas como la punta de un lápiz | "areas on Mars as small as a pencil point" | A |
+| `pierce` | RIMFAX sondea el suelo bajo el rover | "RIMFAX uses radar waves to probe the ground under the rover." | A |
+| `heal` | MOXIE probó cómo producir oxígeno de la atmósfera | "produce oxygen from the Martian atmosphere" | A |
+| `speed` | Velocidad máxima de unos 152 m/h | "just under 0.1 mph (152 meters per hour)" | B |
+| `cooldown` | El MMRTG convierte en electricidad el calor del plutonio | "converts heat from the natural radioactive decay of plutonium into electricity" | B |
+| `magnet` | Guarda núcleos de roca en tubos de muestra | "The rover stores the sample cores in tubes" | B |
+| `drone` | Primer vuelo propulsado y controlado en Marte, 19-04-2021 | "the first powered, controlled flight on the Red Planet" | C |
+| `multishot` | Marte tiene dos lunas, Fobos y Deimos | "Mars has two moons, Phobos and Deimos." | D |
+| `rate` | ChemCam analiza la composición química con láser | "To analyze the chemical composition of rocks and soil." | E |
+| `aura` | El láser de ChemCam vaporiza la roca y crea un plasma | "Vaporizes rock surfaces, creating a plasma of their component gases" | E |
+| `armor` | RAD mide la radiación de alta energía en superficie | "measures and identifies all high-energy radiation on the Martian surface" | E |
+
+Páginas:
+- A: https://science.nasa.gov/mission/mars-2020-perseverance/science-instruments/
+- B: https://science.nasa.gov/mission/mars-2020-perseverance/rover-components/
+- C: https://science.nasa.gov/mission/mars-2020-perseverance/ingenuity-mars-helicopter/
+- D: https://science.nasa.gov/mars/moons/
+- E: https://science.nasa.gov/mission/msl-curiosity/science-instruments/
+
+Límite de esta verificación: las citas se extrajeron con una herramienta de lectura automática de la página. Conviene que una persona abra cada enlace una vez antes del pitch.
