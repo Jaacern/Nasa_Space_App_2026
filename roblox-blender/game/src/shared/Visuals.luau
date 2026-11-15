@@ -10,13 +10,13 @@ local C = {
 	cyanDark = Color3.fromRGB(0, 180, 216),
 	red = Color3.fromRGB(255, 45, 85),
 	magenta = Color3.fromRGB(255, 0, 170),
-	dark = Color3.fromRGB(38, 22, 34),
-	rock = Color3.fromRGB(70, 52, 58),
+	dark = Color3.fromRGB(88, 72, 92),
+	rock = Color3.fromRGB(126, 100, 112),
 	gold = Color3.fromRGB(255, 200, 40),
 	orange = Color3.fromRGB(255, 107, 53),
 	white = Color3.fromRGB(235, 240, 245),
 	hull = Color3.fromRGB(200, 205, 215),
-	hullDark = Color3.fromRGB(60, 66, 80),
+	hullDark = Color3.fromRGB(82, 90, 108),
 	panel = Color3.fromRGB(11, 19, 43),
 }
 Visuals.Colors = C
@@ -187,13 +187,16 @@ local function piece(i: number): Model
 	return m
 end
 
--- Nave estrellada: piezas ancladas con colision. Las ranuras Piece1..4 empiezan ocultas en el cliente.
+-- Nave estrellada: piezas ancladas; usa un cilindro central liso como colision principal para evitar atascos en patas inclinadas.
 function Visuals.makeShip(): Model
 	local ship = Instance.new("Model")
 	ship.Name = "Ship"
-	local function solid(size: Vector3, cf: CFrame, color: Color3, material: Enum.Material, shape: Enum.PartType?): Part
+	local function solid(size: Vector3, cf: CFrame, color: Color3, material: Enum.Material, shape: Enum.PartType?, canCollide: boolean?): Part
 		local p = Instance.new("Part")
 		p.Anchored = true
+		p.CanCollide = if canCollide ~= nil then canCollide else false
+		p.CanQuery = false
+		p.CanTouch = false
 		p.Size = size
 		p.CFrame = cf
 		p.Color = color
@@ -206,16 +209,19 @@ function Visuals.makeShip(): Model
 		p.Parent = ship
 		return p
 	end
+	local col = solid(Vector3.new(28, 12.6, 12.6), CFrame.new(0, 13, 0) * UP, C.hullDark, Enum.Material.SmoothPlastic, CYL, true)
+	col.Name = "ShipCollider"
+	col.Transparency = 1
 	local tilt = CFrame.new(0, 12.5, 0) * CFrame.Angles(0, math.rad(25), math.rad(8))
-	local body = solid(Vector3.new(16, 10, 10), tilt * UP, C.hull, Enum.Material.Metal, CYL)
+	local body = solid(Vector3.new(16, 10, 10), tilt * UP, C.hull, Enum.Material.Metal, CYL, false)
 	body.Name = "Body"
 	ship.PrimaryPart = body
-	solid(Vector3.new(5, 8, 8), tilt * CFrame.new(0, 10, 0) * UP, C.white, Enum.Material.Metal, CYL)
-	solid(Vector3.new(3, 5, 5), tilt * CFrame.new(0, 13.5, 0) * UP, C.hullDark, Enum.Material.Metal, CYL)
-	solid(Vector3.new(1, 10.4, 10.4), tilt * CFrame.new(0, 3, 0) * UP, C.cyanDark, NEON, CYL)
+	solid(Vector3.new(5, 8, 8), tilt * CFrame.new(0, 10, 0) * UP, C.white, Enum.Material.Metal, CYL, false)
+	solid(Vector3.new(3, 5, 5), tilt * CFrame.new(0, 13.5, 0) * UP, C.hullDark, Enum.Material.Metal, CYL, false)
+	solid(Vector3.new(1, 10.4, 10.4), tilt * CFrame.new(0, 3, 0) * UP, C.cyanDark, NEON, CYL, false)
 	for k = 0, 2 do
 		local a = math.rad(120 * k)
-		solid(Vector3.new(1, 12, 1.2), tilt * CFrame.Angles(0, a, 0) * CFrame.new(5.6, -6, 0) * CFrame.Angles(0, 0, math.rad(-25)), C.hullDark, Enum.Material.Metal)
+		solid(Vector3.new(1, 12, 1.2), tilt * CFrame.Angles(0, a, 0) * CFrame.new(5.6, -6, 0) * CFrame.Angles(0, 0, math.rad(-25)), C.hullDark, Enum.Material.Metal, nil, false)
 	end
 	local slots = {
 		tilt * CFrame.new(6.2, -2, 0),
@@ -255,6 +261,9 @@ function Visuals.buildTemplates(folder: Instance)
 		gem(),
 		chest(),
 		shot("shot", C.cyan, Vector3.new(0.5, 0.5, 3.2)),
+		shot("spread", Color3.fromRGB(255, 195, 55), Vector3.new(0.75, 0.45, 2.5)),
+		shot("mortar", Color3.fromRGB(255, 88, 38), Vector3.new(2.0, 2.0, 2.0), BALL),
+		shot("missile", Color3.fromRGB(210, 120, 255), Vector3.new(0.7, 0.7, 2.6)),
 		shot("eshot", C.magenta, Vector3.new(2.4, 2.4, 2.4), BALL),
 		drone(),
 		piece(1),

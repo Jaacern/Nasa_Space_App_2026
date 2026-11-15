@@ -17,8 +17,12 @@ local music: { [string]: Sound } = {}
 local musicTarget: { [string]: number } = { calm = 0, combat = 0, boss = 0 }
 local musicVol: { [string]: number } = {}
 local emitters: { [string]: { att: Attachment, em: ParticleEmitter } } = {}
+local sfxGroup: SoundGroup? = nil
+local musicGroup: SoundGroup? = nil
+local muted = false
 local shake = 0
 local low = false
+local qualityTier = "high"
 local hitstopT = 0
 
 type Num = { part: Part, label: TextLabel, t: number, life: number, vy: number }
@@ -46,23 +50,27 @@ end
 
 function Fx.init(folder: Instance)
 	-- Grupo de efectos con ecualizador: recorta agudos para que nada suene agresivo.
-	local sfxGroup = Instance.new("SoundGroup")
-	sfxGroup.Name = "AresSfx"
-	sfxGroup.Parent = SoundService
+	local sg = Instance.new("SoundGroup")
+	sg.Name = "AresSfx"
+	sg.Volume = if muted then 0 else 1
+	sg.Parent = SoundService
+	sfxGroup = sg
 	local eq = Instance.new("EqualizerSoundEffect")
 	eq.HighGain = -7
 	eq.MidGain = -1.5
 	eq.LowGain = 1
-	eq.Parent = sfxGroup
-	local musicGroup = Instance.new("SoundGroup")
-	musicGroup.Name = "AresMusic"
-	musicGroup.Parent = SoundService
+	eq.Parent = sg
+	local mg = Instance.new("SoundGroup")
+	mg.Name = "AresMusic"
+	mg.Volume = if muted then 0 else 1
+	mg.Parent = SoundService
+	musicGroup = mg
 	for name, def in Balance.Audio.Sfx :: { [string]: any } do
 		local s = Instance.new("Sound")
 		s.Name = "Sfx_" .. name
 		s.SoundId = def.id
 		s.Volume = def.vol
-		s.SoundGroup = sfxGroup
+		s.SoundGroup = sg
 		s.Parent = SoundService
 		sounds[name] = s
 	end
@@ -73,9 +81,8 @@ function Fx.init(folder: Instance)
 			s.SoundId = def.id
 			s.Looped = true
 			s.Volume = 0
-			s.SoundGroup = musicGroup
+			s.SoundGroup = mg
 			s.Parent = SoundService
-			s:Play()
 			music[name] = s
 			musicVol[name] = def.vol
 		end
@@ -143,13 +150,43 @@ end
 
 function Fx.setLow(on: boolean)
 	low = on
+	qualityTier = if on then "low" else "high"
+end
+
+function Fx.setMuted(on: boolean)
+	muted = on
+	if sfxGroup then
+		sfxGroup.Volume = if on then 0 else 1
+	end
+	if musicGroup then
+		musicGroup.Volume = if on then 0 else 1
+	end
+end
+
+function Fx.isMuted(): boolean
+	return muted
+end
+
+-- Ajusta densidad de partículas, sacudida y rótulos flotantes según las especificaciones del dispositivo.
+function Fx.setQuality(tier: string)
+	if tier ~= "high" and tier ~= "med" and tier ~= "low" then
+		tier = "high"
+	end
+	qualityTier = tier
+	low = (tier == "low")
+end
+
+function Fx.getQuality(): string
+	return qualityTier
 end
 
 function Fx.burst(name: string, pos: Vector3, count: number)
 	local e = emitters[name]
 	if e then
-		if low then
-			count = math.max(2, count // 3)
+		if qualityTier == "low" then
+			count = math.max(3, math.round(count * 0.35))
+		elseif qualityTier == "med" then
+			count = math.max(4, math.round(count * 0.65))
 		end
 		e.att.WorldPosition = pos
 		e.em:Emit(count)
@@ -157,7 +194,8 @@ function Fx.burst(name: string, pos: Vector3, count: number)
 end
 
 function Fx.shake(amount: number)
-	shake = math.min(Balance.Camera.ShakeMax, math.max(shake, amount))
+	local mul = if qualityTier == "low" then 0.55 elseif qualityTier == "med" then 0.85 else 1
+	shake = math.min(Balance.Camera.ShakeMax, math.max(shake, amount * mul))
 end
 
 -- Retroceso del heroe al disparar: empuje breve hacia atras de la camara que vuelve solo.
@@ -190,6 +228,9 @@ function Fx.frozen(): boolean
 end
 
 function Fx.number(pos: Vector3, text: string, color: Color3, big: boolean?)
+	if qualityTier == "low" and not big and #numActive >= 8 then
+		return
+	end
 	local n = table.remove(numPool)
 	if not n then
 		n = table.remove(numActive, 1) :: Num
@@ -242,7 +283,16 @@ function Fx.update(dt: number)
 		end
 	end
 	for name, s in music do
-		s.Volume += (musicTarget[name] - s.Volume) * math.min(1, dt * 1.5)
+		local target = musicTarget[name]
+		if target > 0.001 or s.Volume > 0.001 then
+			if not s.Playing then
+				s:Play()
+			end
+			s.Volume += (target - s.Volume) * math.min(1, dt * 1.5)
+		elseif s.Playing then
+			s.Volume = 0
+			s:Pause()
+		end
 	end
 end
 

@@ -22,8 +22,10 @@ Balance.Sim = {
 }
 
 Balance.Modes = {
-	full = { TimeScale = 1, XpMult = 1, Label = "Mision completa" },
-	demo = { TimeScale = 5, XpMult = 3.2, Label = "Demo rapida" },
+	full = { TimeScale = 1, XpMult = 1, EnemyHp = 1, EnemyDmg = 1, BossHp = 1, SpawnMult = 1, FreeRevive = false, Briefing = true, Checkpoints = true, Label = "Mision completa" },
+	-- Demo de pitch (2 minutos): el jefe final aparece a los 85 s reales (1020 / 12), los jefes tienen
+	-- menos vida, hay accion desde el primer segundo y un "Protocolo de emergencia" gratis evita perder en vivo.
+	demo = { TimeScale = 12, XpMult = 2.2, LevelCost = 0.7, EnemyHp = 0.45, EnemyDmg = 0.25, BossHp = 0.22, SpawnMult = 1.5, FreeRevive = true, Briefing = false, Checkpoints = false, Label = "Demo rapida" },
 }
 
 Balance.Hero = {
@@ -45,9 +47,85 @@ Balance.Hero = {
 	RegenPerSec = 1,
 }
 
+-- Modos de fuego del arma principal (alternables en combate con [F] / [Y] o tocando la ranura).
+Balance.WeaponModes = {
+	{
+		id = "laser",
+		shotKind = "shot",
+		dmgMult = 1.0,
+		rateMult = 1.0,
+		projCountBonus = 0,
+		pierceBonus = 0,
+		range = 48,
+		speedMult = 1.0,
+		critBonus = 0.08,
+		splash = 0,
+		knock = 0,
+		spread = 0.14,
+	},
+	{
+		id = "spread",
+		shotKind = "spread",
+		dmgMult = 0.68,
+		rateMult = 0.92,
+		projCountBonus = 2,
+		pierceBonus = 0,
+		range = 38,
+		speedMult = 0.92,
+		critBonus = 0,
+		splash = 0,
+		knock = 1.5,
+		spread = 0.24,
+	},
+	{
+		id = "mortar",
+		shotKind = "mortar",
+		dmgMult = 1.45,
+		rateMult = 0.56,
+		projCountBonus = 0,
+		pierceBonus = 0,
+		range = 44,
+		speedMult = 0.52,
+		critBonus = 0.05,
+		splash = 10.5,
+		knock = 10,
+		spread = 0.20,
+	},
+}
+
 Balance.Skills = {
 	Dash = { Cooldown = 8, Distance = 24, Width = 5, Damage = 25, Invuln = 0.45, Duration = 0.18 },
-	Pulse = { Cooldown = 12, Radius = 18, Damage = 40, Knockback = 16, Shield = 25, ShieldTime = 4 },
+	Pulse = { Cooldown = 20, Radius = 18, Damage = 45, Knockback = 18, Shield = 35, ShieldTime = 6 },
+}
+
+Balance.World = {
+	ShipRadius = 8.4,
+	ArenaSafeMargin = 3.0,
+	Gravity = 74.5, -- gravedad de Marte: 0,38 veces la terrestre (196,2 studs/s2 en Roblox)
+}
+
+Balance.Zones = {
+	{ id = "central", name = "Cráter del Módulo", bonus = "+1.5 vida/s en base segura", tag = "+1,5 VIDA/S", regen = 1.5 },
+	{ id = "north", name = "Cresta Basáltica", bonus = "+15 % XP de muestras", tag = "+15 % XP", xp = 0.15 },
+	{ id = "east", name = "Falla Perseverance", bonus = "+20 % Datos científicos", tag = "+20 % CIENCIA", science = 0.20 },
+	{ id = "south", name = "Llanura Roja", bonus = "+10 % Velocidad de movimiento", tag = "+10 % VELOCIDAD", speed = 0.10 },
+	{ id = "west", name = "Cuenca Criogénica", bonus = "-15 % Espera de habilidades", tag = "-15 % ESPERA", cd = 0.15 },
+}
+
+Balance.Meteors = {
+	UnlockLevel = 5,
+	UnlockWave = 4,
+	Interval = { 22, 15, 11 },
+	Count = { 2, 3, 4 },
+	Radius = 8.5,
+	Delay = 1.65,
+	Dmg = 24,
+}
+
+Balance.BlackHole = {
+	FirstAt = 48,
+	Interval = 85,
+	Duration = 15,
 }
 
 -- Enemigos comunes. speed en studs/s; wind = aviso antes del ataque.
@@ -123,12 +201,43 @@ Balance.Upgrades = {
 	cooldown = { max = 4, per = 0.10 },
 	crit = { max = 5, per = 0.08 },
 	aura = { max = 4, per = 5, radius = 10, interval = 0.5 },
+	nova = { max = 5, baseDmg = 24, per = 11, radius = 14, radiusPer = 2.2, knock = 14, interval = 3.2, intervalPer = 0.25 },
+	missiles = { max = 5, baseCount = 2, dmgMult = 0.82, per = 12, range = 48, speed = 70, splash = 5.2, interval = 2.0, intervalPer = 0.14 },
+	arc = { max = 5, baseChains = 2, dmgMult = 0.78, per = 11, range = 42, jumpRange = 22, interval = 1.65, intervalPer = 0.12 },
 }
--- Mejoras que suman unidades enteras: siempre valen 1 nivel y salen como carta epica.
+-- Mejoras que suman unidades enteras: valen 1 nivel y se desbloquean a partir de nivel 2.
 Balance.UpgradeCount = { multishot = true, pierce = true, drone = true }
+Balance.UpgradeCountMinLevel = 2
+-- Armas secundarias por rango: disponibles desde nivel 1 (+1 rango, +2 si carta epica/legendaria).
+Balance.WeaponRanks = { nova = true, missiles = true, arc = true }
 -- Rareza de carta: 1 comun, 2 rara, 3 epica, 4 legendaria. Mult = niveles que otorga.
-Balance.CardRarity = { Weights = { 60, 27, 10, 3 }, Mult = { 1, 1.5, 2, 3 }, LuckShift = 5 }
-Balance.UpgradeOrder = { "damage", "rate", "multishot", "pierce", "armor", "speed", "magnet", "drone", "cooldown", "crit", "aura" }
+-- Escala por nivel del jugador: evita cartas legendarias o epicas en los primeros niveles.
+Balance.CardRarity = {
+	Weights = { 82, 18, 0, 0 },
+	Stages = {
+		{ minLvl = 1, w = { 82, 18, 0, 0 } },
+		{ minLvl = 4, w = { 62, 30, 8, 0 } },
+		{ minLvl = 7, w = { 46, 34, 17, 3 } },
+		{ minLvl = 11, w = { 32, 36, 24, 8 } },
+		{ minLvl = 15, w = { 22, 34, 29, 15 } },
+	},
+	Mult = { 1, 1.5, 2, 3 },
+	LuckShift = 5,
+}
+
+Balance.ChestTiers = {
+	{ name = "Común", itemW = { 76, 22, 2 }, science = 8, heal = 10, extra = false },
+	{ name = "Raro", itemW = { 20, 62, 18 }, science = 16, heal = 15, extra = false },
+	{ name = "Épico", itemW = { 0, 35, 65 }, science = 28, heal = 22, extra = false },
+	{ name = "Legendario", itemW = { 0, 10, 90 }, science = 45, heal = 35, extra = true },
+}
+Balance.ChestWaveWeights = {
+	{ minWave = 1, w = { 75, 25, 0, 0 } },
+	{ minWave = 4, w = { 42, 40, 16, 2 } },
+	{ minWave = 8, w = { 20, 38, 30, 12 } },
+	{ minWave = 12, w = { 10, 30, 38, 22 } },
+}
+Balance.UpgradeOrder = { "damage", "rate", "nova", "missiles", "arc", "multishot", "pierce", "armor", "speed", "magnet", "drone", "cooldown", "crit", "aura" }
 Balance.LevelUpHeal = 30 -- opcion de reserva "Reparacion de campo"
 
 -- Objetos de cofre. cat: off | def | util. rar: 1 comun, 2 raro, 3 epico.
@@ -181,9 +290,6 @@ Balance.Pieces = {
 -- Camara en tercera persona con giro libre.
 Balance.Camera = { Distance = 27, MinDistance = 14, MaxDistance = 42, Pitch = 24, MinPitch = 6, MaxPitch = 72, Fov = 80, FocusHeight = 3.5, Sensitivity = 0.0036, ShakeMax = 0.35 }
 
--- Gravedad de Marte: 0,38 veces la terrestre (196,2 studs/s2 en Roblox).
-Balance.World = { Gravity = 74.5 }
-
 Balance.Juice = {
 	HitstopKill = 0.04,
 	HitstopBig = 0.06,
@@ -223,6 +329,11 @@ Balance.Audio = {
 Balance.Branding = { NasaInsignia = true }
 
 Balance.Tutorial = { MoveDistance = 20, Dummies = 3, TelegraphDelay = 2 }
+
+-- Umbral de XP para subir de nivel. modeLevelCost (opcional) escala el umbral del modo (demo: subidas más rápidas).
+function Balance.levelNeed(level: number, modeLevelCost: number?): number
+	return math.max(1, math.floor(Balance.xpNeeded(level) * (modeLevelCost or 1)))
+end
 
 function Balance.xpNeeded(level: number): number
 	local s = Balance.Scaling

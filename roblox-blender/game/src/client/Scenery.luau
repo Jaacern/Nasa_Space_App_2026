@@ -128,7 +128,7 @@ local function applyMeshPiece(i: number)
 	end
 end
 
--- Oculta (solo en el cliente) las piezas visibles de la nave del servidor; la colision se conserva.
+-- Oculta (solo en el cliente) las piezas visibles de la nave del servidor; solo ShipCollider mantiene colision.
 local function hideHull()
 	local ship = serverShip()
 	if not ship or hullHidden then
@@ -138,6 +138,11 @@ local function hideHull()
 	for _, d in ship:GetChildren() do
 		if d:IsA("BasePart") then
 			d.Transparency = 1
+			if d.Name ~= "ShipCollider" then
+				d.CanCollide = false
+				d.CanQuery = false
+				d.CanTouch = false
+			end
 		end
 	end
 end
@@ -443,7 +448,7 @@ local function hasRing(char: Model): boolean
 	return false
 end
 
-local function attachMesh(char: Model, name: string, to: BasePart, offset: CFrame)
+local function attachMesh(char: Model, name: string, to: BasePart, offset: CFrame, scale: number)
 	local old = char:FindFirstChild("Suit" .. name)
 	if old then
 		old:Destroy()
@@ -453,12 +458,21 @@ local function attachMesh(char: Model, name: string, to: BasePart, offset: CFram
 	local root = m.PrimaryPart :: Part
 	root.Anchored = false
 	root.Massless = true
+	m:ScaleTo(scale)
 	m:PivotTo(to.CFrame * offset)
 	local w = Instance.new("WeldConstraint")
 	w.Part0 = to
 	w.Part1 = root
 	w.Parent = root
 	m.Parent = char
+end
+
+local function charScales(char: Model): (number, number)
+	local head = char:FindFirstChild("Head") :: BasePart?
+	local torso = (char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso")) :: BasePart?
+	local torsoScale = if torso then math.clamp(torso.Size.Y / 1.65, 0.32, 1.6) else 1
+	local headScale = if head then math.clamp(math.max(head.Size.Y, head.Size.Z) / 1.18, 0.32, 1.6) else torsoScale
+	return torsoScale, headScale
 end
 
 local dressing: { [Model]: boolean } = {}
@@ -486,8 +500,10 @@ local function dress(char: Model)
 					d.Transparency = 1
 				end
 			end
-			attachMesh(char, "Helmet", head, CFrame.new(0, 0.1, 0))
-			attachMesh(char, "Backpack", torso, CFrame.new(0, 0.1, 0.9))
+			local torsoScale, headScale = charScales(char)
+			local backZ = torso.Size.Z * 0.52 + 0.38 * torsoScale
+			attachMesh(char, "Helmet", head, CFrame.new(0, 0.08 * headScale, 0), headScale)
+			attachMesh(char, "Backpack", torso, CFrame.new(0, 0.08 * torsoScale, backZ), torsoScale)
 			applyGear()
 		end
 		dressing[char] = nil
@@ -580,11 +596,223 @@ function Scenery.setMenu(on: boolean)
 	end
 end
 
+-- ------------------------------------------------------------ Zonas del cráter + Evento Agujero Negro (NASA)
+local zoneFolder: Folder? = nil
+
+local function buildZones()
+	if zoneFolder then
+		zoneFolder:Destroy()
+		zoneFolder = nil
+	end
+	local arena = Workspace:FindFirstChild("Arena")
+	if not arena then
+		return
+	end
+	local zf = Instance.new("Folder")
+	zf.Name = "ArenaZones"
+	zf.Parent = arena
+	zoneFolder = zf
+
+	-- Anillo central de Zona 1 (Crater del Modulo, R = 34)
+	local zoneR = (BalanceS :: any).World and (BalanceS :: any).World.Zone1Radius or 34
+	local maxR = (BalanceS :: any).Sim.ArenaRadius - 6
+	local segs = 28
+	for i = 1, segs do
+		local a = (i - 0.5) / segs * math.pi * 2
+		local arc = (2 * math.pi * zoneR) / segs * 0.65
+		local p = Instance.new("Part")
+		p.Name = "Zone1Ring"
+		p.Anchored = true
+		p.CanCollide = false
+		p.CanQuery = false
+		p.CanTouch = false
+		p.CastShadow = false
+		p.Material = Enum.Material.Neon
+		p.Color = Color3.fromRGB(0, 210, 255)
+		p.Transparency = 0.55
+		p.Size = Vector3.new(arc, 0.14, 0.42)
+		p.CFrame = CFrame.new(math.cos(a) * zoneR, 0.08, math.sin(a) * zoneR) * CFrame.Angles(0, -a + math.pi * 0.5, 0)
+		p.Parent = zf
+	end
+
+	-- Fronteras diagonales |x| == |z| entre las 4 zonas exteriores
+	local zColors = {
+		Color3.fromRGB(255, 130, 60),
+		Color3.fromRGB(255, 200, 40),
+		Color3.fromRGB(255, 75, 70),
+		Color3.fromRGB(90, 225, 255),
+	}
+	for i = 1, 4 do
+		local ang = math.rad(45 + (i - 1) * 90)
+		local len = maxR - zoneR
+		local midR = (zoneR + maxR) * 0.5
+		local strip = Instance.new("Part")
+		strip.Name = "ZoneLine" .. i
+		strip.Anchored = true
+		strip.CanCollide = false
+		strip.CanQuery = false
+		strip.CanTouch = false
+		strip.CastShadow = false
+		strip.Material = Enum.Material.Neon
+		strip.Color = Color3.fromRGB(190, 210, 240)
+		strip.Transparency = 0.72
+		strip.Size = Vector3.new(0.45, 0.12, len)
+		strip.CFrame = CFrame.new(math.cos(ang) * midR, 0.07, math.sin(ang) * midR) * CFrame.Angles(0, -ang + math.pi * 0.5, 0)
+		strip.Parent = zf
+
+		-- Baliza de sector en la bisectriz (0, 90, 180, 270 deg)
+		local bAng = math.rad((i - 1) * 90 - 90)
+		local bx, bz = math.cos(bAng) * (maxR - 10), math.sin(bAng) * (maxR - 10)
+		local beacon = Instance.new("Part")
+		beacon.Name = "ZoneBeacon" .. i
+		beacon.Shape = Enum.PartType.Cylinder
+		beacon.Anchored = true
+		beacon.CanCollide = false
+		beacon.CanQuery = false
+		beacon.CanTouch = false
+		beacon.CastShadow = false
+		beacon.Material = Enum.Material.Neon
+		beacon.Color = zColors[i]
+		beacon.Transparency = 0.55
+		beacon.Size = Vector3.new(18, 0.85, 0.85)
+		beacon.CFrame = CFrame.new(bx, 9, bz) * CFrame.Angles(0, 0, math.rad(90))
+		beacon.Parent = zf
+	end
+end
+
+local NasaDataS = require(ReplicatedStorage.Shared.NasaData)
+local bhModel: Model? = nil
+local bhCore: Part? = nil
+local bhInner: Part? = nil
+local bhOuter: Part? = nil
+local bhJetN: Part? = nil
+local bhJetS: Part? = nil
+local bhLeft = 0
+local bhDur = 15
+local bhPhase = 0
+local bhTilt = CFrame.Angles(math.rad(22), math.rad(-18), math.rad(14))
+local BH_POS = Vector3.new(-220, 185, -450)
+
+function Scenery.clearBlackHole()
+	bhLeft = 0
+	if bhModel then
+		bhModel:Destroy()
+		bhModel = nil
+	end
+	bhCore, bhInner, bhOuter, bhJetN, bhJetS = nil, nil, nil, nil, nil
+end
+
+function Scenery.triggerBlackHole(bhIdx: number, duration: number)
+	Scenery.clearBlackHole()
+	local def = NasaDataS.blackHoleForEvent(bhIdx)
+	local tint = if def and def.tint then def.tint else nil
+	local diskCol = if tint then Color3.fromRGB(tint[1], tint[2], tint[3]) else Color3.fromRGB(255, 160, 60)
+	local jetCol = if tint
+		then Color3.fromRGB(math.min(255, math.floor(tint[1] * 0.65 + 90)), math.min(255, math.floor(tint[2] * 0.65 + 100)), 255)
+		else Color3.fromRGB(165, 110, 255)
+	bhDur = math.max(4, duration or 15)
+	bhLeft = bhDur
+	bhPhase = 0
+
+	local m = Instance.new("Model")
+	m.Name = "BlackHoleEvent"
+	local core = Instance.new("Part")
+	core.Name = "EventHorizon"
+	core.Shape = Enum.PartType.Ball
+	core.Material = Enum.Material.SmoothPlastic
+	core.Color = Color3.new(0, 0, 0)
+	core.Reflectance = 0
+	core.CastShadow = false
+	core.Anchored = true
+	core.CanCollide = false
+	core.CanQuery = false
+	core.CanTouch = false
+	core.Size = Vector3.new(78, 78, 78)
+	core.CFrame = CFrame.new(BH_POS)
+	core.Parent = m
+
+	local inner = Instance.new("Part")
+	inner.Name = "AccretionInner"
+	inner.Shape = Enum.PartType.Cylinder
+	inner.Material = Enum.Material.Neon
+	inner.Color = diskCol
+	inner.Transparency = 0.2
+	inner.CastShadow = false
+	inner.Anchored = true
+	inner.CanCollide = false
+	inner.CanQuery = false
+	inner.CanTouch = false
+	inner.Size = Vector3.new(2.5, 165, 165)
+	inner.Parent = m
+
+	local outer = Instance.new("Part")
+	outer.Name = "AccretionOuter"
+	outer.Shape = Enum.PartType.Cylinder
+	outer.Material = Enum.Material.Neon
+	outer.Color = jetCol
+	outer.Transparency = 0.5
+	outer.CastShadow = false
+	outer.Anchored = true
+	outer.CanCollide = false
+	outer.CanQuery = false
+	outer.CanTouch = false
+	outer.Size = Vector3.new(1.6, 235, 235)
+	outer.Parent = m
+
+	local function jet(name: string): Part
+		local j = Instance.new("Part")
+		j.Name = name
+		j.Shape = Enum.PartType.Cylinder
+		j.Material = Enum.Material.Neon
+		j.Color = jetCol
+		j.Transparency = 0.45
+		j.CastShadow = false
+		j.Anchored = true
+		j.CanCollide = false
+		j.CanQuery = false
+		j.CanTouch = false
+		j.Size = Vector3.new(190, 12, 12)
+		j.Parent = m
+		return j
+	end
+
+	bhCore = core
+	bhInner = inner
+	bhOuter = outer
+	bhJetN = jet("JetN")
+	bhJetS = jet("JetS")
+	m.PrimaryPart = core
+	m.Parent = Workspace
+	bhModel = m
+end
+
 function Scenery.update(dt: number)
 	local m = insignia
 	if m then
 		insigniaYaw += dt * INSIGNIA_SPIN
 		m:PivotTo(CFrame.new(Scenery.shipPosition() + Vector3.new(0, INSIGNIA_HEIGHT, 0)) * CFrame.Angles(0, insigniaYaw, 0))
+	end
+	if bhLeft > 0 and bhModel and bhCore and bhInner and bhOuter and bhJetN and bhJetS then
+		bhLeft -= dt
+		if bhLeft <= 0 then
+			Scenery.clearBlackHole()
+			return
+		end
+		bhPhase += dt
+		local elapsed = bhDur - bhLeft
+		local s = math.min(1, elapsed / 1.4, bhLeft / 1.6)
+		local origin = CFrame.new(BH_POS) * bhTilt
+		bhCore.Size = Vector3.new(78, 78, 78) * s
+		bhCore.CFrame = origin
+		bhInner.Size = Vector3.new(2.4, 165 * s, 165 * s)
+		bhInner.CFrame = origin * CFrame.Angles(0, bhPhase * 1.6, math.rad(90))
+		bhOuter.Size = Vector3.new(1.5, 235 * s, 235 * s)
+		bhOuter.CFrame = origin * CFrame.Angles(0, -bhPhase * 0.9, math.rad(90) + 0.08)
+		local jetOffset = 95 * s
+		bhJetN.Size = Vector3.new(180 * s, 12 * s, 12 * s)
+		bhJetN.CFrame = origin * CFrame.new(0, jetOffset, 0) * CFrame.Angles(0, bhPhase * 2.2, math.rad(90))
+		bhJetS.Size = Vector3.new(180 * s, 12 * s, 12 * s)
+		bhJetS.CFrame = origin * CFrame.new(0, -jetOffset, 0) * CFrame.Angles(0, -bhPhase * 2.2, math.rad(90))
 	end
 end
 
@@ -630,6 +858,11 @@ local function bodyPart(char: Model, ...: string): BasePart?
 	return nil
 end
 
+local function scaledOffset(s: number, cf: CFrame): CFrame
+	local rot = cf - cf.Position
+	return CFrame.new(cf.Position * s) * rot
+end
+
 local function buildGear(char: Model, id: string, lvl: number)
 	for _, d in char:GetChildren() do
 		if d.Name == "Gear_" .. id then
@@ -642,49 +875,66 @@ local function buildGear(char: Model, id: string, lvl: number)
 	if not torso or not arm then
 		return
 	end
+	local s, headS = charScales(char)
+	local armS = math.clamp(arm.Size.Y / 1.05, 0.32, 1.6)
 	local n = math.clamp(math.ceil(lvl), 1, 4)
 	local ring = CFrame.Angles(0, 0, math.pi / 2)
+	local function gp(to: BasePart, sc: number, size: Vector3, off: CFrame, color: Color3, mat: Enum.Material, shape: Enum.PartType?, trans: number?)
+		gearPart(char, id, to, size * sc, scaledOffset(sc, off), color, mat, shape, trans)
+	end
 	if id == "blaster" then
 		-- arma base: siempre visible en el antebrazo derecho
-		gearPart(char, id, arm, Vector3.new(0.5, 0.5, 1.5), CFrame.new(0, -0.5, -0.55), G_DARK, METAL)
-		gearPart(char, id, arm, Vector3.new(0.26, 0.26, 0.5), CFrame.new(0, -0.5, -1.5), G_CYAN, NEON)
+		gp(arm, armS, Vector3.new(0.5, 0.5, 1.5), CFrame.new(0, -0.5, -0.55), G_DARK, METAL)
+		gp(arm, armS, Vector3.new(0.26, 0.26, 0.5), CFrame.new(0, -0.5, -1.5), G_CYAN, NEON)
 	elseif id == "damage" then
 		for i = 1, n do
-			gearPart(char, id, arm, Vector3.new(0.66, 0.66, 0.12), CFrame.new(0, -0.5, -0.15 - 0.3 * i), G_ORANGE, NEON)
+			gp(arm, armS, Vector3.new(0.66, 0.66, 0.12), CFrame.new(0, -0.5, -0.15 - 0.3 * i), G_ORANGE, NEON)
 		end
 	elseif id == "rate" then
-		gearPart(char, id, arm, Vector3.new(0.28, 0.28, 1.1 + 0.15 * n), CFrame.new(0, -0.95, -0.6), G_DARK, METAL)
-		gearPart(char, id, arm, Vector3.new(0.16, 0.16, 0.3), CFrame.new(0, -0.95, -1.3 - 0.08 * n), G_GOLD, NEON)
+		gp(arm, armS, Vector3.new(0.28, 0.28, 1.1 + 0.15 * n), CFrame.new(0, -0.95, -0.6), G_DARK, METAL)
+		gp(arm, armS, Vector3.new(0.16, 0.16, 0.3), CFrame.new(0, -0.95, -1.3 - 0.08 * n), G_GOLD, NEON)
 	elseif id == "multishot" then
 		for i = 1, n do
 			local side = if i % 2 == 1 then 1 else -1
-			gearPart(char, id, arm, Vector3.new(0.18, 0.18, 1.3), CFrame.new(side * (0.36 + 0.1 * ((i - 1) // 2)), -0.5, -0.75), G_CYAN, NEON)
+			gp(arm, armS, Vector3.new(0.18, 0.18, 1.3), CFrame.new(side * (0.36 + 0.1 * ((i - 1) // 2)), -0.5, -0.75), G_CYAN, NEON)
 		end
 	elseif id == "pierce" then
-		gearPart(char, id, arm, Vector3.new(0.1, 0.1, 1.0 + 0.35 * n), CFrame.new(0, -0.5, -2.1 - 0.17 * n), G_CYAN, NEON)
+		gp(arm, armS, Vector3.new(0.1, 0.1, 1.0 + 0.35 * n), CFrame.new(0, -0.5, -2.1 - 0.17 * n), G_CYAN, NEON)
 	elseif id == "armor" then
 		for _, sx in { -1, 1 } do
-			gearPart(char, id, torso, Vector3.new(0.95, 0.28 + 0.08 * n, 1.1), CFrame.new(sx * 1.3, 0.8, 0), G_GOLD, METAL)
+			gp(torso, s, Vector3.new(0.95, 0.28 + 0.08 * n, 1.1), CFrame.new(sx * 1.3, 0.8, 0), G_GOLD, METAL)
 		end
 	elseif id == "speed" then
 		for _, legName in { { "LeftLowerLeg", "Left Leg" }, { "RightLowerLeg", "Right Leg" } } do
 			local leg = bodyPart(char, legName[1], legName[2])
 			if leg then
-				gearPart(char, id, leg, Vector3.new(0.3 + 0.05 * n, 0.5 + 0.1 * n, 0.3 + 0.05 * n), CFrame.new(0, -0.1, 0.5), G_ORANGE, NEON)
+				local legS = math.clamp(leg.Size.Y / 1.15, 0.32, 1.6)
+				gp(leg, legS, Vector3.new(0.3 + 0.05 * n, 0.5 + 0.1 * n, 0.3 + 0.05 * n), CFrame.new(0, -0.1, 0.5), G_ORANGE, NEON)
 			end
 		end
 	elseif id == "magnet" then
 		local d = 3 + 0.5 * n
-		gearPart(char, id, torso, Vector3.new(0.1, d, d), CFrame.new(0, -0.9, 0) * ring, G_CYAN, NEON, Enum.PartType.Cylinder, 0.6)
+		gp(torso, s, Vector3.new(0.1, d, d), CFrame.new(0, -0.9, 0) * ring, G_CYAN, NEON, Enum.PartType.Cylinder, 0.6)
 	elseif id == "cooldown" then
 		for _, sx in { -1, 1 } do
-			gearPart(char, id, torso, Vector3.new(0.12, 0.9 + 0.2 * n, 0.5), CFrame.new(sx * 0.6, 1.0, 1.35), G_CYAN, NEON)
+			gp(torso, s, Vector3.new(0.12, 0.9 + 0.2 * n, 0.5), CFrame.new(sx * 0.6, 1.0, 1.35), G_CYAN, NEON)
 		end
 	elseif id == "crit" and head then
-		gearPart(char, id, head, Vector3.new(0.3, 0.3, 0.45 + 0.08 * n), CFrame.new(0.6, 0.25, -0.6), G_RED, NEON)
+		gp(head, headS, Vector3.new(0.3, 0.3, 0.45 + 0.08 * n), CFrame.new(0.6, 0.25, -0.6), G_RED, NEON)
 	elseif id == "aura" then
 		local d = 5 + 0.8 * n
-		gearPart(char, id, torso, Vector3.new(0.12, d, d), CFrame.new(0, -2.6, 0) * ring, G_MAGENTA, NEON, Enum.PartType.Cylinder, 0.55)
+		gp(torso, s, Vector3.new(0.12, d, d), CFrame.new(0, -2.6, 0) * ring, G_MAGENTA, NEON, Enum.PartType.Cylinder, 0.55)
+	elseif id == "nova" then
+		gp(torso, s, Vector3.new(0.22, 2.7 + 0.25 * n, 2.7 + 0.25 * n), CFrame.new(0, -0.45, 0) * ring, G_ORANGE, NEON, Enum.PartType.Cylinder, 0.25)
+	elseif id == "missiles" then
+		for _, sx in { -1, 1 } do
+			gp(torso, s, Vector3.new(0.55, 0.65, 1.05), CFrame.new(sx * 1.38, 1.35, 0.15), G_DARK, METAL)
+			gp(torso, s, Vector3.new(0.32, 0.32, 0.45), CFrame.new(sx * 1.38, 1.5, -0.42), G_MAGENTA, NEON)
+		end
+	elseif id == "arc" then
+		for _, sx in { -1, 1 } do
+			gp(torso, s, Vector3.new(0.24, 1.15 + 0.12 * n, 0.24), CFrame.new(sx * 0.88, 1.35, 0.92), G_CYAN, NEON)
+		end
 	end
 end
 
@@ -763,6 +1013,7 @@ function Scenery.init()
 		Scenery.resetShip()
 		refreshShip()
 		Scenery.resetShip()
+		buildZones()
 		scheduleDecor()
 		redress()
 		refreshRover()

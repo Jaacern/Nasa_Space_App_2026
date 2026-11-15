@@ -21,6 +21,9 @@ Content.Upgrades = {
 	cooldown = { name = "Recarga eficiente", fmt = "-%d %% de espera de habilidades.", scale = 100, fact = "El generador MMRTG convierte en electricidad el calor de la desintegración del plutonio." },
 	crit = { name = "Puntería de precisión", fmt = "+%d %% de golpe crítico.", scale = 100, fact = "SuperCam puede analizar zonas de roca tan pequeñas como la punta de un lápiz." },
 	aura = { name = "Campo electrostático", fmt = "+%d de daño por pulso a los enemigos cercanos.", scale = 1, fact = "El láser de ChemCam vaporiza la superficie de la roca y crea un plasma que el instrumento analiza." },
+	nova = { name = "Onda Sísmica 360°", fmt = "Onda 360° en área (+%d daño y más radio).", scale = 1, fact = "La misión InSight de la NASA detectó más de 1 300 terremotos marcianos con su sismómetro SEIS." },
+	missiles = { name = "Salva de Micromisiles", fmt = "Salva a varios blancos (+%d daño y +1 misil).", scale = 1, fact = "El láser ultravioleta SHERLOC de Perseverance escanea rocas marcianas con gran precisión." },
+	arc = { name = "Arco Electrostático", fmt = "Rayo encadenado (+%d daño y +1 salto).", scale = 1, fact = "El polvo seco de Marte genera descargas electrostáticas en remolinos de polvo." },
 	heal = { name = "Reparación de campo", desc = "Recupera 30 de vida.", fact = "MOXIE probó cómo producir oxígeno a partir de la atmósfera de Marte." },
 }
 Content.CardRarities = { "COMÚN", "RARA", "ÉPICA", "LEGENDARIA" }
@@ -104,8 +107,48 @@ Content.Pieces = {
 }
 
 Content.Skills = {
-	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "Esquiva rápida que daña lo que cruza." },
-	{ name = "Pulso de escudo", short = "PULSO", key = "E", desc = "Empuja y daña alrededor. Da escudo." },
+	{ name = "Impulso RCS", short = "RCS", key = "Q", desc = "Esquiva invulnerable. Daña a quien atraviesas." },
+	{ name = "Pulso de escudo", short = "ESCUDO", key = "E", desc = "Empuja a los enemigos y te da un escudo temporal." },
+}
+
+Content.AutoWeapon = {
+	name = "Arma principal",
+	short = "LÁSER",
+	key = "AUTO",
+	tag = "DISPARA SOLA",
+	desc = "Apunta y dispara sola. Cambia de modo según el enemigo.",
+}
+
+Content.WeaponModes = {
+	{
+		id = "laser",
+		name = "Haz Láser",
+		short = "LÁSER",
+		tag = "PRECISIÓN · +8% CRÍTICO",
+		desc = "Disparo rápido de largo alcance. Ideal contra élites y jefes.",
+	},
+	{
+		id = "spread",
+		name = "Abanico Plasma",
+		short = "ABANICO",
+		tag = "3+ PROYECTILES · CONTROL",
+		desc = "Lanza 3+ haces en abanico amplio. Barre grupos cercanos rápido.",
+	},
+	{
+		id = "mortar",
+		name = "Mortero Sísmico",
+		short = "MORTERO",
+		tag = "ÁREA 10.5m · EMPUJE",
+		desc = "Proyectil pesado que detona en área con empuje contra enjambres.",
+	},
+}
+
+Content.ChestTiers = { "COFRE COMÚN", "COFRE RARO", "COFRE ÉPICO", "COFRE LEGENDARIO" }
+
+Content.Briefing = {
+	"• Muévete sin parar y sal de los círculos naranjas antes del golpe.",
+	"• Recoge muestras para subir de nivel y abre los cofres que marca la flecha.",
+	"• Vence a los 4 jefes: cada uno suelta una pieza de la nave.",
 }
 
 Content.Meta = {
@@ -120,7 +163,7 @@ Content.Meta = {
 }
 
 Content.Tutorial = {
-	"Muévete con WASD o con el joystick. Gira la cámara con el ratón o arrastrando la pantalla.",
+	"Muévete con WASD, las flechas o el joystick. Gira la cámara con el ratón o arrastrando la pantalla.",
 	"Tu láser dispara solo. Aléjate de los remolinos mientras dispara y destruye 3.",
 	"Recoge las muestras doradas hasta subir de nivel.",
 	"Zona naranja = peligro. Sal antes de que se llene.",
@@ -130,7 +173,16 @@ Content.Tutorial = {
 	"Práctica libre. Pulsa SALIR cuando quieras.",
 }
 
-Content.Controls = "WASD mover · Ratón girar cámara · Espacio saltar · Q impulso · E pulso · P pausa · 1-2-3 elegir carta"
+Content.Controls = "WASD mover · Ratón cámara · Q esquivar · E escudo · F arma · P pausa"
+Content.ControlsGamepad = "Stick izq. mover · Stick der. cámara · X esquivar · B escudo · Y arma"
+Content.ControlsTouch = "Joystick mover · Arrastra para girar · Botones: esquivar, escudo y arma"
+
+-- Ayuda de controles del panel de Ajustes (una línea por plataforma).
+Content.ControlsHelp = {
+	"WASD o flechas mover · Ratón cámara · Ctrl suelta el ratón · Espacio saltar · Q esquivar · E escudo · F arma · 1-3 cartas · P pausa",
+	"Stick izq. mover · Stick der. cámara · A saltar · X esquivar · B escudo · Y arma · Cruceta cartas · Start pausa",
+	"Joystick mover · Arrastra para girar · Pellizca para acercar · Botones: saltar, esquivar, escudo y arma",
+}
 
 Content.Credits = {
 	"ARES FORGE. Proyecto del equipo para NASA International Space Apps Challenge 2026.",
@@ -144,7 +196,8 @@ Content.Credits = {
 	"",
 	"HERRAMIENTAS",
 	"Roblox Studio (Luau) y Blender 4.5 LTS. Flujo de assets con skills de arjun988/blender-skills (licencia MIT).",
-	"Tipografías: Michroma, Titillium Web y Roboto Mono (incluidas en Roblox).",
+	"Tipografías: Michroma, Sarpanch, Jura, Builder Sans, Bangers y Roboto Mono (incluidas en Roblox).",
+	"Eventos astrofísicos: NASA Chandra / NuSTAR / Event Horizon Telescope (Sgr A*, M87*, Cygnus X-1) y NASA InSight / JPL CNEOS.",
 	"",
 	"El juego no usa el logotipo de NASA ni assets de otros juegos.",
 }
