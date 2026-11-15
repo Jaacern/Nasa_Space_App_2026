@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 132" role="img" aria-labelledby="wm-title">
+  <title id="wm-title">OUTPOST RUN · Junior Astronaut Mission Trainer</title>
+  <g fill="none" stroke="#FC3D21" stroke-width="2.5">
+    <ellipse cx="38" cy="46" rx="66" ry="21" transform="rotate(-18 38 46)" opacity=".9"/>
+    <circle cx="38" cy="46" r="25" fill="#0B3D91" stroke="#F8FAFC" stroke-width="2"/>
+    <circle cx="47" cy="36" r="7" fill="#FC3D21" stroke="none"/>
+  </g>
+  <text x="118" y="72" font-family="Michroma, sans-serif" font-size="62" letter-spacing="3" fill="#F8FAFC">OUTPOST</text>
+  <text x="565" y="72" font-family="Michroma, sans-serif" font-size="62" letter-spacing="3" fill="#FC3D21">RUN</text>
+  <text x="120" y="106" font-family="'IBM Plex Mono', monospace" font-size="17" letter-spacing="5.5" fill="#8FA3BF">JUNIOR ASTRONAUT · MISSION TRAINER</text>
+  <path d="M788 26l5.4 15.6L809 47l-15.6 5.4L788 68l-5.4-15.6L767 47l15.6-5.4z" fill="#F8FAFC" opacity=".85"/>
+</svg>

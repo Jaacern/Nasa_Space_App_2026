@@ -1,0 +1,974 @@
+/* ============================================================================
+   OUTPOST RUN · NASA GRAPHICS STANDARDS (NHB 1430.2 / WDS) & BLENDER 3D VECTOR UI
+   Tipografías Oficiales Descargadas Localmente (/public/assets/fonts/):
+   - Public Sans (NASA Web Design System / science.nasa.gov)
+   - Instrument Serif Italic (Contraste Editorial NASA Flagship / Apple Keynote)
+   - IBM Plex Mono (Telemetría Tabular JPL / Mission Control / Blender Viewport)
+   - Michroma (Nomenclatura Aeroespacial inspirada en NASA Worm 1975)
+   ============================================================================ */
+
+@font-face {
+  font-family: "Public Sans";
+  src: url("/public/assets/fonts/PublicSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Public Sans";
+  src: url("/public/assets/fonts/PublicSans-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Public Sans";
+  src: url("/public/assets/fonts/PublicSans-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/public/assets/fonts/IBMPlexMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Mono";
+  src: url("/public/assets/fonts/IBMPlexMono-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/public/assets/fonts/InstrumentSerif-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Instrument Serif";
+  src: url("/public/assets/fonts/InstrumentSerif-Italic.woff2") format("woff2");
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Michroma";
+  src: url("/public/assets/fonts/Michroma-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg-void: #030509;
+  --glass-bg: rgba(9, 13, 22, 0.72);
+  --glass-bg-strong: rgba(7, 10, 18, 0.88);
+  --glass-border: rgba(226, 232, 240, 0.12);
+  --glass-highlight: rgba(252, 61, 33, 0.45);
+
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-dim: #64748b;
+
+  /* Paleta Oficial NASA WDS + Ejes Vectoriales Blender 3D */
+  --nasa-red: #fc3d21;
+  --nasa-blue: #0b3d91;
+  --cyan-halo: #38bdf8;
+  --amber-warn: #f59e0b;
+  --emerald-ok: #10b981;
+  --crimson-alert: #f43f5e;
+  --axis-x: #ff3b5c;
+  --axis-y: #22c55e;
+  --axis-z: #3b82f6;
+
+  --font-display: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Instrument Serif", Georgia, serif;
+  --font-sans: "Public Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --font-nasa: "Michroma", sans-serif;
+
+  --radius-xl: 18px;
+  --radius-lg: 12px;
+  --radius-pill: 999px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  background: var(--bg-void);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* ============================================================================
+   1. LIENZO 3D WEBGL FULLSCREEN (INTERACTIVO COMO VIEWPORT DE BLENDER)
+   ============================================================================ */
+#webgl-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: auto;
+  cursor: grab;
+  background: radial-gradient(circle at 50% 45%, #091224 0%, #030509 85%);
+}
+
+#webgl-container:active {
+  cursor: grabbing;
+}
+
+#webgl-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Retícula central técnico-vectorial estilo Blender 3D Cursor */
+.halo-reticle {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 38px;
+  height: 38px;
+  transform: translate(-50%, -50%);
+  border: 1px dashed rgba(226, 232, 240, 0.22);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.halo-reticle::before,
+.halo-reticle::after {
+  content: "";
+  position: absolute;
+  background: rgba(252, 61, 33, 0.55);
+}
+
+.halo-reticle::before {
+  top: 50%;
+  left: -6px;
+  right: -6px;
+  height: 1px;
+}
+
+.halo-reticle::after {
+  left: 50%;
+  top: -6px;
+  bottom: -6px;
+  width: 1px;
+}
+
+.halo-reticle.warp-pulse {
+  transform: translate(-50%, -50%) scale(1.65);
+  border-color: var(--nasa-red);
+}
+
+/* ============================================================================
+   2. GIZMO Y TELEMETRÍA VECTORIAL 3D (ESTILO BLENDER 4.5 VIEWPORT OVERLAY)
+   ============================================================================ */
+.blender-viewport-hud {
+  position: fixed;
+  top: 4.1rem;
+  right: 1.25rem;
+  z-index: 45;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  background: rgba(7, 10, 18, 0.76);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(226, 232, 240, 0.12);
+  border-radius: 10px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+
+.blender-axes-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding-right: 0.65rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.axis-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-weight: 600;
+  font-size: 0.58rem;
+  color: #fff;
+  cursor: pointer;
+  border: none;
+  transition: transform 0.15s ease;
+}
+
+.axis-badge:hover {
+  transform: scale(1.15);
+}
+
+.axis-badge.x { background: var(--axis-x); }
+.axis-badge.y { background: var(--axis-y); color: #052e16; }
+.axis-badge.z { background: var(--axis-z); }
+
+.blender-vec-data {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  line-height: 1.25;
+}
+
+/* ============================================================================
+   3. BARRA SUPERIOR EJECUTIVA (NASA WDS / TECHNICAL INSTRUMENTATION)
+   ============================================================================ */
+.topbar {
+  position: fixed;
+  top: 0.65rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(96vw, 1380px);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.42rem 0.85rem;
+  background: rgba(7, 10, 18, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-family: var(--font-nasa);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.brand-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--nasa-red);
+  box-shadow: 0 0 10px var(--nasa-red);
+}
+
+.brand-tag {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background: rgba(252, 61, 33, 0.16);
+  border: 1px solid rgba(252, 61, 33, 0.45);
+  padding: 0.16rem 0.5rem;
+  border-radius: 6px;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.room-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.room-pill {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.3rem 0.62rem;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.room-pill:hover {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.room-pill.active {
+  color: #ffffff;
+  background: rgba(11, 61, 145, 0.55);
+  border-color: rgba(56, 189, 248, 0.55);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.mode-chip {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 0.28rem 0.58rem;
+  border-radius: 7px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.04);
+  cursor: pointer;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  white-space: nowrap;
+}
+
+.mode-chip.live {
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.5);
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.mode-chip.snapshot {
+  color: #fde68a;
+  border-color: rgba(245, 158, 11, 0.4);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+/* ============================================================================
+   4. HUD INFERIOR DE NAVEGACIÓN ORBITAL Y CÁMARA VECTORIAL
+   ============================================================================ */
+.cockpit-bar {
+  position: fixed;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.42rem 0.9rem;
+  background: rgba(7, 10, 18, 0.84);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--text-secondary);
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.65);
+}
+
+.cockpit-readout {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.cockpit-portal-name {
+  color: var(--text-primary);
+  font-weight: 600;
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ============================================================================
+   5. DIAPOSITIVAS EDITORIALES NASA (TARJETA LATERAL CON VISIÓN 3D DESPEJADA)
+   ============================================================================ */
+.scroll-story {
+  position: relative;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.room-section {
+  min-height: 112vh;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 5.2rem 3.2vw 3.5rem;
+}
+
+.room-section:nth-child(even) {
+  justify-content: flex-end;
+}
+
+/* Tarjeta Editorial Técnica con marcas de encuadre Hassleblad/NASA (+) */
+.pitch-card {
+  pointer-events: auto;
+  position: relative;
+  width: min(92vw, 435px);
+  background: var(--glass-bg);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-top: 2px solid var(--nasa-red);
+  border-radius: 14px;
+  padding: 1.25rem 1.35rem;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+
+.pitch-card:hover {
+  border-color: rgba(226, 232, 240, 0.26);
+  border-top-color: var(--nasa-red);
+}
+
+.slide-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.45rem;
+}
+
+.pitch-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: #93c5fd;
+}
+
+.pitch-time-pill {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #f8fafc;
+  background: rgba(11, 61, 145, 0.45);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  padding: 0.12rem 0.45rem;
+  border-radius: 5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pitch-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1.9vw, 1.68rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
+  margin-bottom: 0.6rem;
+  color: #ffffff;
+}
+
+.pitch-title em {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.14em;
+  color: #93c5fd;
+  letter-spacing: -0.01em;
+}
+
+/* Guion de locución del Pitch de 30s */
+.pitch-script-box {
+  background: rgba(15, 23, 42, 0.65);
+  border-left: 2px solid var(--nasa-red);
+  border-radius: 0 8px 8px 0;
+  padding: 0.6rem 0.78rem;
+  margin-bottom: 0.8rem;
+  font-size: 0.81rem;
+  line-height: 1.48;
+  color: #e2e8f0;
+}
+
+.pitch-script-tag {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fca5a5;
+  margin-bottom: 0.2rem;
+}
+
+/* 3 KPIs Bento Tabulares */
+.bento-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.45rem;
+  margin-bottom: 0.8rem;
+}
+
+.bento-kpi {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 0.45rem 0.52rem;
+}
+
+.bento-kpi-val {
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.bento-kpi-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 0.14rem;
+}
+
+/* Selector de los 5 Portales en Órbita */
+.portal-nodes-label {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 0.35rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.portal-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 0.28rem;
+}
+
+.portal-node {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.34rem 0.55rem;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+
+.portal-node:hover,
+.portal-node.active-portal {
+  background: rgba(11, 61, 145, 0.38);
+  border-color: rgba(56, 189, 248, 0.55);
+  transform: translateX(3px);
+}
+
+.portal-node-left {
+  display: flex;
+  align-items: center;
+  gap: 0.48rem;
+  min-width: 0;
+}
+
+.portal-orb {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  flex-shrink: 0;
+}
+
+.portal-node-title {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.portal-node-tier {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: #93c5fd;
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   6. BOTONES Y CONTROLES TÉCNICOS
+   ============================================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  padding: 0.36rem 0.72rem;
+  border-radius: 7px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btn-halo {
+  background: rgba(252, 61, 33, 0.18);
+  border-color: rgba(252, 61, 33, 0.6);
+  color: #ffffff;
+}
+
+.btn-halo:hover,
+.btn-halo.active {
+  background: rgba(252, 61, 33, 0.35);
+  border-color: #fc3d21;
+  box-shadow: 0 0 18px rgba(252, 61, 33, 0.35);
+}
+
+.select-pill {
+  background: rgba(15, 23, 42, 0.85);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+  padding: 0.34rem 0.65rem;
+  border-radius: 7px;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+/* ============================================================================
+   7. DIAPOSITIVA 06: SIMULADOR INTERACTIVO DE 30 SOLES
+   ============================================================================ */
+.pitch-sim-section {
+  pointer-events: auto;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4.8rem 1.25rem 4.8rem;
+}
+
+.pitch-sim-shell {
+  width: min(96vw, 1180px);
+  background: var(--glass-bg-strong);
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  border-top: 2px solid var(--nasa-red);
+  border-radius: 16px;
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.78);
+}
+
+.pitch-sim-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sol-timeline {
+  display: grid;
+  grid-template-columns: repeat(30, minmax(0, 1fr));
+  gap: 3px;
+  margin: 0.75rem 0;
+}
+
+.sol-cell {
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.54rem;
+  color: var(--text-dim);
+}
+
+.sol-cell.done {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: rgba(16, 185, 129, 0.45);
+  color: #a7f3d0;
+}
+
+.sol-cell.current {
+  background: rgba(252, 61, 33, 0.28);
+  border-color: var(--nasa-red);
+  color: #fff;
+  font-weight: 700;
+}
+
+.sol-cell.has-event {
+  border-bottom: 2px solid var(--amber-warn);
+}
+
+.sol-cell.has-major-event {
+  border-bottom: 2px solid var(--crimson-alert);
+  background: rgba(244, 63, 94, 0.16);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  gap: 0.55rem;
+  margin-bottom: 0.75rem;
+}
+
+.stat-box {
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 0.55rem 0.72rem;
+}
+
+.stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0.14rem 0 0.3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.progress-track {
+  height: 4px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.3s ease;
+}
+
+.decision-grid {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 0.85rem;
+  align-items: start;
+}
+
+.cards-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.55rem;
+}
+
+.game-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 0.68rem;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 128px;
+}
+
+.game-card:hover:not(.disabled) {
+  border-color: var(--cyan-halo);
+  transform: translateY(-2px);
+}
+
+.game-card.selected {
+  background: rgba(11, 61, 145, 0.35);
+  border-color: var(--cyan-halo);
+}
+
+.game-card.disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.card-badge {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  color: #93c5fd;
+}
+
+.card-cost-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.16rem;
+  margin: 0.32rem 0;
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+}
+
+.cost-now { color: #fde047; }
+.cost-deferred { color: #fda4af; }
+.cost-good { color: #6ee7b7; }
+
+.card-teaches {
+  font-size: 0.65rem;
+  color: var(--text-dim);
+  line-height: 1.3;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.32rem;
+  margin-top: 0.25rem;
+}
+
+.alert-banner {
+  background: rgba(244, 63, 94, 0.14);
+  border: 1px solid rgba(244, 63, 94, 0.45);
+  color: #fecdd3;
+  padding: 0.48rem 0.78rem;
+  border-radius: 8px;
+  font-size: 0.74rem;
+  margin-bottom: 0.6rem;
+}
+
+.warn-banner {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  color: #fde68a;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.72rem;
+  margin-bottom: 0.6rem;
+}
+
+/* ============================================================================
+   8. DRAWERS / MODALES COMPACTOS
+   ============================================================================ */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: rgba(2, 4, 10, 0.82);
+  backdrop-filter: blur(16px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.modal-backdrop.open {
+  display: flex;
+}
+
+.modal-panel {
+  width: min(96vw, 1120px);
+  max-height: 88vh;
+  background: rgba(9, 13, 24, 0.96);
+  border: 1px solid var(--glass-border);
+  border-top: 2px solid var(--nasa-red);
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.95rem 1.35rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-body {
+  padding: 1.15rem 1.35rem;
+  overflow-y: auto;
+}
+
+.flow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+}
+
+.flow-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.flow-card-thumb {
+  height: 110px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.flow-card-body {
+  padding: 0.65rem;
+  font-size: 0.72rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+@media (max-width: 920px) {
+  .room-nav { display: none; }
+  .blender-viewport-hud { display: none; }
+  .decision-grid { grid-template-columns: 1fr; }
+  .cards-row { grid-template-columns: 1fr; }
+  .room-section, .room-section:nth-child(even) {
+    justify-content: center;
+  }
+}

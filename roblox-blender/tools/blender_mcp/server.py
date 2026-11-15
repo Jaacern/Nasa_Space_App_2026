@@ -104,11 +104,12 @@ def abrir_blender():
             return {"estado": "ya estaba abierto"}
         if not BLENDER.is_file():
             raise FileNotFoundError(f"no encuentro Blender en {BLENDER}")
-        indicadores = subprocess.DETACHED_PROCESS | subprocess.CREATE_NEW_PROCESS_GROUP
+        indicadores = getattr(subprocess, "DETACHED_PROCESS", 0) | getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0)
         subprocess.Popen(
             [str(BLENDER), "--python", str(PUENTE)],
             cwd=str(RAIZ),
             creationflags=indicadores,
+            start_new_session=(os.name != "nt"),
             close_fds=True,
         )
         registrar("blender_lanzado")

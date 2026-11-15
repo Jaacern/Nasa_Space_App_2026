@@ -1,0 +1,70 @@
+/* ============================================================================
+   ORBITAL UI · ICONOS
+   Set de Lucide (ISC) descargado en assets/icons. Uso:
+     <span class="ux-icon ux-icon--rocket" aria-hidden="true"></span>
+   El color lo hereda de currentColor (mask, no img).
+   ============================================================================ */
+
+.ux-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  vertical-align: -0.12em;
+  background-color: currentColor;
+  -webkit-mask: var(--ux-icon) center / contain no-repeat;
+  mask: var(--ux-icon) center / contain no-repeat;
+}
+
+.ux-icon--activity { --ux-icon: url("../assets/icons/activity.svg"); }
+.ux-icon--alert-triangle { --ux-icon: url("../assets/icons/alert-triangle.svg"); }
+.ux-icon--antenna { --ux-icon: url("../assets/icons/antenna.svg"); }
+.ux-icon--arrow-up-right { --ux-icon: url("../assets/icons/arrow-up-right.svg"); }
+.ux-icon--battery-charging { --ux-icon: url("../assets/icons/battery-charging.svg"); }
+.ux-icon--box { --ux-icon: url("../assets/icons/box.svg"); }
+.ux-icon--check { --ux-icon: url("../assets/icons/check.svg"); }
+.ux-icon--chevron-right { --ux-icon: url("../assets/icons/chevron-right.svg"); }
+.ux-icon--circle-dot { --ux-icon: url("../assets/icons/circle-dot.svg"); }
+.ux-icon--cloud-sun { --ux-icon: url("../assets/icons/cloud-sun.svg"); }
+.ux-icon--compass { --ux-icon: url("../assets/icons/compass.svg"); }
+.ux-icon--cpu { --ux-icon: url("../assets/icons/cpu.svg"); }
+.ux-icon--crosshair { --ux-icon: url("../assets/icons/crosshair.svg"); }
+.ux-icon--database { --ux-icon: url("../assets/icons/database.svg"); }
+.ux-icon--download { --ux-icon: url("../assets/icons/download.svg"); }
+.ux-icon--droplet { --ux-icon: url("../assets/icons/droplet.svg"); }
+.ux-icon--external-link { --ux-icon: url("../assets/icons/external-link.svg"); }
+.ux-icon--flame { --ux-icon: url("../assets/icons/flame.svg"); }
+.ux-icon--gauge { --ux-icon: url("../assets/icons/gauge.svg"); }
+.ux-icon--globe { --ux-icon: url("../assets/icons/globe.svg"); }
+.ux-icon--hexagon { --ux-icon: url("../assets/icons/hexagon.svg"); }
+.ux-icon--info { --ux-icon: url("../assets/icons/info.svg"); }
+.ux-icon--map-pin { --ux-icon: url("../assets/icons/map-pin.svg"); }
+.ux-icon--maximize { --ux-icon: url("../assets/icons/maximize.svg"); }
+.ux-icon--menu { --ux-icon: url("../assets/icons/menu.svg"); }
+.ux-icon--moon-star { --ux-icon: url("../assets/icons/moon-star.svg"); }
+.ux-icon--orbit { --ux-icon: url("../assets/icons/orbit.svg"); }
+.ux-icon--pause { --ux-icon: url("../assets/icons/pause.svg"); }
+.ux-icon--play { --ux-icon: url("../assets/icons/play.svg"); }
+.ux-icon--radar { --ux-icon: url("../assets/icons/radar.svg"); }
+.ux-icon--radio { --ux-icon: url("../assets/icons/radio.svg"); }
+.ux-icon--rocket { --ux-icon: url("../assets/icons/rocket.svg"); }
+.ux-icon--rotate-ccw { --ux-icon: url("../assets/icons/rotate-ccw.svg"); }
+.ux-icon--satellite { --ux-icon: url("../assets/icons/satellite.svg"); }
+.ux-icon--scan-line { --ux-icon: url("../assets/icons/scan-line.svg"); }
+.ux-icon--search { --ux-icon: url("../assets/icons/search.svg"); }
+.ux-icon--settings { --ux-icon: url("../assets/icons/settings.svg"); }
+.ux-icon--shield-check { --ux-icon: url("../assets/icons/shield-check.svg"); }
+.ux-icon--shield { --ux-icon: url("../assets/icons/shield.svg"); }
+.ux-icon--signal { --ux-icon: url("../assets/icons/signal.svg"); }
+.ux-icon--sparkles { --ux-icon: url("../assets/icons/sparkles.svg"); }
+.ux-icon--star { --ux-icon: url("../assets/icons/star.svg"); }
+.ux-icon--sun { --ux-icon: url("../assets/icons/sun.svg"); }
+.ux-icon--target { --ux-icon: url("../assets/icons/target.svg"); }
+.ux-icon--telescope { --ux-icon: url("../assets/icons/telescope.svg"); }
+.ux-icon--thermometer { --ux-icon: url("../assets/icons/thermometer.svg"); }
+.ux-icon--timer { --ux-icon: url("../assets/icons/timer.svg"); }
+.ux-icon--triangle { --ux-icon: url("../assets/icons/triangle.svg"); }
+.ux-icon--waves { --ux-icon: url("../assets/icons/waves.svg"); }
+.ux-icon--wind { --ux-icon: url("../assets/icons/wind.svg"); }
+.ux-icon--x { --ux-icon: url("../assets/icons/x.svg"); }
+.ux-icon--zap { --ux-icon: url("../assets/icons/zap.svg"); }

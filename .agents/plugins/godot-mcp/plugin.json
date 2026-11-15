@@ -1,0 +1,12 @@
+{
+  "name": "godot-mcp",
+  "author": {
+    "name": "Coding-Solo",
+    "url": "https://github.com/Coding-Solo"
+  },
+  "homepage": "https://github.com/Coding-Solo/godot-mcp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Coding-Solo/godot-mcp.git"
+  }
+}

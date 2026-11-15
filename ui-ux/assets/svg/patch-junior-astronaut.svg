@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" role="img" aria-labelledby="patch-title patch-desc">
+  <title id="patch-title">Parche de misión Junior Astronaut Mission Trainer</title>
+  <desc id="patch-desc">Parche circular original, sin emblemas oficiales de NASA: órbita, cohete y 30 soles.</desc>
+  <defs>
+    <path id="arc-top" d="M 58 200 A 142 142 0 0 1 342 200"/>
+    <path id="arc-bottom" d="M 66 200 A 134 134 0 0 0 334 200"/>
+    <radialGradient id="patch-glow" cx="50%" cy="38%" r="65%">
+      <stop offset="0" stop-color="#16336F"/>
+      <stop offset="1" stop-color="#071022"/>
+    </radialGradient>
+    <linearGradient id="rocket-body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset=".55" stop-color="#D7E1F0"/>
+      <stop offset="1" stop-color="#8FA3BF"/>
+    </linearGradient>
+  </defs>
+
+  <circle cx="200" cy="200" r="194" fill="#05070D"/>
+  <circle cx="200" cy="200" r="188" fill="url(#patch-glow)" stroke="#FC3D21" stroke-width="7"/>
+  <circle cx="200" cy="200" r="172" fill="none" stroke="#F8FAFC" stroke-opacity=".28" stroke-width="1.2"/>
+  <circle cx="200" cy="200" r="132" fill="none" stroke="#F8FAFC" stroke-opacity=".18" stroke-width="1" stroke-dasharray="2 6"/>
+
+  <!-- Estrellas -->
+  <g fill="#F8FAFC">
+    <path d="M104 128l3.8 10.7L118 143l-10.2 4.3L104 158l-3.8-10.7L90 143l10.2-4.3z" opacity=".95"/>
+    <path d="M296 118l2.9 8.1 8.1 2.9-8.1 2.9-2.9 8.1-2.9-8.1-8.1-2.9 8.1-2.9z" opacity=".7"/>
+    <path d="M286 292l2.4 6.6 6.6 2.4-6.6 2.4-2.4 6.6-2.4-6.6-6.6-2.4 6.6-2.4z" opacity=".6"/>
+    <circle cx="118" cy="286" r="2.6" opacity=".8"/>
+    <circle cx="92" cy="214" r="1.8" opacity=".6"/>
+    <circle cx="310" cy="232" r="2" opacity=".7"/>
+  </g>
+
+  <!-- Órbita -->
+  <g transform="rotate(-28 200 200)" fill="none">
+    <ellipse cx="200" cy="200" rx="128" ry="52" stroke="#38BDF8" stroke-width="1.6" stroke-opacity=".85"/>
+    <ellipse cx="200" cy="200" rx="128" ry="52" stroke="#38BDF8" stroke-width="5" stroke-opacity=".12"/>
+    <circle cx="318" cy="188" r="6" fill="#38BDF8" stroke="none"/>
+  </g>
+
+  <!-- Cohete -->
+  <g transform="translate(200 202) rotate(38)">
+    <path d="M0 -92c20 18 29 48 29 76 0 17-5 32-13 44H-16c-8-12-13-27-13-44 0-28 9-58 29-76z" fill="url(#rocket-body)" stroke="#05070D" stroke-width="2"/>
+    <path d="M0 -92c-11 10-18 24-23 40l23 10z" fill="#FC3D21" opacity=".92"/>
+    <path d="M0 -92c11 10 18 24 23 40l-23 10z" fill="#D7E1F0"/>
+    <circle cx="0" cy="-28" r="15" fill="#0B3D91" stroke="#F8FAFC" stroke-width="3"/>
+    <circle cx="-5" cy="-33" r="4.5" fill="#38BDF8" opacity=".9"/>
+    <path d="M-16 54l-30 34 12-46zM16 54l30 34-12-46z" fill="#FC3D21"/>
+    <path d="M-14 62h28l-14 24z" fill="#F5A524"/>
+    <path d="M-7 92h14l-7 20z" fill="#FC3D21"/>
+    <rect x="-16" y="28" width="32" height="8" rx="2" fill="#8FA3BF"/>
+  </g>
+
+  <!-- Texto circular -->
+  <text font-family="Michroma, sans-serif" font-size="18" letter-spacing="3.2" fill="#F8FAFC">
+    <textPath href="#arc-top" startOffset="50%" text-anchor="middle">JUNIOR ASTRONAUT</textPath>
+  </text>
+  <text font-family="'IBM Plex Mono', monospace" font-size="14" letter-spacing="2.6" fill="#FC3D21">
+    <textPath href="#arc-bottom" startOffset="50%" text-anchor="middle">MISSION TRAINER · 30 SOLES</textPath>
+  </text>
+
+  <!-- Etiquetas -->
+  <g font-family="'IBM Plex Mono', monospace" font-size="9.5" letter-spacing="1.6" fill="#8FA3BF">
+    <text x="200" y="268" text-anchor="middle">LUNA / MARTE · 2026</text>
+    <text x="200" y="346" text-anchor="middle" fill="#F8FAFC" opacity=".55">SPACE APPS · 2026</text>
+  </g>
+</svg>

@@ -1,0 +1,25 @@
+/* ============================================================================
+   ORBITAL UI · PUNTO DE ENTRADA
+   Kit de diseño frontend con temática NASA para Outpost Run.
+
+   Uso:
+     <link rel="stylesheet" href="/ui-ux/css/ui-ux.css">
+     <body class="ux-root"> ... </body>
+
+   Orden:
+     1. fonts.css      tipografías locales (sin Google Fonts en runtime)
+     2. tokens.css     colores, tipos, espacio, radios, sombras, motion
+     3. base.css       reset y accesibilidad bajo .ux-root
+     4. icons.css      íconos Lucide como máscaras (heredan currentColor)
+     5. components.css botones, paneles, tarjetas, datos, formularios…
+     6. patterns.css   fondos estelares, grillas, grano, animaciones
+     7. utilities.css  helpers
+   ============================================================================ */
+
+@import url("./fonts.css");
+@import url("./tokens.css");
+@import url("./base.css");
+@import url("./icons.css");
+@import url("./components.css");
+@import url("./patterns.css");
+@import url("./utilities.css");

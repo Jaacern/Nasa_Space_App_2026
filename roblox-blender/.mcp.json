@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "blender": {
-      "command": "<RUTA_PYTHON_3.12>",
-      "args": ["<RUTA_DEL_PROYECTO>\\tools\\blender_mcp\\server.py"]
+      "command": "/usr/bin/python3",
+      "args": ["/home/fx01/Nasa_Space_App_2026/roblox-blender/tools/blender_mcp/server.py"]
     },
     "Roblox_Studio": {
       "command": "cmd.exe",

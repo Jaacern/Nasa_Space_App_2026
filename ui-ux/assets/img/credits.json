@@ -1,0 +1,102 @@
+{
+  "source": "NASA Images API",
+  "retrievedAt": "2026-11-14T22:10:34.161Z",
+  "images": [
+    {
+      "nasaId": "art002e009280b",
+      "file": "assets/img/earthrise-artemis.jpg",
+      "title": "Artemis Era Earthrise",
+      "description": "art002e009280 (April 6, 2026) – Earthrise captured through the Orion spacecraft window at 7:22 p.m. ET during the Artemis II crew’s flyby of the Moon’s far side. Earth appears as a delicate crescent, with only its right edge illuminated. The planet’s soft blue hue and scattered white cloud systems stand out on the right against the blackness of space, while the left side fades into night. Taken wi",
+      "center": "JSC",
+      "dateCreated": "2026-04-06T00:00:00Z",
+      "source": "https://images.nasa.gov/details/art002e009280b",
+      "assetUrl": "https://images-assets.nasa.gov/image/art002e009280b/art002e009280b~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "carina_nebula",
+      "file": "assets/img/carina-nebula.jpg",
+      "title": "James Webb Space Telescope NIRCam Image of the “Cosmic Cliffs” in Carina Nebula",
+      "description": "What looks much like craggy mountains on a moonlit evening is actually the edge of a nearby, young, star-forming region NGC 3324 in the Carina Nebula. Captured in infrared light by the Near-Infrared Camera (NIRCam) on NASA’s James Webb Space Telescope, this image reveals previously obscured areas of star birth.  Called the Cosmic Cliffs, the region is actually the edge of a gigantic, gaseous cavit",
+      "center": "STScI (Webb)",
+      "dateCreated": "2022-07-12T11:00:00Z",
+      "source": "https://images.nasa.gov/details/carina_nebula",
+      "assetUrl": "https://images-assets.nasa.gov/image/carina_nebula/carina_nebula~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "PIA24542",
+      "file": "assets/img/perseverance-selfie.jpg",
+      "title": "Perseverance's Selfie with Ingenuity",
+      "description": "NASA's Perseverance Mars rover took a selfie with the Ingenuity helicopter, seen here about 13 feet (3.9 meters) from the rover in this image taken April 6, 2021, the 46th Martian day, or sol, of the mission by the WATSON (Wide Angle Topographic Sensor for Operations and eNgineering) camera on the SHERLOC (Scanning Habitable Environments with Raman and Luminescence for Organics and Chemicals) inst",
+      "center": "JPL",
+      "dateCreated": "2021-04-07T00:00:00Z",
+      "source": "https://images.nasa.gov/details/PIA24542",
+      "assetUrl": "https://images-assets.nasa.gov/image/PIA24542/PIA24542~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "SLS_MAF_20260401_ArtemisIILaunch_05",
+      "file": "assets/img/artemis-ii-launch.jpg",
+      "title": "Artemis II launch ",
+      "description": "Four astronauts aboard NASA’s Orion spacecraft atop the SLS (Space Launch System) rocket launch on the agency’s Artemis II test flight, Wednesday, April 1, 2026, from Launch Complex 39B at NASA’s Kennedy Space Center in Florida. Artemis II lifted off at 6:35 p.m. ET. Artemis II is the first crewed mission of the agency’s Artemis campaign. The mission will send NASA astronauts Reid Wiseman, Victor ",
+      "center": "MSFC",
+      "dateCreated": "2026-04-01T00:00:00Z",
+      "source": "https://images.nasa.gov/details/SLS_MAF_20260401_ArtemisIILaunch_05",
+      "assetUrl": "https://images-assets.nasa.gov/image/SLS_MAF_20260401_ArtemisIILaunch_05/SLS_MAF_20260401_ArtemisIILaunch_05~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "jsc2004e52772",
+      "file": "assets/img/apollo-17-panorama.jpg",
+      "title": "Panorama view of Apollo 17 Lunar surface photos ",
+      "description": "   Panorama view of Apollo 17 Lunar surface photos for use in presentations to NASA management and for Outreach Education in regard to new NASA initiative for human planetary research. Photo numbers used for this panoramic include: Apollo 17 start frame AS17-147-22572 thru end frame AS17-147-22600. View is of the Apollo Lunar Surface Experiment Package (ALSEP) Station taken during Extravehicular A",
+      "center": "JSC",
+      "dateCreated": "1972-12-01T00:00:00Z",
+      "source": "https://images.nasa.gov/details/jsc2004e52772",
+      "assetUrl": "https://images-assets.nasa.gov/image/jsc2004e52772/jsc2004e52772~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "jsc2026e020490",
+      "file": "assets/img/mission-control-2026.jpg",
+      "title": "Science Officers in Mission Control",
+      "description": "jsc2026e020490 (April 6, 2026) - Pictured from left to right, Angela Garcia, Dr. Kelsey Young, and Dr. Trevor Graff, the first science officers of the Artemis program in the White Flight Control Room in the Christopher C. Kraft Jr. Mission Control Center at NASA’s Johnson Space Center. Seen here about ten minutes before Earthset during Artemis II, these science officers are seen monitoring mission",
+      "center": "JSC",
+      "dateCreated": "2026-04-06T00:00:00Z",
+      "source": "https://images.nasa.gov/details/jsc2026e020490",
+      "assetUrl": "https://images-assets.nasa.gov/image/jsc2026e020490/jsc2026e020490~medium.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "PIA20332",
+      "file": "assets/img/mars-vista.jpg",
+      "title": "Full-Circle Vista from Naukluft Plateau on Mars",
+      "description": "This mid-afternoon, 360-degree panorama was acquired by NASA Curiosity Mars rover on April 4, 2016, as part of long-term campaign to document the context and details of the geology and landforms along Curiosity traverse inside Gale Crater.",
+      "center": "JPL",
+      "dateCreated": "2016-04-27T16:52:37Z",
+      "source": "https://images.nasa.gov/details/PIA20332",
+      "assetUrl": "https://images-assets.nasa.gov/image/PIA20332/PIA20332~large.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    },
+    {
+      "nasaId": "PIA12110",
+      "file": "assets/img/hubble-deep-field.jpg",
+      "title": "Hubble Deep Field Image Unveils Myriad Galaxies Back to the Beginning of Time",
+      "description": "Several hundred never before seen galaxies are visible in this deepest-ever view of the universe, called the Hubble Deep Field, made with NASA Hubble Space Telescope. ",
+      "center": "STScI (Hubble)",
+      "dateCreated": "1996-01-15T18:46:16Z",
+      "source": "https://images.nasa.gov/details/PIA12110",
+      "assetUrl": "https://images-assets.nasa.gov/image/PIA12110/PIA12110~orig.jpg",
+      "credit": "NASA",
+      "license": "NASA Media Usage Guidelines — https://www.nasa.gov/nasa-brand-center/images-and-media/"
+    }
+  ]
+}

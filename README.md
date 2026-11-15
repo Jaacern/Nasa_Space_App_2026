@@ -1,56 +1,51 @@
-# NASA Space Apps 2026: juego de outpost con datos reales
+# Junior Astronaut Mission Trainer
 
-Prototipo educativo para niños de 7 a 12 años: gestionar una base lunar o marciana con clima espacial, radiación y estudios reales de NASA.
+NASA Space Apps 2026. Juego para niños de 7 a 12 años: gestionar una base lunar o marciana (energía, aire, blindaje) con clima espacial, radiación y ciencia reales de NASA y la CSA.
 
-## Empezar (5 minutos)
+## Empezar
 
 Requiere Node 22.9 o superior. No hay dependencias que instalar.
 
 ```bash
-npm test               # 15 pruebas sin red
-npm run validate       # revisa cartas, balance y procedencia de los datos
-npm run demo           # muestra un escenario real jugable en consola
-npm run api            # API local en http://127.0.0.1:8787  (abre / para ver los endpoints)
-```
-
-Para traer datos nuevos o comprobar las fuentes en vivo (necesita tu clave en `.env`):
-
-```bash
-cp .env.example .env   # y pega tu NASA_API_KEY nueva
-npm run check:apis     # prueba las 6 fuentes en vivo
-npm run ingest         # regenera data/curated/
+npm test            # 23 pruebas, sin red
+npm run check       # contenido del juego, snapshots y relevancia de los datos
+npm run api         # API local en http://127.0.0.1:8787 (abre / para ver el catálogo)
 ```
 
 ## Leer en este orden
 
-1. [Plan del juego y de los datos](docs/PLAN-JUEGO-Y-DATOS.md): idea, mecánicas, uso de los datos, IA, calendario.
-2. [API local y saneado](docs/API-LOCAL.md): cómo pedir datos desde el juego, endpoints y seguridad.
-3. [Pendientes manuales](docs/PENDIENTES-MANUALES.md): lo que solo una persona puede hacer.
-4. [Prompts de IA](docs/ia/PROMPTS.md): resúmenes infantiles, narración y revisiones.
-5. [Investigación de fuentes](docs/investigacion-recursos-nasa-csa.md): qué ofrece cada recurso NASA y CSA, con límites.
+1. [docs/JUEGO.md](docs/JUEGO.md): idea, mecánicas, reparto del equipo, calendario, lista para el jurado.
+2. [docs/DATOS.md](docs/DATOS.md): cada recurso de la pestaña Resources, cómo consumirlo, límites y saneado.
+3. [docs/IA.md](docs/IA.md): dónde se usa IA, prompts y revisión humana.
 
 ## Estructura
 
 | Ruta | Contenido |
 |---|---|
-| `server/api.mjs` | API local que sirve datos ya saneados |
-| `src/api/` | Saneado, contratos y adaptadores por fuente |
-| `src/data/worldState.mjs` | Capa de datos para el juego (calendario de eventos, perfil del sitio) |
-| `scripts/ingest.mjs` | Descarga y guarda snapshots en `data/curated/` |
-| `scripts/check-apis.mjs` | Prueba de las fuentes en vivo |
-| `data/curated/` | Snapshots JSON con fecha de copia |
-| `content/` | Cartas, constantes de equilibrio y glosario (valores de juego) |
-| `public/` | Página de arranque de prueba |
-| `test/` | Pruebas y ejemplos de respuestas (incluida una "hostil") |
+| `src/api/` | Catálogo de fuentes, saneado, contratos y adaptadores |
+| `src/data/worldState.mjs` | Capa de datos del juego: calendario de eventos, perfil del sitio, datos curiosos |
+| `server/api.mjs` | API local que sirve los datos ya saneados |
+| `scripts/` | `ingest.mjs` (descarga snapshots) y `check.mjs` (comprobaciones) |
+| `data/curated/` | Snapshots reales con fecha de copia: el juego funciona sin red |
+| `content/` | Cartas, constantes de equilibrio y glosario (valores de juego, no datos NASA) |
+| `public/` | Página de prueba que lee la API |
+| `ui-ux/` | Kit de diseño ORBITAL UI: tokens, componentes, assets y demo en `/ui-ux/` |
+| `test/` | Pruebas y respuestas reales guardadas |
 
-## Estado actual
+## Pendiente (solo una persona puede hacerlo)
 
-- Datos reales descargados y probados: DONKI, RadLab, OSDR, Mars Trek, InSight.
-- Pendiente: el bucle del juego y la interfaz. Los datos y la API ya están listos para empezar.
-- Pendiente con clave NASA propia: `asteroids.json` y `apod.json` (la `DEMO_KEY` se agotó en las pruebas).
+- [ ] **Clave NASA nueva.** La que se pegó en el chat está expuesta. Pide otra en <https://api.nasa.gov/>, ponla en `.env` (`cp .env.example .env`) y ejecuta `npm run check:live`. Solo la necesitan APOD e InSight.
+- [ ] **Primer commit.** Nada está commiteado. Revisa que `git status` no muestre `.env`.
+- [ ] **APOD:** la API devolvió `500` y una vez el logo de NASA como imagen. No hay snapshot; es decorativo, reintentar o descartar.
+- [ ] **Pestaña Resources y reglas del evento:** no tengo acceso. Revisar si añadieron recursos y qué exigen sobre declarar el uso de IA.
+- [ ] **Elegir sitio y capas en Mars Trek** explorando <https://trek.nasa.gov/mars/> (es una aplicación web que no pude leer).
+- [ ] **Revisar los estudios OSDR elegidos** y los resúmenes infantiles (`reviewedByHuman`). Hoy hay 26 pendientes y el juego los oculta.
+- [ ] **Confirmar con una fuente NASA** las afirmaciones físicas de `content/balance.json` (noche lunar, tormentas de polvo) antes de decirlas como hechos.
+- [ ] **Probar el juego en un navegador real** (CORS y teselas se verificaron solo con Node) y con niños de 7 a 12 años.
+- [ ] **Antes de la demo:** `npm run ingest`, `npm run check`, commit de `data/curated/`.
 
 ## Seguridad
 
 No subas claves. `.env` está ignorado por Git y el servidor nunca devuelve la clave.
 
-NASA y CSA no patrocinan ni respaldan este proyecto.
+NASA y la CSA no patrocinan ni respaldan este proyecto.

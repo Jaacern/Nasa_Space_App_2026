@@ -1,0 +1,492 @@
+{
+  "meta": {
+    "title": "Plan de Generación de Entornos en Video con Google Flow (Veo 3.1) + NASA APIs",
+    "project": "Junior Astronaut Mission Trainer (NASA Space Apps 2026)",
+    "totalBudgetCredits": 1050,
+    "pricingModel": {
+      "veo_3_1_lite": {
+        "name": "Veo 3.1 Lite",
+        "creditsPerVideo": 10,
+        "resolution": "720p",
+        "durationSec": 8,
+        "bestFor": "Loops ambientales de fondo, cielos estrellados, interiores estáticos y capas secundarias detrás del canvas 3D."
+      },
+      "veo_3_1_fast": {
+        "name": "Veo 3.1 Fast",
+        "creditsPerVideo": 20,
+        "resolution": "1080p",
+        "durationSec": 8,
+        "bestFor": "Image-to-Video (Frames to Video) usando fotos reales de la NASA como primer fotograma. La foto real ya aporta la geometría y textura, dando el 95% de la calidad de Quality a 1/5 del costo."
+      },
+      "veo_3_1_quality": {
+        "name": "Veo 3.1 Quality",
+        "creditsPerVideo": 100,
+        "resolution": "1080p High Fidelity",
+        "durationSec": 8,
+        "bestFor": "1 Hero Shot principal por cada uno de los 5 entornos (física compleja de humo/fuego en el despegue, eyección de plasma solar y entradas atmosféricas)."
+      }
+    },
+    "budgetSummary": {
+      "totalVideos": 25,
+      "environmentsCount": 5,
+      "videosPerEnvironment": 5,
+      "breakdown": {
+        "qualityHeroVideos": { "count": 5, "unitCost": 100, "subtotalCredits": 500 },
+        "fastBiomeVideos": { "count": 12, "unitCost": 20, "subtotalCredits": 240 },
+        "liteAmbientVideos": { "count": 8, "unitCost": 10, "subtotalCredits": 80 }
+      },
+      "plannedSpendCredits": 820,
+      "reserveForRetriesOrExtendCredits": 230,
+      "totalAvailableCredits": 1050
+    }
+  },
+  "nasaApiEvaluation": [
+    {
+      "api": "Mars Rover Photos (mars.nasa.gov Raw Images en el proyecto)",
+      "statusInRepo": "Integrada (data/curated/rover_photos.json y /api/rover-photos)",
+      "useForFlow": "ALTA PRIORIDAD (Image-to-Video): 6 fotos reales de Perseverance (Sol 2024, Mastcam-Z) y Curiosity (Sol 5073, Navcam/Hazcam) listas para subir como Frame Inicial en Google Flow.",
+      "environments": ["marte"]
+    },
+    {
+      "api": "Vesta/Moon/Mars Trek WMTS",
+      "statusInRepo": "Integrada para Marte (data/curated/mars_layers.json y /api/mars-layers)",
+      "useForFlow": "ALTA PRIORIDAD (Image-to-Video + Textura 3D): Teselas WMTS de relieve MOLA de Marte, LRO WAC de la Luna y Dawn HAMO del asteroide Vesta. Sirven tanto para envolver esferas 3D en Three.js como de frame inicial para descensos orbitales.",
+      "environments": ["marte", "luna", "universo"]
+    },
+    {
+      "api": "DONKI (Space Weather Database)",
+      "statusInRepo": "Integrada (data/curated/space_weather.json y /api/space-weather)",
+      "useForFlow": "ALTA PRIORIDAD (Data-to-Prompt): Datos reales de erupciones solares (FLR X9), eyecciones de masa coronal (CME) y tormentas geomagnéticas (GST) para parametrizar auroras en la Tierra, ondas de plasma en el Universo y tormentas de radiación en Luna/Marte.",
+      "environments": ["universo", "tierra", "luna", "marte"]
+    },
+    {
+      "api": "Insight (Mars Weather Service API)",
+      "statusInRepo": "Integrada (data/curated/mars_weather.json y /api/mars-weather)",
+      "useForFlow": "MEDIA-ALTA (Data-to-Prompt): Datos reales de viento (m/s), presión (Pa) y temperatura (°C) en Elysium Planitia para definir la intensidad del polvo en suspensión en los prompts de Marte.",
+      "environments": ["marte"]
+    },
+    {
+      "api": "Open Science Data Repository (OSDR) + RadLab",
+      "statusInRepo": "Integrada (data/curated/osdr_facts.json, radiation.json)",
+      "useForFlow": "MEDIA-ALTA (Data-to-Prompt): Inspira el hábitat interior (invernadero espacial de plantas OSDR) y los efectos visuales de dosimetría/escudo de radiación en LEO, Luna y Marte.",
+      "environments": ["luna", "marte", "despegue"]
+    },
+    {
+      "api": "APOD (Astronomy Picture of the Day)",
+      "statusInRepo": "Integrada opcional (/api/apod)",
+      "useForFlow": "MEDIA (Image-to-Video): Imágenes de nebulosas y espacio profundo (solo cuando mediaType='image' y reusable=true). Nota: la API oficial a veces responde 500 o devuelve el logo de NASA.",
+      "environments": ["universo"]
+    },
+    {
+      "api": "NASA Image and Video Library (images-api.nasa.gov)",
+      "statusInRepo": "Recomendada sin API Key",
+      "useForFlow": "ALTA PRIORIDAD (Image-to-Video): Fuente número 1 libre de derechos y sin clave para obtener fotos reales del despegue de Artemis I (SLS), superficie lunar Apollo/LRO y nebulosas del James Webb.",
+      "environments": ["despegue", "luna", "universo", "tierra"]
+    },
+    {
+      "api": "EPIC (Earth Polychromatic Imaging Camera) & GIBS",
+      "statusInRepo": "Recomendada para Landing Page (Bioma Tierra)",
+      "useForFlow": "ALTA PRIORIDAD (Image-to-Video): Fotos reales de disco completo de la Tierra (EPIC) y mosaicos satelitales de biomas terrestres (GIBS: océanos, Amazonas, glaciares, desiertos) para los 5 videos de Tierra.",
+      "environments": ["tierra"]
+    },
+    {
+      "api": "EONET (Earth Observatory Natural Event Tracker)",
+      "statusInRepo": "Complementaria para biomas de Tierra",
+      "useForFlow": "MEDIA (Data-to-Prompt): Coordenadas y categorías de eventos naturales reales (volcanes, ciclones, auroras) para animar los biomas de la Tierra desde órbita.",
+      "environments": ["tierra"]
+    },
+    {
+      "api": "Asteroids NeoWs & SSD/CNEOS",
+      "statusInRepo": "Complementaria para viaje interplanetario",
+      "useForFlow": "MEDIA (Data-to-Prompt + 3D): Tamaños, velocidades y órbitas de asteroides cercanos para la escena del cohete cruzando el campo de asteroides rumbo a Marte.",
+      "environments": ["universo"]
+    },
+    {
+      "api": "TLE API & Satellite Situation Center (SSC)",
+      "statusInRepo": "Complementaria para 3D Web (No requiere video)",
+      "useForFlow": "BAJA EN VIDEO / ALTA EN THREE.JS: En lugar de gastar créditos de Google Flow en satélites, usa TLE para dibujar trayectorias orbitales reales en WebGL alrededor del globo terrestre.",
+      "environments": ["tierra", "despegue"]
+    },
+    {
+      "api": "Exoplanet Archive, Techport & TechTransfer",
+      "statusInRepo": "Referencia conceptual",
+      "useForFlow": "BAJA: Techport sirve como referencia visual del diseño de módulos habitables (CHAPEA / hábitats 3D) en los prompts de Luna y Marte.",
+      "environments": ["luna", "marte"]
+    }
+  ],
+  "masterPromptTemplate": {
+    "referenceTemplateRepo": "https://github.com/ITomPoland/portfolio-itom",
+    "itomArchitectureMapping": {
+      "coreConcept": "Adaptar la arquitectura 2.5D de 'portfolio-itom' (React Three Fiber + Three.js + GSAP + PaintRevealMaterial + Corredor infinito con Rooms temáticas) a una misión espacial.",
+      "paperAirplaneReplacement": "El avión de papel interactivo de portfolio-itom se reemplaza por el Cohete / Cápsula Orion que vuela por el corredor espacial guiado por el scroll (GSAP) y el cursor.",
+      "paintRevealShaderIntegration": "En portfolio-itom, los planos 2D usan PaintRevealMaterial (transición de textura sketch/boceto en B&N a textura a color al pasar el cursor o acercarse). En nuestra web, uBaseTexture es la foto real estática de la NASA (en estilo blueprint/telemetría o cruda de rover_photos.json) y uRevealTexture es un THREE.VideoTexture con el video generado en Google Flow a partir de ESA MISMA FOTO (Frames to Video). Como el Frame 0 del video coincide pixel por pixel con la foto de la NASA, al pasar el cursor o el cohete sobre el plano, el paisaje cobra vida en video sin saltos de geometría.",
+      "roomsMapping": [
+        { "roomIndex": 1, "itomEquivalent": "Intro / Corridor Entry Room", "nasaRoom": "Room 1: Tierra (Biomas y Plataforma 39B)", "zRange": [0, -50] },
+        { "roomIndex": 2, "itomEquivalent": "Transition / Flight Corridor", "nasaRoom": "Room 2: Despegue (Ignición, Max-Q, Separación LEO, TLI)", "zRange": [-50, -100] },
+        { "roomIndex": 3, "itomEquivalent": "Paper Airplane Interactive Corridor", "nasaRoom": "Room 3: Universo (Clima Espacial DONKI y Campo de Asteroides NeoWs/Vesta)", "zRange": [-100, -160] },
+        { "roomIndex": 4, "itomEquivalent": "Project Showcase Room A", "nasaRoom": "Room 4: Luna (Polo Sur Shackleton, Outpost de Regolito, Invernadero OSDR)", "zRange": [-160, -220] },
+        { "roomIndex": 5, "itomEquivalent": "Project Showcase Room B / Finale", "nasaRoom": "Room 5: Marte (Cráter Jezero, Cráter Gale, Tormenta InSight y Lanzador de Partida)", "zRange": [-220, -280] }
+      ]
+    },
+    "systemFormula": "[LOCKED / SUBTLE CAMERA FOR 2.5D R3F PLANE] + [EXACT NASA FIRST FRAME ANCHOR] + [ENVIRONMENTAL MOTION (PARTICLES/PLASMA/CLOUDS)] + [LIGHTING & PHYSICS] + [NO OVERLAYS]",
+    "globalRulesForGoogleFlow": [
+      "REGLA CRÍTICA PARA PORTFOLIO-ITOM (PaintRevealMaterial): Subir siempre la foto de la NASA como 'First Frame' en Google Flow (Frames to Video) y pedir en el prompt 'Fixed tripod camera' o 'Ultra-subtle slow motion preserving exact first-frame composition'. Así, cuando el shader PaintRevealMaterial revele el video sobre la imagen estática de la NASA al pasar el mouse, la roca/planeta/cohete encajará exactamente en la misma coordenada UV.",
+      "El movimiento de avance 3D ya lo hace la cámara de React Three Fiber + GSAP en el corredor de portfolio-itom; por lo tanto, el video de Google Flow debe animar los ELEMENTOS INTERNOS del bioma (humo del cohete, polvo marciano, auroras, plasma solar, nubes) en lugar de mover bruscamente la cámara.",
+      "Evitar cortes de cámara (no jump cuts), sin texto superpuesto ni HUD quemado en el video."
+    ],
+    "negativePrompt": "text, watermark, UI overlay, HUD numbers, shaky camera, fast camera pan, whip pan, jump cuts, morphing terrain geometry, cartoon, low poly, overexposed, distorted spacecraft"
+  },
+  "journeyFlow": [
+    {
+      "order": 1,
+      "environmentId": "tierra",
+      "environmentName": "Tierra (Biomas y Órbita Baja)",
+      "scrollRange": "0% - 20%",
+      "narrativeRole": "Origen de la misión: exploración de los biomas terrestres desde el espacio, escudo geomagnético y preparación en la plataforma de lanzamiento.",
+      "threeJsSetup": "Esfera 3D de la Tierra en primer plano con nubes dinámicas; los videos actúan como portales de bioma al hacer zoom o como fondo inmersivo de sección.",
+      "videos": [
+        {
+          "id": "earth-01",
+          "title": "Amanecer Orbital y Aurora Geomagnética (Hero)",
+          "tier": "veo_3_1_quality",
+          "credits": 100,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "EPIC / NASA Image Library (ISS Earth Aurora) + DONKI GST Kp>7",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/iss035e008716/iss035e008716~medium.jpg",
+          "promptEn": "Cinematic slow orbital camera gliding above Earth at orbital sunrise, based on the reference NASA ISS photograph. Shimmering emerald and violet geomagnetic aurora borealis ribbons dancing across the upper thermosphere triggered by a solar storm, deep blue curvature of Earth below, volumetric cloud formations over the ocean, realistic golden sun flare breaking over the horizon, 8k photorealistic IMAX space cinematography, smooth continuous motion for seamless web background.",
+          "cameraMotion": "Slow orbital pan right + subtle push-in",
+          "webAssetRole": "Hero background de la sección 1 (0%-5% scroll)"
+        },
+        {
+          "id": "earth-02",
+          "title": "Bioma Oceánico y Ciclón desde Baja Órbita",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "EPIC / EONET Severe Storms / GIBS Blue Marble",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/iss009e21205/iss009e21205~medium.jpg",
+          "promptEn": "High-altitude nadir satellite view looking down at Earth's turquoise ocean biome and a massive swirling white hurricane cloud system, slow clockwise rotation of volumetric clouds casting soft shadows on the deep sapphire sea, sunlight glinting off the water surface, photorealistic NASA Earth Observatory aesthetic, steady slow drift, no cuts.",
+          "cameraMotion": "Top-down slow drift forward",
+          "webAssetRole": "Tarjeta interactiva / portal de bioma Hidrósfera"
+        },
+        {
+          "id": "earth-03",
+          "title": "Bioma de Selva y Ríos (Biosfera Viva)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "GIBS / NASA Earth Observatory Amazon Basin",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/iss017e013856/iss017e013856~medium.jpg",
+          "promptEn": "Aerial high-altitude cinematic flight over a lush emerald rainforest biome and winding golden sunlit river delta as seen from low orbit, morning mist rising from the canopy, soft cumulus clouds drifting slowly across the frame, rich natural contrast, NASA Landsat and ISS photography style, smooth forward camera movement.",
+          "cameraMotion": "Slow aerial dolly forward",
+          "webAssetRole": "Tarjeta interactiva / portal de bioma Biosfera (contraste con Marte)"
+        },
+        {
+          "id": "earth-04",
+          "title": "Bioma Polar y Glaciares (Criósfera)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Text to Video / Frames to Video",
+          "nasaSource": "GIBS Cryosphere / Operation IceBridge",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA18182/PIA18182~orig.jpg",
+          "promptEn": "Sweeping cinematic view over pristine Arctic glacier ice sheets and deep blue meltwater channels meeting the dark polar sea, crisp low-angle polar sunlight casting long crystalline shadows, subtle drifting snow mist, tranquil slow camera glide, photorealistic NASA Earth science footage.",
+          "cameraMotion": "Slow horizontal pan",
+          "webAssetRole": "Ambient loop secundario para el panel de clima terrestre"
+        },
+        {
+          "id": "earth-05",
+          "title": "Bioma Costero: Plataforma de Lanzamiento al Atardecer",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Image Library (Artemis I Launch Pad 39B)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/NHQ202203180001/NHQ202203180001~orig.jpg",
+          "promptEn": "Cinematic wide shot of a towering space launch rocket standing on a coastal launchpad at golden hour twilight, white cryogenic liquid oxygen vapor gently venting from the rocket core stage in the ocean breeze, spotlights illuminating the metallic hull, Atlantic ocean waves in the background, dramatic warm sunset sky transitioning to deep twilight blue, slow push-in toward the rocket.",
+          "cameraMotion": "Slow dolly in toward launchpad",
+          "webAssetRole": "Transición entre Entorno Tierra y Entorno Despegue (18%-20% scroll)"
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "environmentId": "despegue",
+      "environmentName": "Despegue y Ascenso Orbital",
+      "scrollRange": "20% - 40%",
+      "narrativeRole": "El cohete despega desde la Tierra, atraviesa la atmósfera, supera Max-Q, separa etapas en órbita baja (LEO) y ejecuta la inyección translunar.",
+      "threeJsSetup": "Modelo 3D del cohete en el centro del viewport que vibra y rota con el scroll mientras los videos muestran la física de humo, nubes y transición al vacío.",
+      "videos": [
+        {
+          "id": "launch-01",
+          "title": "Ignición Principal y Despegue del Cohete (Hero)",
+          "tier": "veo_3_1_quality",
+          "credits": 100,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Image Library (Artemis I SLS Liftoff)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/NHQ202211160002/NHQ202211160002~orig.jpg",
+          "promptEn": "Epic low-angle slow-motion cinematic shot of a heavy space exploration rocket igniting its main engines and twin solid rocket boosters at liftoff, blinding golden-orange exhaust flames illuminating massive billowing clouds of glowing steam and acoustic water suppression mist, the rocket slowly rising upward with immense physical weight and power, photorealistic IMAX 60fps clarity, no text.",
+          "cameraMotion": "Slow tilt up following the rising rocket",
+          "webAssetRole": "Hero shot de la sección Despegue al activar el botón 'Iniciar Misión'"
+        },
+        {
+          "id": "launch-02",
+          "title": "Ascenso Supersónico y Ruptura de Nubes (Max-Q)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Image Library (Rocket Ascent & Plume)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/B1B_Crew_Night_Launch/B1B_Crew_Night_Launch~medium.jpg",
+          "promptEn": "Tracking camera alongside a sleek white multi-stage rocket hurtling vertically through a dense layer of sunlit stratospheric clouds, white aerodynamic vapor cone forming around the nose fairing at supersonic Max-Q, brilliant exhaust plume trailing below, sky rapidly darkening from azure blue to deep indigo above, smooth continuous upward camera tracking.",
+          "cameraMotion": "Vertical tracking shot upward",
+          "webAssetRole": "Fondo dinámico durante el scroll de ascenso atmosférico (25%-30%)"
+        },
+        {
+          "id": "launch-03",
+          "title": "Separación de Propulsores en la Frontera del Espacio",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Image Library (Stage Separation LEO)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/0700508/0700508~medium.jpg",
+          "promptEn": "Onboard spacecraft camera view looking back at Earth's curved blue horizon and thin glowing atmosphere line against the blackness of space, twin spent rocket boosters gracefully separating and tumbling away in slow motion with small cold-gas thruster puffs, harsh direct sunlight reflecting off white spacecraft hull, authentic NASA mission footage.",
+          "cameraMotion": "Slow camera drift forward looking back at Earth",
+          "webAssetRole": "Transición de salida de la atmósfera (30%-34% scroll)"
+        },
+        {
+          "id": "launch-04",
+          "title": "Órbita Baja Terrestre (LEO) y Despliegue Solar",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "RadLab LEO-ISS (4.2 uGy/h baseline) + Orion LEO",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/orion_earth_moon_20221121/orion_earth_moon_20221121~medium.jpg",
+          "promptEn": "Deep space external view of a crewed spacecraft capsule in low Earth orbit unfolding its four metallic solar array wings in slow motion, golden mylar thermal insulation catching the sun, the vibrant blue and white Earth rotating gently in the background, silent weightless motion, photorealistic.",
+          "cameraMotion": "Slow orbital pan around capsule",
+          "webAssetRole": "Punto de control LEO: muestra la radiación base medida por RadLab (4.2 uGy/h)"
+        },
+        {
+          "id": "launch-05",
+          "title": "Encendido de Inyección Translunar (TLI Burn)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Artemis II Orion Translunar Injection Reference",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/art002e016281/art002e016281~large.jpg",
+          "promptEn": "Cinematic wide shot in the vacuum of space: the spacecraft main orbital maneuvering engine ignites with a crisp blue-white vacuum plasma plume, propelling the vessel away from the shrinking crescent of Earth toward the deep cosmos, stars glinting in the dark background, smooth forward dolly camera.",
+          "cameraMotion": "Fast push-in transitioning to deep space",
+          "webAssetRole": "Cierre de la etapa Despegue hacia el Universo profundo (36%-40% scroll)"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "environmentId": "universo",
+      "environmentName": "Universo, Clima Espacial y Asteroides",
+      "scrollRange": "40% - 60%",
+      "narrativeRole": "Crucero interplanetario: el cohete esquiva asteroides (NeoWs/Vesta) y enfrenta tormentas solares reales de DONKI (FLR, CME, SEP).",
+      "threeJsSetup": "Campo de asteroides 3D interactivo y partículas solares en WebGL; los videos proveen el Sol activo, los cuerpos rocosos y el fondo cósmico.",
+      "videos": [
+        {
+          "id": "universe-01",
+          "title": "Erupción Solar X9 y Eyección de Masa Coronal DONKI (Hero)",
+          "tier": "veo_3_1_quality",
+          "credits": 100,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "DONKI (Escenario oct-2024-x9 / gannon-2024-05) + NASA SDO",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001435/GSFC_20171208_Archive_e001435~orig.jpg",
+          "promptEn": "Extreme ultraviolet NASA Solar Dynamics Observatory style close-up of the Sun's roaring surface: a colossal X-class solar flare erupts with blinding magnetic loops, hurling a massive glowing coronal mass ejection plasma cloud outward into dark interplanetary space, intricate solar filaments and shockwaves, 8k scientific visualization, slow hypnotic motion.",
+          "cameraMotion": "Slow pull-back from the solar corona",
+          "webAssetRole": "Hero background del clima espacial DONKI (40%-45% scroll)"
+        },
+        {
+          "id": "universe-02",
+          "title": "Vuelo del Cohete junto a un Asteroide Cercano (NeoWs / Vesta)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Vesta Trek WMTS / NASA Dawn & OSIRIS-REx Bennu",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA22946/PIA22946~orig.jpg",
+          "promptEn": "Cinematic space shot of a rugged, cratered near-Earth rubble-pile asteroid rotating slowly in the vacuum of space based on the NASA OSIRIS-REx reference photo, a sleek human spacecraft gliding silently past in the mid-ground, sharp high-contrast directional sunlight casting pitch-black shadows across boulders and regolith pebbles floating in microgravity.",
+          "cameraMotion": "Slow flyby tracking shot past the asteroid",
+          "webAssetRole": "Encuentro con asteroides durante el crucero interplanetario"
+        },
+        {
+          "id": "universe-03",
+          "title": "Cinturón de Asteroides y Protoplaneta Vesta",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Vesta Trek WMTS (Dawn Framing Camera Mosaic)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA15678/PIA15678~orig.jpg",
+          "promptEn": "Orbital flyover above the giant protoplanet Vesta showing its towering Rheasilvia central crater peak and equatorial troughs, smaller rocky meteoroids drifting slowly in the foreground, distant Sun shining like a brilliant diamond with subtle lens flare, realistic NASA Dawn mission photography, smooth forward camera glide.",
+          "cameraMotion": "Slow orbital flyover",
+          "webAssetRole": "Escena de navegación entre asteroides y recursos minerales"
+        },
+        {
+          "id": "universe-04",
+          "title": "Nebulosa Profunda del James Webb (Fondo Cósmico)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "APOD / NASA Image Library (Carina Cosmic Cliffs)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/carina_nebula/carina_nebula~medium.jpg",
+          "promptEn": "Subtle 3D parallax camera drift through the glowing amber and cyan dust pillars of the Carina Nebula captured by the James Webb Space Telescope, newborn stars twinkling softly within translucent cosmic gas clouds, serene eternal deep space ambiance, seamless loopable slow motion.",
+          "cameraMotion": "Ultra-slow 3D parallax push-in",
+          "webAssetRole": "Skybox de fondo profundo para el canvas 3D del Universo"
+        },
+        {
+          "id": "universe-05",
+          "title": "Onda de Choque Interplanetaria y Tormenta de Protones (SEP)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "DONKI SEP / IPS + RadLab Orion Artemis I (17.2 uGy/h)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/0201490/0201490~medium.jpg",
+          "promptEn": "Deep space visualization of an interplanetary solar energetic particle storm sweeping past a spacecraft en route to Mars, subtle translucent golden-violet ionization waves and faint Cherenkov-like particle streaks zipping through the dark vacuum, spacecraft radiation shield hull glinting, calm cinematic camera drift.",
+          "cameraMotion": "Slow lateral tracking shot",
+          "webAssetRole": "Fondo visual al explicar el aviso de tormenta (`warningSols`) y el Refugio"
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "environmentId": "luna",
+      "environmentName": "Luna (Polo Sur, Mares Basálticos y Base Lunar)",
+      "scrollRange": "60% - 80%",
+      "narrativeRole": "Primer sitio elegible del juego Outpost Run: baja gravedad, retraso de radio de 1.3 s, dosis de radiación LRO (12.7 uGy/h) y noche lunar de 14 días.",
+      "threeJsSetup": "Terreno lunar 3D con iluminación rasante; el usuario puede inspeccionar los módulos de la base (paneles solares, muro de regolito, invernadero).",
+      "videos": [
+        {
+          "id": "moon-01",
+          "title": "Descenso sobre el Polo Sur Lunar y Cráter Shackleton (Hero)",
+          "tier": "veo_3_1_quality",
+          "credits": 100,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Moon Trek WMTS / NASA LRO Shackleton Rim & Earthrise",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA19952/PIA19952~orig.jpg",
+          "promptEn": "Breathtaking cinematic descent over the rugged lunar south pole and Shackleton crater rim, razor-sharp long black shadows contrasted against brilliant silver-gray sunlit regolith peaks, the vibrant blue and white marble of Earth hanging motionless above the horizon in a pitch-black starless exposure sky, spacecraft landing thrusters kicking up a thin sheet of lunar dust below, 8k IMAX Apollo and Artemis realism.",
+          "cameraMotion": "Slow descending crane/dolly shot toward crater rim",
+          "webAssetRole": "Hero background al seleccionar o llegar al sitio 'Luna' (60%-65% scroll)"
+        },
+        {
+          "id": "moon-02",
+          "title": "Bioma de Llanura Basáltica Lunar y Polvo en 1/6 g",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Image Library (Apollo Lunar Surface / LRO)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA23041/PIA23041~small.jpg",
+          "promptEn": "Surface-level wide shot across a vast gray lunar basalt plain and distant rounded Mons hills, fine silver regolith dust kicked up by a lunar rover wheel settling in slow ballistic arcs in one-sixth gravity without air turbulence, harsh unattenuated sunlight, crisp footprints in the soil, authentic Apollo Hasselblad photography look.",
+          "cameraMotion": "Low-angle slow dolly forward across lunar soil",
+          "webAssetRole": "Vista de superficie del bioma lunar durante el día"
+        },
+        {
+          "id": "moon-03",
+          "title": "Outpost Lunar con Blindaje de Regolito Sinterizado",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Carta 'Muro de regolito' (content/cards.json) + RadLab LRO (12.7 uGy/h)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/11%2004%2024%20hls%202%20raptors/11%2004%2024%20hls%202%20raptors~medium.jpg",
+          "promptEn": "Realistic near-future NASA Artemis lunar outpost built inside a shallow crater: pressurized white cylindrical habitat modules protected by a thick 3D-printed sintered gray lunar regolith radiation shield arch, vertical solar array towers tracking the low sun on the horizon, high-gain antenna pointed toward Earth in the black sky, slow cinematic pan.",
+          "cameraMotion": "Slow orbital pan around the lunar outpost",
+          "webAssetRole": "Visualización de las mecánicas de Energía y Blindaje en la Luna"
+        },
+        {
+          "id": "moon-04",
+          "title": "Bioma de la Larga Noche Lunar (Reserva de Energía)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Mecánica de noche lunar (content/balance.json) + LRO South Pole Illumination",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/GSFC_20171208_Archive_e001282/GSFC_20171208_Archive_e001282~small.jpg",
+          "promptEn": "Quiet cinematic night scene on the Moon during the fourteen-day lunar night: the cratered regolith landscape is bathed in cool bluish Earthshine from the full Earth in the sky, the lunar outpost windows glow warmly with conservation amber lights while solar panels stand folded in standby, Milky Way galaxy arching across the dark sky, slow steady camera.",
+          "cameraMotion": "Static tripod with very slow zoom in",
+          "webAssetRole": "Estado visual de baja energía / modo ahorro en la Luna"
+        },
+        {
+          "id": "moon-05",
+          "title": "Invernadero Espacial e Investigación Biológica (OSDR / CSA)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "OSDR (topic=plants) + CSA Food Production + Carta 'Invernadero'",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/KSC-20170808-PH_CSH01_0092/KSC-20170808-PH_CSH01_0092~medium.jpg",
+          "promptEn": "Interior view inside a pressurized space habitat hydroponic greenhouse module inspired by NASA Veggie and CSA food production experiments: rows of vibrant green lettuce and dwarf tomato plants growing under soft magenta and white LED grow lights, gentle water mist droplets, a reinforced circular viewport window in the background revealing the gray lunar surface outside, slow dolly shot.",
+          "cameraMotion": "Slow dolly along hydroponic racks toward window",
+          "webAssetRole": "Fondo para la carta 'Invernadero' y los estudios reales OSDR de plantas"
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "environmentId": "marte",
+      "environmentName": "Marte (Cráter Jezero, Gale Crater, Tormentas y Outpost)",
+      "scrollRange": "80% - 100%",
+      "narrativeRole": "Destino final del viaje y sitio de mayor reto en Outpost Run: retraso de radio de 3 a 22 min, tormentas de polvo que bloquean paneles solares y radiación medida por Liulin-MO (15.2 uGy/h).",
+      "threeJsSetup": "Globo y terreno 3D con la capa WMTS MOLA real (`mars_layers.json`); galería inmersiva de biomas generados directamente desde las fotos reales de `rover_photos.json`.",
+      "videos": [
+        {
+          "id": "mars-01",
+          "title": "Entrada Orbital sobre el Relieve MOLA y Valles Marineris (Hero)",
+          "tier": "veo_3_1_quality",
+          "credits": 100,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "Mars Trek WMTS (data/curated/mars_layers.json) + Viking/MRO",
+          "referenceImageUrl": "https://trek.nasa.gov/tiles/Mars/EQ/Mars_MGS_MOLA_ClrShade_merge_global_463m/1.0.0/default/default028mm/1/0/1.jpg",
+          "promptEn": "Sweeping high-altitude orbital descent over the rust-red canyons of Valles Marineris and ancient river deltas on Mars, wispy high-altitude water-ice clouds catching the warm butterscotch Martian sunlight in the thin carbon dioxide atmosphere, deep canyon shadows and layered sedimentary cliffs below, 8k IMAX planetary cinematography, smooth continuous descent.",
+          "cameraMotion": "High-altitude descending flyover",
+          "webAssetRole": "Hero background de la sección Marte (80%-85% scroll)"
+        },
+        {
+          "id": "mars-02",
+          "title": "Bioma Cráter Jezero en Vivo (Perseverance Sol 2024 Mastcam-Z)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "data/curated/rover_photos.json -> Perseverance MCZ_LEFT (Sol 2024)",
+          "referenceImageUrl": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02024/ids/edr/browse/zcam/ZL0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ02_800.jpg",
+          "promptEn": "Animate this exact NASA Perseverance rover Mastcam-Z photograph of Jezero Crater on Mars with subtle, scientifically accurate environmental motion: fine ochre Martian dust gently blowing across the layered sandstone rocks and ripples in a light breeze, soft butterscotch sky haze shifting subtly in the distance, rock geometry remains 100% faithful to the original NASA frame, slow steady camera pan.",
+          "cameraMotion": "Subtle slow pan right preserving exact NASA terrain",
+          "webAssetRole": "Bioma real 1 de Marte (con atribución directa a Perseverance Sol 2024)"
+        },
+        {
+          "id": "mars-03",
+          "title": "Bioma Cráter Gale y Remolinos de Polvo (Curiosity Sol 5073 Navcam)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "data/curated/rover_photos.json -> Curiosity NAV_LEFT_B (Sol 5073) + InSight Wind",
+          "referenceImageUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/ncam/NLB_847853302EDR_F1252490NCAM00354M_-br.jpg",
+          "promptEn": "Bring this real NASA Curiosity rover Navigation Camera photograph of Gale Crater to life: a tall, slender Martian dust devil (whirlwind) drifts slowly across the distant valley floor against the slopes of Mount Sharp, fine dust grains skimming across the foreground bedrock driven by Martian winds measured by InSight, authentic grayscale-to-warm-sepia rover camera aesthetic, smooth slow push-in.",
+          "cameraMotion": "Slow push-in across Gale Crater terrain",
+          "webAssetRole": "Bioma real 2 de Marte (conecta foto de Curiosity Sol 5073 con vientos de InSight)"
+        },
+        {
+          "id": "mars-04",
+          "title": "Tormenta de Polvo Marciana sobre el Outpost (Hazcam Reference)",
+          "tier": "veo_3_1_fast",
+          "credits": 20,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "data/curated/rover_photos.json -> Curiosity RHAZ_LEFT_B (Sol 5073) + Perseverance MCZ_RIGHT",
+          "referenceImageUrl": "https://mars.nasa.gov/mars2020-raw-images/pub/ods/surface/sol/02024/ids/edr/browse/zcam/ZR0_2024_0846622583_145EBY_N0930000ZCAM10058_1100LMJ01_800.jpg",
+          "secondaryReferenceUrl": "https://mars.nasa.gov/msl-raw-images/proj/msl/redops/ods/surface/sol/05073/opgs/edr/rcam/RLB_847852011EDR_S1252490RHAZ00303M_-br.jpg",
+          "promptEn": "Starting from the NASA Martian surface terrain reference, a massive rust-colored Martian dust storm wall rolls across the horizon, dimming the sunlight into a dramatic deep amber haze. In the mid-ground, a compact Martian outpost habitat seals its storm shelter shutters while fine red dust swirls across its solar panels, realistic atmospheric scattering, slow steady camera.",
+          "cameraMotion": "Slow wide pan as dust wall approaches",
+          "webAssetRole": "Evento de presión: tormenta de polvo + activación del Refugio en Marte"
+        },
+        {
+          "id": "mars-05",
+          "title": "Atardecer Azul en Marte y Antena de Misión (Cierre del Viaje)",
+          "tier": "veo_3_1_lite",
+          "credits": 10,
+          "flowMode": "Frames to Video (Image-to-Video)",
+          "nasaSource": "NASA Rover Blue Sunset + Comm Delay (3-22 min en worldState.mjs)",
+          "referenceImageUrl": "https://images-assets.nasa.gov/image/PIA19400/PIA19400~orig.jpg",
+          "promptEn": "Scientifically accurate Martian sunset based on NASA rover photography: the small distant Sun sinks toward the rocky crater rim surrounded by an eerie cool pale-blue Mie-scattering glow within the warm dusty sky. In the foreground silhouette, the Martian outpost dish antenna slowly aligns toward Earth, warm interior habitat lights glowing softly, peaceful cinematic loop.",
+          "cameraMotion": "Static composition with slow atmospheric light transition",
+          "webAssetRole": "Cierre de la landing page (95%-100% scroll) y CTA 'Jugar Misión Outpost Run'"
+        }
+      ]
+    }
+  ]
+}

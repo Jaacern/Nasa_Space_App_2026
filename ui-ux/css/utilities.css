@@ -1,0 +1,167 @@
+/* ============================================================================
+   ORBITAL UI · UTILIDADES
+   Helpers con prefijo ux- para no chocar con Tailwind, Bootstrap o el CSS
+   existente del proyecto.
+   ============================================================================ */
+
+/* Texto */
+.ux-text-center { text-align: center; }
+.ux-text-left { text-align: left; }
+.ux-text-right { text-align: right; }
+.ux-text-balance { text-wrap: balance; }
+.ux-text-pretty { text-wrap: pretty; }
+.ux-uppercase { text-transform: uppercase; }
+.ux-nowrap { white-space: nowrap; }
+.ux-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ux-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ux-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+
+.ux-text-primary { color: var(--ux-white); }
+.ux-text-secondary { color: var(--ux-text-secondary); }
+.ux-text-muted { color: var(--ux-text-muted); }
+.ux-text-faint { color: var(--ux-text-faint); }
+.ux-text-red { color: var(--ux-red-400); }
+.ux-text-blue { color: var(--ux-blue-300); }
+.ux-text-cyan { color: var(--ux-cyan-300); }
+.ux-text-amber { color: var(--ux-amber-300); }
+.ux-text-mint { color: var(--ux-mint-400); }
+.ux-text-inverse { color: var(--ux-text-inverse); }
+
+.ux-text-2xs { font-size: var(--ux-text-2xs); }
+.ux-text-xs { font-size: var(--ux-text-xs); }
+.ux-text-sm { font-size: var(--ux-text-sm); }
+.ux-text-base { font-size: var(--ux-text-base); }
+.ux-text-lg { font-size: var(--ux-text-lg); }
+.ux-text-xl { font-size: var(--ux-text-xl); }
+.ux-text-2xl { font-size: var(--ux-text-2xl); }
+.ux-text-3xl { font-size: var(--ux-text-3xl); }
+
+.ux-weight-regular { font-weight: var(--ux-weight-regular); }
+.ux-weight-semibold { font-weight: var(--ux-weight-semibold); }
+.ux-weight-bold { font-weight: var(--ux-weight-bold); }
+.ux-weight-black { font-weight: var(--ux-weight-black); }
+
+.ux-tracking-wide { letter-spacing: var(--ux-tracking-wide); }
+.ux-tracking-wider { letter-spacing: var(--ux-tracking-wider); }
+.ux-tracking-widest { letter-spacing: var(--ux-tracking-widest); }
+.ux-leading-tight { line-height: var(--ux-leading-tight); }
+.ux-leading-normal { line-height: var(--ux-leading-normal); }
+.ux-balance { text-wrap: balance; }
+
+/* Display */
+.ux-block { display: block; }
+.ux-inline { display: inline; }
+.ux-inline-block { display: inline-block; }
+.ux-inline-flex { display: inline-flex; }
+.ux-flex { display: flex; }
+.ux-grid-display { display: grid; }
+.ux-hidden { display: none; }
+.ux-relative { position: relative; }
+.ux-absolute { position: absolute; }
+.ux-fixed { position: fixed; }
+.ux-sticky { position: sticky; }
+.ux-inset-0 { inset: 0; }
+.ux-overflow-hidden { overflow: hidden; }
+.ux-isolate { isolation: isolate; }
+
+.ux-flex-col { flex-direction: column; }
+.ux-flex-wrap { flex-wrap: wrap; }
+.ux-flex-1 { flex: 1 1 0%; }
+.ux-items-start { align-items: flex-start; }
+.ux-items-center { align-items: center; }
+.ux-items-end { align-items: flex-end; }
+.ux-justify-start { justify-content: flex-start; }
+.ux-justify-center { justify-content: center; }
+.ux-justify-between { justify-content: space-between; }
+.ux-justify-end { justify-content: flex-end; }
+.ux-self-center { align-self: center; }
+
+.ux-gap-1 { gap: var(--ux-space-1); }
+.ux-gap-2 { gap: var(--ux-space-2); }
+.ux-gap-3 { gap: var(--ux-space-3); }
+.ux-gap-4 { gap: var(--ux-space-4); }
+.ux-gap-5 { gap: var(--ux-space-5); }
+.ux-gap-6 { gap: var(--ux-space-6); }
+.ux-gap-8 { gap: var(--ux-space-8); }
+.ux-gap-10 { gap: var(--ux-space-10); }
+.ux-gap-12 { gap: var(--ux-space-12); }
+
+/* Márgenes y padding */
+.ux-m-0 { margin: 0; }
+.ux-mt-1 { margin-top: var(--ux-space-1); }
+.ux-mt-2 { margin-top: var(--ux-space-2); }
+.ux-mt-3 { margin-top: var(--ux-space-3); }
+.ux-mt-4 { margin-top: var(--ux-space-4); }
+.ux-mt-6 { margin-top: var(--ux-space-6); }
+.ux-mt-8 { margin-top: var(--ux-space-8); }
+.ux-mt-10 { margin-top: var(--ux-space-10); }
+.ux-mt-12 { margin-top: var(--ux-space-12); }
+.ux-mb-2 { margin-bottom: var(--ux-space-2); }
+.ux-mb-3 { margin-bottom: var(--ux-space-3); }
+.ux-mb-4 { margin-bottom: var(--ux-space-4); }
+.ux-mb-6 { margin-bottom: var(--ux-space-6); }
+.ux-mb-8 { margin-bottom: var(--ux-space-8); }
+.ux-mx-auto { margin-inline: auto; }
+.ux-p-0 { padding: 0; }
+.ux-p-3 { padding: var(--ux-space-3); }
+.ux-p-4 { padding: var(--ux-space-4); }
+.ux-p-5 { padding: var(--ux-space-5); }
+.ux-p-6 { padding: var(--ux-space-6); }
+.ux-p-8 { padding: var(--ux-space-8); }
+
+/* Tamaños */
+.ux-w-full { width: 100%; }
+.ux-h-full { height: 100%; }
+.ux-min-h-screen { min-height: 100vh; }
+.ux-max-w-sm { max-width: 380px; }
+.ux-max-w-md { max-width: 560px; }
+.ux-max-w-lg { max-width: 760px; }
+.ux-max-w-xl { max-width: 980px; }
+
+/* Bordes y formas */
+.ux-rounded-sm { border-radius: var(--ux-radius-sm); }
+.ux-rounded-md { border-radius: var(--ux-radius-md); }
+.ux-rounded-lg { border-radius: var(--ux-radius-lg); }
+.ux-rounded-full { border-radius: 50%; }
+.ux-border { border: var(--ux-border-hairline); }
+.ux-border-strong { border: 1px solid var(--ux-border-strong); }
+.ux-border-dashed { border: 1px dashed var(--ux-border-strong); }
+.ux-border-top { border-top: var(--ux-border-hairline); }
+.ux-border-bottom { border-bottom: var(--ux-border-hairline); }
+.ux-chamfer { clip-path: var(--ux-chamfer-md); }
+.ux-chamfer-sm { clip-path: var(--ux-chamfer-sm); }
+.ux-chamfer-lg { clip-path: var(--ux-chamfer-lg); }
+
+/* Efectos */
+.ux-opacity-60 { opacity: 0.6; }
+.ux-opacity-40 { opacity: 0.4; }
+.ux-shadow-md { box-shadow: var(--ux-shadow-md); }
+.ux-shadow-lg { box-shadow: var(--ux-shadow-lg); }
+.ux-glow-red { box-shadow: var(--ux-glow-red); }
+.ux-glow-cyan { box-shadow: var(--ux-glow-cyan); }
+.ux-blur { filter: blur(12px); }
+.ux-grayscale { filter: grayscale(1); }
+.ux-cover { object-fit: cover; width: 100%; height: 100%; }
+
+/* Aspect ratios */
+.ux-aspect-square { aspect-ratio: 1; }
+.ux-aspect-video { aspect-ratio: 16 / 9; }
+.ux-aspect-photo { aspect-ratio: 4 / 3; }
+.ux-aspect-portrait { aspect-ratio: 3 / 4; }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .ux-hide-md { display: none !important; }
+}
+@media (max-width: 600px) {
+  .ux-hide-sm { display: none !important; }
+}
+@media (min-width: 901px) {
+  .ux-show-md { display: none !important; }
+}
+
+/* Print */
+@media print {
+  .ux-root { color: #000; background: #fff; }
+  .ux-no-print { display: none !important; }
+}

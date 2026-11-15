@@ -15,7 +15,8 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { getApod, getCsaResources, getMarsSurfaceWeather, getRoverPhotos, getSpaceWeatherLive } from "../src/api/sources.mjs";
 import { CATALOG } from "../src/api/catalog.mjs";
-import { redact } from "../src/api/sanitize.mjs";
+import { redact, safeUrl } from "../src/api/sanitize.mjs";
+import { enrichPlanWithSnapshots, optimizeFlowBudget } from "../src/data/flowPlanner.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const CURATED = path.join(ROOT, "data", "curated");
@@ -97,6 +98,25 @@ const routes = {
     return { meta: d.meta, topic: t };
   },
   "/api/manifest": () => readCurated("manifest.json"),
+  "/api/flow-plan": async (q) => {
+    const plan = JSON.parse(await readFile(path.join(ROOT, "content", "flow_video_plan.json"), "utf8"));
+    const [roverPhotos, marsWeather, spaceWeather, radiation] = await Promise.all([
+      readCurated("rover_photos.json").catch(() => null),
+      readCurated("mars_weather.json").catch(() => null),
+      readCurated("space_weather.json").catch(() => null),
+      readCurated("radiation.json").catch(() => null),
+    ]);
+    const credits = Number(q.get("credits") ?? 1050);
+    const enriched = enrichPlanWithSnapshots(plan, { roverPhotos, marsWeather, spaceWeather, radiation });
+    const optimized = optimizeFlowBudget(enriched, { credits });
+    return {
+      meta: { source: "Google Flow Video Asset Planner + NASA Snapshots", mode: "snapshot", retrievedAt: new Date().toISOString() },
+      budget: optimized.budget,
+      masterPromptTemplate: enriched.masterPromptTemplate,
+      nasaApiEvaluation: enriched.nasaApiEvaluation,
+      environments: optimized.environments,
+    };
+  },
 };
 
 async function handleApi(pathname, q) {
@@ -112,8 +132,59 @@ async function handleApi(pathname, q) {
 }
 
 // --- Archivos estáticos (solo carpetas públicas) ------------------------------
-const STATIC_PREFIXES = ["/src/", "/data/curated/", "/content/", "/public/"];
-const MIME = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp" };
+const STATIC_PREFIXES = ["/src/", "/data/curated/", "/content/", "/public/", "/ui-ux/"];
+const MIME = {
+  ".html": "text/html; charset=utf-8",
+  ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
+  ".css": "text/css; charset=utf-8",
+  ".md": "text/markdown; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
+  ".pdf": "application/pdf",
+  ".svg": "image/svg+xml",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".webp": "image/webp",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
+  ".glb": "model/gltf-binary",
+  ".wasm": "application/wasm",
+  ".woff2": "font/woff2",
+  ".woff": "font/woff",
+};
+
+const ALLOWED_MEDIA_HOSTS = new Set([
+  "images-assets.nasa.gov",
+  "mars.nasa.gov",
+  "trek.nasa.gov",
+  "assets.science.nasa.gov",
+  "science.nasa.gov",
+  "apod.nasa.gov",
+]);
+
+async function handleMediaProxy(q, res, baseHeaders) {
+  const rawUrl = safeUrl(q.get("url"));
+  if (!rawUrl) throw new ApiError(400, "bad_url", "URL inválida");
+  const parsed = new URL(rawUrl);
+  if (!ALLOWED_MEDIA_HOSTS.has(parsed.hostname)) {
+    throw new ApiError(400, "forbidden_host", "Solo se permiten dominios oficiales de NASA");
+  }
+  const upstream = await fetch(rawUrl, {
+    headers: { "User-Agent": "OutpostMissionTrainer/0.1 (NASA Space Apps 2026)" },
+    signal: AbortSignal.timeout(12_000),
+  });
+  if (!upstream.ok) throw new ApiError(upstream.status, "upstream_error", `HTTP ${upstream.status}`);
+  const ctype = upstream.headers.get("content-type") ?? "image/jpeg";
+  const buf = Buffer.from(await upstream.arrayBuffer());
+  res.writeHead(200, {
+    ...baseHeaders,
+    "Content-Type": ctype,
+    "Cache-Control": "public, max-age=86400",
+  });
+  res.end(buf);
+}
 
 async function serveStatic(pathname, res) {
   const decoded = decodeURIComponent(pathname);
@@ -156,9 +227,19 @@ export function createApp() {
       if (req.method !== "GET" && req.method !== "HEAD") throw new ApiError(405, "method_not_allowed", "Solo GET");
       if (limited(req.socket.remoteAddress ?? "?")) throw new ApiError(429, "rate_limited", "Demasiadas peticiones; espera un minuto");
       const url = new URL(req.url, "http://localhost");
-      if (url.pathname === "/") {
+      if (url.pathname === "/" || url.pathname === "/index.html") {
+        if (await serveStatic("/public/index.html", res)) return;
+      }
+      if (url.pathname === "/api") {
         res.writeHead(200, { ...base, "Content-Type": "text/html; charset=utf-8" });
         return res.end(indexHtml());
+      }
+      if (["/ui-ux", "/ui-ux/", "/ui-ux/demo", "/ui-ux/demo/"].includes(url.pathname)) {
+        res.writeHead(302, { ...base, Location: "/ui-ux/demo/index.html" });
+        return res.end();
+      }
+      if (url.pathname === "/api/media-proxy") {
+        return await handleMediaProxy(url.searchParams, res, base);
       }
       if (url.pathname.startsWith("/api/")) {
         const body = await handleApi(url.pathname.replace(/\/$/, ""), url.searchParams);

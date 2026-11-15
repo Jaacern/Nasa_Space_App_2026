@@ -74,7 +74,27 @@ const APOD_SCHEMA = {
 };
 
 export async function getApod({ fetchJson = request } = {}) {
-  const a = await fetchJson(`${NASA_API}planetary/apod?api_key=${encodeURIComponent(apiKey())}`);
+  let a = await fetchJson(`${NASA_API}planetary/apod?api_key=${encodeURIComponent(apiKey())}`).catch((e) => {
+    if (fetchJson !== request) throw e;
+    return null;
+  });
+  // Si api.nasa.gov/planetary/apod devuelve HTTP 500 o el marcador de posición (logo de science.nasa.gov),
+  // en modo real (fetchJson === request) consultamos la página oficial https://science.nasa.gov/apod/ donde redirige apod.nasa.gov.
+  if (fetchJson === request && (!a || /nasa-logo|\/wp-content\/themes\//i.test(a?.url ?? "") || /^NASA Science$/i.test(a?.title ?? ""))) {
+    const html = await request("https://science.nasa.gov/apod/", { as: "text" });
+    const imgMatch = html.match(/https:\/\/assets\.science\.nasa\.gov\/content\/dam\/science\/cds\/apod\/[^\s"'<>]+\.(?:jpe?g|png)/i);
+    if (imgMatch) {
+      a = {
+        date: isoDate(a?.date) ?? todayIso(),
+        title: cleanText(a?.explanation?.split(".")[0] || "Astronomy Picture of the Day", 120),
+        media_type: "image",
+        url: imgMatch[0],
+        hdurl: imgMatch[0],
+        copyright: a?.copyright ?? null,
+        explanation: a?.explanation || "Astronomy Picture of the Day from NASA Science (science.nasa.gov/apod/).",
+      };
+    }
+  }
   const copyright = cleanText(a?.copyright, 80) || null;
   const out = {
     meta: liveMeta({ source: "NASA APOD", sourceUrl: NASA_API }),
@@ -89,6 +109,11 @@ export async function getApod({ fetchJson = request } = {}) {
       explanation: cleanText(a?.explanation, 400),
     },
   };
+  // Observado el 2026-11-14: la API a veces responde con el logo de NASA como "imagen del día". Es un marcador de
+  // posición (y el logo de NASA no se puede usar así), no un dato real.
+  if (/nasa-logo|\/wp-content\/themes\//i.test(out.apod.url ?? "") || /^NASA Science$/i.test(out.apod.title)) {
+    throw new Error("apod: la API devolvió un marcador de posición (logo de NASA), no una imagen del día");
+  }
   return assertValid(out, APOD_SCHEMA, "apod");
 }
 

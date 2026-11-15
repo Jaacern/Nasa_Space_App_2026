@@ -2,3 +2,6 @@
 node_modules/
 scripts/_*
 *.log
+
+# Assets 3D descargados (pesados: no se versionan)
+ASSETS 3D/

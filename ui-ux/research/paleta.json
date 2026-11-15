@@ -1,0 +1,89 @@
+{
+  "name": "ORBITAL UI",
+  "version": "1.0.0",
+  "theme": "NASA / mission patch / space birthday",
+  "updated": "2026-11-14",
+  "colors": {
+    "primitives": {
+      "red": { "300": "#FF9B87", "400": "#FF6A4D", "500": "#FC3D21", "600": "#DB2A10", "700": "#A81E0B" },
+      "blue": { "200": "#C7DBFF", "300": "#6FA8FF", "400": "#3B82F6", "500": "#1C67E3", "600": "#0B3D91", "700": "#082B6B", "800": "#06152F" },
+      "cyan": { "300": "#7DD3FC", "400": "#38BDF8", "500": "#0EA5E9" },
+      "amber": { "300": "#FCD34D", "400": "#F5A524", "500": "#D97706" },
+      "mint": { "400": "#2DD4A7", "500": "#14B8A6" },
+      "rust": { "500": "#C1440E" },
+      "gold": { "400": "#D9A441" },
+      "neutrals": {
+        "void": "#04060C",
+        "space950": "#070B14",
+        "space900": "#0A1020",
+        "space850": "#0D1526",
+        "space800": "#111B30",
+        "space700": "#17233C",
+        "steel600": "#28374F",
+        "steel500": "#3E5068",
+        "steel400": "#61748E",
+        "lunar400": "#8FA3BF",
+        "lunar300": "#B4C2D6",
+        "lunar200": "#D8E1EE",
+        "lunar100": "#EEF3FA",
+        "white": "#F8FAFC"
+      }
+    },
+    "semantic": {
+      "bg": "#04060C",
+      "surface": "rgba(13, 21, 38, 0.72)",
+      "border": "rgba(180, 194, 214, 0.16)",
+      "text": "#F8FAFC",
+      "textSecondary": "#D8E1EE",
+      "textMuted": "#8FA3BF",
+      "action": "#FC3D21",
+      "link": "#1C67E3",
+      "data": "#38BDF8",
+      "success": "#2DD4A7",
+      "warning": "#F5A524",
+      "danger": "#FC3D21",
+      "focus": "#7DD3FC"
+    },
+    "officialReference": {
+      "nasaWebRed": "#FC3D21",
+      "nasaWebBlue": "#0B3D91",
+      "wormRed": "#E03C31",
+      "nasaGovAccent2026": "#F64137",
+      "note": "Rojo y azul del emblema NASA según NASA Style Guide (Pantone 185 y 286). El rojo del logotipo worm es Pantone 179 / #E03C31. NASA no patrocina este kit."
+    }
+  },
+  "typography": {
+    "ui": { "family": "Public Sans", "role": "Interfaz base (NASA WDS / USWDS)", "weights": [400, 600, 700], "license": "SIL OFL 1.1" },
+    "sans": { "family": "Inter", "role": "Lectura y UI alternativa (NASA HDS)", "weights": [400, 600, 800], "license": "SIL OFL 1.1" },
+    "display": { "family": "Michroma", "role": "Display aeroespacial / worm-inspired", "weights": [400], "license": "SIL OFL 1.1" },
+    "editorial": { "family": "Instrument Serif", "role": "Contraste editorial / pitch", "weights": [400], "styles": ["normal", "italic"], "license": "SIL OFL 1.1" },
+    "mono": { "family": "IBM Plex Mono", "role": "Telemetría y etiquetas", "weights": [400, 600], "license": "SIL OFL 1.1" },
+    "data": { "family": "DM Mono", "role": "Datos y cifras (NASA HDS)", "weights": [400, 500], "license": "SIL OFL 1.1" },
+    "tech": { "family": "Chakra Petch", "role": "HUD / sci-fi alternativo", "weights": [400, 600, 700], "license": "SIL OFL 1.1" },
+    "poster": { "family": "Bungee", "role": "Póster de fiesta / sticker", "weights": [400], "license": "SIL OFL 1.1" }
+  },
+  "assets": {
+    "fonts": "assets/fonts/*.woff2 (subset latin + latin-ext)",
+    "icons": "assets/icons/*.svg (Lucide, ISC)",
+    "images": "assets/img/*.jpg|webp (NASA Images API)",
+    "credits": "assets/img/credits.json",
+    "originalSvg": [
+      "assets/svg/wordmark-outpost.svg",
+      "assets/svg/patch-junior-astronaut.svg",
+      "assets/svg/orbit-chart.svg",
+      "assets/svg/sticker-30-soles.svg",
+      "assets/svg/planet-ring.svg",
+      "assets/svg/starburst.svg"
+    ]
+  },
+  "sources": [
+    "https://www.nasa.gov/nasa-brand-center/",
+    "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+    "https://www.nasa.gov/wp-content/uploads/2015/01/nasa_graphics_manual_nhb_1430-2_jan_1976.pdf",
+    "https://en.wikipedia.org/wiki/NASA_insignia",
+    "https://designsystem.digital.gov/components/typography/",
+    "https://images.nasa.gov/",
+    "https://fonts.google.com/",
+    "https://lucide.dev/"
+  ]
+}

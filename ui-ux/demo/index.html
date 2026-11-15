@@ -1,0 +1,939 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ORBITAL UI · Kit de diseño NASA para Outpost Run</title>
+  <meta name="description" content="Kit UI/UX con temática NASA: colores, tipografías, bordes, formas, efectos y componentes frontend listos para usar. Proyecto Outpost Run, NASA Space Apps 2026.">
+  <link rel="icon" href="../assets/svg/sticker-30-soles.svg" type="image/svg+xml">
+  <link rel="preload" href="../assets/fonts/michroma-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/public-sans-400-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../css/ui-ux.css">
+  <style>
+    /* ---------- Estilos exclusivos de la maqueta de demostración ---------- */
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--ux-bg); overflow-x: clip; }
+    .demo-nav {
+      position: sticky; top: 0; z-index: var(--ux-z-sticky);
+      background: rgba(5, 8, 15, 0.72);
+      border-bottom: var(--ux-border-hairline);
+      backdrop-filter: blur(18px) saturate(135%);
+      -webkit-backdrop-filter: blur(18px) saturate(135%);
+    }
+    .demo-nav__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--ux-space-6); min-height: 66px; }
+    .demo-logo { display: flex; align-items: center; gap: var(--ux-space-3); }
+    .demo-logo img { width: auto; height: 27px; }
+    .demo-nav__links { display: flex; align-items: center; gap: var(--ux-space-6); }
+    .demo-nav__links a { font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ux-text-muted); text-decoration: none; }
+    .demo-nav__links a:hover { color: var(--ux-white); }
+    .demo-clock { font-family: var(--ux-font-data); font-size: 11px; letter-spacing: .08em; color: var(--ux-cyan-300); }
+
+    .demo-hero { position: relative; display: flex; align-items: center; min-height: min(940px, 94vh); padding-block: clamp(3.5rem, 8vw, 6rem) clamp(4rem, 9vw, 7rem); overflow: hidden; }
+    .demo-hero__bg {
+      position: absolute; inset: 0; z-index: 0;
+      background-image: url("../assets/img/carina-nebula.webp");
+      background-repeat: no-repeat; background-position: 72% 45%; background-size: cover;
+      opacity: .62;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.85) 62%, #000 100%);
+      mask-image: linear-gradient(90deg, transparent 0%, rgba(0,0,0,.12) 30%, rgba(0,0,0,.85) 62%, #000 100%);
+    }
+    .demo-hero__bg::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(4,6,12,.35), rgba(4,6,12,.86)); }
+    .demo-hero__grid {
+      position: absolute; inset: 0; z-index: 0; opacity: .55;
+      background-image: linear-gradient(rgba(143,163,191,.07) 1px, transparent 1px), linear-gradient(90deg, rgba(143,163,191,.07) 1px, transparent 1px);
+      background-size: 64px 64px;
+      -webkit-mask-image: radial-gradient(80% 70% at 45% 45%, #000 20%, transparent 78%);
+      mask-image: radial-gradient(80% 70% at 45% 45%, #000 20%, transparent 78%);
+    }
+    .demo-hero__inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1.08fr .92fr; gap: clamp(2rem, 5vw, 5rem); align-items: center; }
+    .demo-hero__inner > * { min-width: 0; }
+    .hero-copy { display: grid; gap: var(--ux-space-6); align-content: center; max-width: 760px; }
+    .hero-title { font-family: var(--ux-font-display); font-size: clamp(3.4rem, 7.4vw, 7.4rem); font-weight: 400; line-height: .88; letter-spacing: -.045em; text-transform: uppercase; margin: 0; text-wrap: balance; }
+    .hero-title .line { display: block; }
+    .hero-title .signal { color: var(--ux-red-500); text-shadow: 0 0 46px rgba(252,61,33,.35); }
+    .hero-title .thin { color: transparent; -webkit-text-stroke: 1px rgba(216,225,238,.5); }
+    .hero-title em { display: block; margin-top: .16em; font-family: var(--ux-font-editorial); font-style: italic; font-weight: 400; font-size: .31em; line-height: 1.08; letter-spacing: -.01em; text-transform: none; color: var(--ux-lunar-200); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: var(--ux-space-3); }
+    .hero-stats { display: flex; flex-wrap: wrap; gap: clamp(1.25rem, 3vw, 2.75rem); padding-top: var(--ux-space-5); border-top: var(--ux-border-hairline); }
+    .hero-stats .ux-stat__value { font-size: var(--ux-text-2xl); }
+
+    .hero-visual { position: relative; display: grid; place-items: center; min-height: clamp(380px, 46vw, 600px); }
+    .hero-orbit { position: absolute; width: 112%; aspect-ratio: 1; border: 1px dashed rgba(143,163,191,.24); border-radius: 50%; transform: rotate(-22deg) scaleY(.46); }
+    .hero-orbit::after { content: ""; position: absolute; top: 50%; left: -5px; width: 9px; height: 9px; border-radius: 50%; background: var(--ux-cyan-400); box-shadow: 0 0 18px var(--ux-cyan-400); }
+    .hero-orbit--two { width: 94%; transform: rotate(16deg) scaleY(.62); border-color: rgba(56,189,248,.16); }
+    .hero-orbit--two::after { left: auto; right: 8%; top: 18%; background: var(--ux-red-500); box-shadow: 0 0 18px var(--ux-red-500); }
+    .hero-patch { position: relative; z-index: 2; width: clamp(280px, 34vw, 430px); filter: drop-shadow(0 34px 70px rgba(0,0,0,.65)); animation: ux-float 9s var(--ux-ease-in-out) infinite; }
+    .hero-patch .ux-patch { width: 100%; }
+    .hero-sticker { position: absolute; z-index: 3; top: 4%; right: 0; width: clamp(96px, 10vw, 144px); }
+    .hero-readout { position: absolute; z-index: 3; left: 50%; bottom: -7%; width: min(280px, 74%); transform: translateX(-50%); }
+    .hero-chart { position: absolute; z-index: 1; right: -6%; bottom: -2%; width: min(280px, 52%); opacity: .55; }
+
+    .demo-section { position: relative; padding-block: clamp(4.5rem, 9vw, 8rem); }
+    .demo-section--alt { background: linear-gradient(180deg, rgba(10,16,32,.55), rgba(4,6,12,0)); }
+    .section-index { display: flex; align-items: center; gap: var(--ux-space-4); margin-bottom: var(--ux-space-5); }
+    .section-index__num { font-family: var(--ux-font-display); font-size: var(--ux-text-sm); color: var(--ux-red-500); }
+    .section-index__line { width: 72px; height: 1px; background: var(--ux-border-strong); }
+    .section-index__label { font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--ux-text-faint); }
+    .section-title { font-family: var(--ux-font-display); font-size: clamp(2rem, 4.4vw, 3.8rem); line-height: 1; letter-spacing: -.03em; text-transform: uppercase; max-width: 900px; }
+    .section-title em { font-family: var(--ux-font-editorial); font-style: italic; text-transform: none; color: var(--ux-cyan-300); letter-spacing: -.01em; }
+    .section-head { display: grid; gap: var(--ux-space-4); max-width: 820px; margin-bottom: var(--ux-space-12); }
+
+    .swatch-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--ux-space-4); }
+    .swatch { overflow: hidden; background: var(--ux-surface); border: var(--ux-border-hairline); border-radius: var(--ux-radius-md); text-align: left; transition: transform var(--ux-dur-base) var(--ux-ease-out), border-color var(--ux-dur-base); }
+    .swatch:hover { transform: translateY(-3px); border-color: var(--ux-border-strong); }
+    .swatch__chip { position: relative; display: block; height: 112px; background: var(--sw); }
+    .swatch__chip::after { content: ""; position: absolute; inset: 0; opacity: .12; background-image: linear-gradient(rgba(0,0,0,.55) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,.55) 1px, transparent 1px); background-size: 16px 16px; }
+    .swatch__body { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ux-space-2); padding: var(--ux-space-3) var(--ux-space-4); }
+    .swatch__name { font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ux-text-secondary); }
+    .swatch__hex { font-family: var(--ux-font-data); font-size: 10px; color: var(--ux-text-faint); }
+    .swatch__use { display: block; padding: 0 var(--ux-space-4) var(--ux-space-3); font-size: 11px; color: var(--ux-text-faint); }
+    .gradient-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ux-space-4); margin-top: var(--ux-space-4); }
+    .gradient-card { padding: var(--ux-space-5); min-height: 150px; display: flex; flex-direction: column; justify-content: flex-end; border-radius: var(--ux-radius-md); border: var(--ux-border-hairline); }
+
+    .type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ux-space-5); }
+    .type-card { display: grid; grid-template-columns: auto 1fr; gap: var(--ux-space-5); align-items: center; padding: var(--ux-space-5); background: var(--ux-surface); border: var(--ux-border-hairline); border-radius: var(--ux-radius-md); transition: border-color var(--ux-dur-base), background var(--ux-dur-base); }
+    .type-card:hover { border-color: var(--ux-border-cyan); background: rgba(13,21,38,.9); }
+    .type-card__aa { font-size: clamp(3.5rem, 6vw, 5rem); line-height: .8; color: var(--ux-white); min-width: 1.5em; }
+    .type-card__name { font-family: var(--ux-font-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ux-cyan-300); }
+    .type-card__role { margin-top: 4px; font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .08em; color: var(--ux-text-faint); text-transform: uppercase; }
+    .type-card__sample { margin-top: 8px; font-size: var(--ux-text-sm); color: var(--ux-text-secondary); line-height: 1.45; }
+    .scale-demo { margin-top: var(--ux-space-8); padding: var(--ux-space-8); border: var(--ux-border-hairline); border-radius: var(--ux-radius-lg); background: var(--ux-surface-inset); display: grid; gap: var(--ux-space-4); }
+    .scale-demo__row { display: grid; grid-template-columns: 120px 1fr; gap: var(--ux-space-4); align-items: baseline; padding-bottom: var(--ux-space-3); border-bottom: 1px solid var(--ux-border-faint); }
+    .scale-demo__row:last-child { border-bottom: 0; padding-bottom: 0; }
+    .scale-demo__key { font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: var(--ux-text-faint); }
+
+    .shape-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: var(--ux-space-5); }
+    .shape-card { padding: var(--ux-space-6); min-height: 220px; display: flex; flex-direction: column; justify-content: space-between; gap: var(--ux-space-5); }
+    .shape-card--wide { grid-column: span 7; }
+    .shape-card--tall { grid-column: span 5; }
+    .shape-card--third { grid-column: span 4; }
+    .shape-demo-center { display: grid; place-items: center; flex: 1; }
+    .border-samples { display: grid; gap: var(--ux-space-4); }
+    .border-sample { display: flex; align-items: center; justify-content: space-between; gap: var(--ux-space-4); padding: var(--ux-space-4); font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ux-text-muted); }
+    .orbit-card { padding: 0; overflow: hidden; min-height: 320px; }
+    .orbit-card img { width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+    .hex-tile { width: 120px; aspect-ratio: 1.15; display: grid; place-items: center; background: linear-gradient(180deg, rgba(56,189,248,.18), rgba(11,61,145,.3)); clip-path: polygon(25% 5%, 75% 5%, 100% 50%, 75% 95%, 25% 95%, 0 50%); font-family: var(--ux-font-display); font-size: 11px; letter-spacing: .1em; color: var(--ux-cyan-300); }
+
+    .dash { display: grid; grid-template-columns: 1.15fr .85fr; gap: var(--ux-space-5); }
+    .dash__side { display: grid; gap: var(--ux-space-5); align-content: start; }
+    .dash-meters { display: grid; gap: var(--ux-space-5); }
+    .dash-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ux-space-4); padding-top: var(--ux-space-4); border-top: var(--ux-border-hairline); }
+    .cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ux-space-5); }
+    .form-demo { display: grid; gap: var(--ux-space-4); }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ux-space-4); }
+    .alert-stack { display: grid; gap: var(--ux-space-3); }
+
+    .effects-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ux-space-5); }
+    .effect-card { position: relative; min-height: 260px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: var(--ux-space-5); border: var(--ux-border-hairline); border-radius: var(--ux-radius-lg); }
+    .effect-card__label { position: relative; z-index: 4; font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: var(--ux-text-secondary); }
+    .effect-card__title { position: relative; z-index: 4; font-family: var(--ux-font-display); font-size: var(--ux-text-sm); margin-top: 4px; }
+    .foil-card { background: var(--ux-grad-foil); background-size: 200% 200%; color: #0a1020; }
+    .foil-card .effect-card__label, .foil-card .effect-card__title { color: #0a1020; }
+
+    .gallery { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 180px; gap: var(--ux-space-3); }
+    .gallery figure { position: relative; margin: 0; overflow: hidden; border-radius: var(--ux-radius-md); border: var(--ux-border-hairline); background: var(--ux-space-900); }
+    .gallery img { width: 100%; height: 100%; object-fit: cover; transition: transform 900ms var(--ux-ease-out), filter 600ms; filter: saturate(.9); }
+    .gallery figure:hover img { transform: scale(1.06); filter: saturate(1.1); }
+    .gallery figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(4,6,12,.88)); pointer-events: none; }
+    .gallery figcaption { position: absolute; z-index: 2; left: var(--ux-space-4); right: var(--ux-space-4); bottom: var(--ux-space-3); display: flex; align-items: flex-end; justify-content: space-between; gap: var(--ux-space-3); }
+    .gallery figcaption strong { display: block; font-size: 12px; font-weight: 600; color: var(--ux-white); }
+    .gallery figcaption span { font-family: var(--ux-font-mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--ux-text-muted); }
+    .gallery .span-2 { grid-column: span 2; }
+    .gallery .row-2 { grid-row: span 2; }
+    .gallery-band { margin-top: var(--ux-space-5); position: relative; overflow: hidden; border-radius: var(--ux-radius-md); border: var(--ux-border-hairline); height: 170px; }
+    .gallery-band img { width: 100%; height: 100%; object-fit: cover; opacity: .75; }
+    .gallery-band__caption { position: absolute; inset: auto var(--ux-space-5) var(--ux-space-4); display: flex; justify-content: space-between; gap: var(--ux-space-4); font-family: var(--ux-font-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ux-text-secondary); }
+
+    .demo-footer { padding-block: var(--ux-space-16) var(--ux-space-8); border-top: var(--ux-border-hairline); background: linear-gradient(180deg, rgba(4,6,12,.2), rgba(4,6,12,.85)); }
+    .footer-mark { width: min(420px, 80vw); height: auto; opacity: .95; }
+    .demo-toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); z-index: var(--ux-z-toast); opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s; }
+    .demo-toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    @media (max-width: 1050px) {
+      .demo-hero__inner { grid-template-columns: minmax(0, 1fr); }
+      .hero-visual { min-height: 430px; order: -1; }
+      .hero-patch { width: min(340px, 62vw); }
+      .hero-readout { left: 0; bottom: -2%; }
+      .hero-chart { display: none; }
+      .dash { grid-template-columns: 1fr; }
+      .cards-grid { grid-template-columns: repeat(2, 1fr); }
+      .effects-grid { grid-template-columns: minmax(0, 1fr); }
+      .swatch-grid { grid-template-columns: repeat(3, 1fr); }
+      .shape-card--wide, .shape-card--tall, .shape-card--third { grid-column: span 12; }
+      .gallery { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 760px) {
+      .demo-nav__links { display: none; }
+      .type-grid { grid-template-columns: minmax(0, 1fr); }
+      .cards-grid { grid-template-columns: minmax(0, 1fr); }
+      .swatch-grid { grid-template-columns: repeat(2, 1fr); }
+      .gradient-strip { grid-template-columns: minmax(0, 1fr); }
+      .form-row { grid-template-columns: minmax(0, 1fr); }
+      .gallery { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 190px; }
+      .hero-title em { font-size: .36em; }
+      .hero-readout { position: relative; left: auto; bottom: auto; justify-self: center; transform: none; margin-top: -12px; width: min(280px, 100%); }
+      .scale-demo { padding: var(--ux-space-5); }
+      .scale-demo__row { grid-template-columns: minmax(0, 1fr); gap: .35rem; }
+      .scale-demo__row .ux-h1 { font-size: clamp(2rem, 9vw, 3.25rem); }
+      .scale-demo__row .ux-h2 { font-size: clamp(1.6rem, 7vw, 2.6rem); }
+      .scale-demo__row .ux-h3 { font-size: clamp(1.25rem, 5.5vw, 2rem); }
+      .orbit-card { min-height: 250px; }
+      .orbit-card img { object-fit: contain; }
+      .demo-nav__inner { gap: var(--ux-space-3); }
+      .hud-card { padding: var(--ux-space-5); }
+    }
+    @media (max-width: 500px) {
+      .demo-clock { display: none; }
+      .hero-title { font-size: clamp(2.75rem, 11.6vw, 3.4rem); }
+      .swatch-grid { grid-template-columns: minmax(0, 1fr); }
+      .gallery { grid-template-columns: minmax(0, 1fr); }
+      .gallery .span-2, .gallery .row-2 { grid-column: span 1; grid-row: span 1; }
+      .dash-kpis { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body class="ux-root">
+  <a class="ux-skip-link" href="#contenido">Saltar al contenido</a>
+
+  <!-- ===================== NAV ===================== -->
+  <header class="demo-nav">
+    <div class="ux-container demo-nav__inner">
+      <a class="demo-logo" href="#top" aria-label="ORBITAL UI, inicio">
+        <img src="../assets/svg/wordmark-outpost.svg" alt="Outpost Run">
+      </a>
+      <nav class="demo-nav__links" aria-label="Secciones del kit">
+        <a href="#paleta">Paleta</a>
+        <a href="#tipografia">Tipografía</a>
+        <a href="#forma">Forma</a>
+        <a href="#componentes">Componentes</a>
+        <a href="#efectos">Efectos</a>
+        <a href="#imagenes">Imágenes</a>
+      </nav>
+      <div class="ux-cluster" style="gap:.75rem">
+        <span class="ux-badge ux-badge--ok"><span class="ux-status-dot ux-status-dot--live"></span>UI KIT v1.0</span>
+        <span class="demo-clock" id="utc-clock" aria-label="Hora UTC">--:--:-- UTC</span>
+      </div>
+    </div>
+  </header>
+
+  <main id="contenido">
+    <!-- ===================== HERO ===================== -->
+    <section class="demo-hero" id="top">
+      <div class="demo-hero__bg" aria-hidden="true"></div>
+      <div class="demo-hero__grid" aria-hidden="true"></div>
+      <div class="ux-container demo-hero__inner">
+        <div class="hero-copy">
+          <p class="ux-kicker">Orbital UI · Kit de diseño · NASA Space Apps 2026</p>
+
+          <h1 class="hero-title">
+            <span class="line">Outpost</span>
+            <span class="line signal">Run</span>
+            <em>el universo, en tu pantalla.</em>
+          </h1>
+
+          <p class="ux-lead" style="max-width:600px">
+            Un sistema visual con <strong>olor a pólvora y estrellas</strong>: colores de señal,
+            tipografías de misión, parches, bordes HUD, texturas de telemetría y componentes
+            listos para una web con temática NASA. Como una fiesta de cumpleaños, pero en el espacio.
+          </p>
+
+          <div class="hero-actions">
+            <a class="ux-btn ux-btn--primary ux-btn--lg" href="#paleta">
+              <span class="ux-icon ux-icon--rocket" aria-hidden="true"></span>
+              Explorar el kit
+            </a>
+            <a class="ux-btn ux-btn--lg" href="#componentes">
+              <span class="ux-icon ux-icon--scan-line" aria-hidden="true"></span>
+              Ver componentes
+            </a>
+            <a class="ux-btn ux-btn--ghost ux-btn--lg" href="../README.md">
+              <span class="ux-icon ux-icon--download" aria-hidden="true"></span>
+              Leer la guía
+            </a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="ux-stat"><span class="ux-stat__value">08</span><span class="ux-stat__label">Familias tipográficas</span></div>
+            <div class="ux-stat"><span class="ux-stat__value">52</span><span class="ux-stat__label">Íconos Lucide</span></div>
+            <div class="ux-stat"><span class="ux-stat__value">08</span><span class="ux-stat__label">Fotos NASA</span></div>
+            <div class="ux-stat"><span class="ux-stat__value">100%</span><span class="ux-stat__label">CSS y SVG</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual" aria-hidden="true">
+          <div class="hero-orbit"></div>
+          <div class="hero-orbit hero-orbit--two"></div>
+          <img class="hero-chart" src="../assets/svg/orbit-chart.svg" alt="" width="640" height="420">
+          <div class="hero-patch">
+            <div class="ux-patch ux-patch--spin">
+              <img src="../assets/svg/patch-junior-astronaut.svg" alt="" width="400" height="400">
+            </div>
+          </div>
+          <img class="hero-sticker ux-animate-float" src="../assets/svg/sticker-30-soles.svg" alt="" width="220" height="220" style="animation-delay:-3s">
+          <div class="hero-readout ux-panel ux-hud" style="padding:1rem">
+            <div class="ux-eyebrow" style="margin-bottom:.6rem">Telemetría</div>
+            <div class="ux-readout" style="padding:0;background:none;border:0">
+              <div class="ux-readout__row"><span class="ux-readout__key">Sitio</span><span class="ux-readout__val">Jezero</span></div>
+              <div class="ux-readout__row"><span class="ux-readout__key">Sol</span><span class="ux-readout__val">014 / 030</span></div>
+              <div class="ux-readout__row"><span class="ux-readout__key">Señal</span><span class="ux-readout__val ux-readout__val--ok">NOMINAL</span></div>
+              <div class="ux-readout__row"><span class="ux-readout__key">Retardo</span><span class="ux-readout__val ux-readout__val--warn">14 M 22 S</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- cinta de misión -->
+    <div class="ux-marquee" aria-hidden="true" style="background:rgba(7,11,20,.7)">
+      <div class="ux-marquee__track">
+        <span class="ux-marquee__item">Mission Patch UI</span>
+        <span class="ux-marquee__item">Colores de señal</span>
+        <span class="ux-marquee__item">Tipografía aeroespacial</span>
+        <span class="ux-marquee__item">Bordes HUD</span>
+        <span class="ux-marquee__item">Texturas de telemetría</span>
+        <span class="ux-marquee__item">Stickers de misión</span>
+        <span class="ux-marquee__item">Componentes accesibles</span>
+      </div>
+      <div class="ux-marquee__track" aria-hidden="true">
+        <span class="ux-marquee__item">Mission Patch UI</span>
+        <span class="ux-marquee__item">Colores de señal</span>
+        <span class="ux-marquee__item">Tipografía aeroespacial</span>
+        <span class="ux-marquee__item">Bordes HUD</span>
+        <span class="ux-marquee__item">Texturas de telemetría</span>
+        <span class="ux-marquee__item">Stickers de misión</span>
+        <span class="ux-marquee__item">Componentes accesibles</span>
+      </div>
+    </div>
+
+    <!-- ===================== 01 PALETA ===================== -->
+    <section class="demo-section" id="paleta">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">01</span><span class="section-index__line"></span><span class="section-index__label">Sistema de color</span></div>
+          <h2 class="section-title">Pintura de <em>cohete</em> y luz de consola.</h2>
+          <p class="ux-lead">Negro de vacío para el fondo, azul institucional para la confianza, rojo de señal para la acción y cian de telemetría para los datos. Toca cualquier muestra para copiar su hex.</p>
+        </header>
+
+        <div class="swatch-grid">
+          <button class="swatch" data-copy="#04060C" style="--sw:#04060C">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Void</span><span class="swatch__hex">#04060C</span></span>
+            <span class="swatch__use">Fondo profundo · --ux-void</span>
+          </button>
+          <button class="swatch" data-copy="#0A1020" style="--sw:#0A1020">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Space 900</span><span class="swatch__hex">#0A1020</span></span>
+            <span class="swatch__use">Superficie · --ux-space-900</span>
+          </button>
+          <button class="swatch" data-copy="#17233C" style="--sw:#17233C">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Space 700</span><span class="swatch__hex">#17233C</span></span>
+            <span class="swatch__use">Panel elevado · --ux-space-700</span>
+          </button>
+          <button class="swatch" data-copy="#B4C2D6" style="--sw:#B4C2D6">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Lunar 300</span><span class="swatch__hex">#B4C2D6</span></span>
+            <span class="swatch__use">Texto secundario · --ux-lunar-300</span>
+          </button>
+
+          <button class="swatch" data-copy="#FC3D21" style="--sw:#FC3D21">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Signal Red</span><span class="swatch__hex">#FC3D21</span></span>
+            <span class="swatch__use">Acción · --ux-red-500</span>
+          </button>
+          <button class="swatch" data-copy="#0B3D91" style="--sw:#0B3D91">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">NASA Blue</span><span class="swatch__hex">#0B3D91</span></span>
+            <span class="swatch__use">Confianza · --ux-blue-600</span>
+          </button>
+          <button class="swatch" data-copy="#1C67E3" style="--sw:#1C67E3">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Link Blue</span><span class="swatch__hex">#1C67E3</span></span>
+            <span class="swatch__use">Interacción · --ux-blue-500</span>
+          </button>
+          <button class="swatch" data-copy="#38BDF8" style="--sw:#38BDF8">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Telemetry</span><span class="swatch__hex">#38BDF8</span></span>
+            <span class="swatch__use">Datos · --ux-cyan-400</span>
+          </button>
+
+          <button class="swatch" data-copy="#F5A524" style="--sw:#F5A524">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Solar Amber</span><span class="swatch__hex">#F5A524</span></span>
+            <span class="swatch__use">Aviso · --ux-amber-400</span>
+          </button>
+          <button class="swatch" data-copy="#2DD4A7" style="--sw:#2DD4A7">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Nominal Mint</span><span class="swatch__hex">#2DD4A7</span></span>
+            <span class="swatch__use">Éxito · --ux-mint-400</span>
+          </button>
+          <button class="swatch" data-copy="#C1440E" style="--sw:#C1440E">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Mars Rust</span><span class="swatch__hex">#C1440E</span></span>
+            <span class="swatch__use">Marte · --ux-rust-500</span>
+          </button>
+          <button class="swatch" data-copy="#D9A441" style="--sw:#D9A441">
+            <span class="swatch__chip"></span>
+            <span class="swatch__body"><span class="swatch__name">Mission Gold</span><span class="swatch__hex">#D9A441</span></span>
+            <span class="swatch__use">Foil · --ux-gold-400</span>
+          </button>
+        </div>
+
+        <div class="gradient-strip">
+          <div class="gradient-card" style="background:var(--ux-grad-space)">
+            <span class="ux-label">--ux-grad-space</span>
+            <strong style="margin-top:.35rem">Vacío con azul de Tierra</strong>
+          </div>
+          <div class="gradient-card" style="background:var(--ux-grad-signal)">
+            <span class="ux-label" style="color:#2b0a04">--ux-grad-signal</span>
+            <strong style="margin-top:.35rem;color:#2b0a04">Rojo de acción → ámbar solar</strong>
+          </div>
+          <div class="gradient-card" style="background:var(--ux-grad-foil);color:#0a1020">
+            <span class="ux-label" style="color:#0a1020">--ux-grad-foil</span>
+            <strong style="margin-top:.35rem">Foil de parche espacial</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 02 TIPOGRAFÍA ===================== -->
+    <section class="demo-section demo-section--alt" id="tipografia">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">02</span><span class="section-index__line"></span><span class="section-index__label">Voces tipográficas</span></div>
+          <h2 class="section-title">Ocho voces. <em>Una tripulación.</em></h2>
+          <p class="ux-lead">La interfaz habla en Public Sans e Inter; la misión grita en Michroma; los datos susurran en IBM Plex Mono; y la fiesta se pone en Bungee. Todas con subset latin + latin-ext y descargadas localmente.</p>
+        </header>
+
+        <div class="type-grid">
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-ui);font-weight:700">Aa</span>
+            <div>
+              <p class="type-card__name">Public Sans</p>
+              <p class="type-card__role">Interfaz base · 400 / 600 / 700</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-ui)">La base del sistema: botones, párrafos y formularios legibles a cualquier tamaño.</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-sans);font-weight:800">Aa</span>
+            <div>
+              <p class="type-card__name">Inter</p>
+              <p class="type-card__role">Lectura · 400 / 600 / 800</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-sans)">Segunda voz de interfaz, con más altura de x y un ritmo muy cómodo en pantalla.</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-display);font-size:2.4rem">M</span>
+            <div>
+              <p class="type-card__name">Michroma</p>
+              <p class="type-card__role">Display · 400</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-display);font-size:11px;letter-spacing:.14em;text-transform:uppercase">Mission Control · Outpost Run · 30 Soles</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-editorial);font-style:italic">Aa</span>
+            <div>
+              <p class="type-card__name">Instrument Serif</p>
+              <p class="type-card__role">Editorial · roman / italic</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-editorial);font-style:italic;font-size:1.35rem">«El espacio no está lejos: está detrás de esta pantalla.»</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-mono);font-size:2.6rem">Aa</span>
+            <div>
+              <p class="type-card__name">IBM Plex Mono</p>
+              <p class="type-card__role">Telemetría · 400 / 600</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-mono)">SOL 014 · 02:30 UTC · O₂ 21.4% · PWR 82%</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-data);font-size:2.6rem">33</span>
+            <div>
+              <p class="type-card__name">DM Mono</p>
+              <p class="type-card__role">Datos · 400 / 500</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-data)">Δ 14 m 22 s · 3.63× ISS · −63.4 °C</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-tech);font-weight:700">Aa</span>
+            <div>
+              <p class="type-card__name">Chakra Petch</p>
+              <p class="type-card__role">HUD / sci-fi · 400 / 600 / 700</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-tech);text-transform:uppercase;letter-spacing:.08em">Shield integrity · signal locked</p>
+            </div>
+          </article>
+          <article class="type-card">
+            <span class="type-card__aa" style="font-family:var(--ux-font-poster);font-size:2.2rem">30</span>
+            <div>
+              <p class="type-card__name">Bungee</p>
+              <p class="type-card__role">Póster / fiesta · 400</p>
+              <p class="type-card__sample" style="font-family:var(--ux-font-poster);text-transform:uppercase;line-height:1">Misión<br>cumpleaños</p>
+            </div>
+          </article>
+        </div>
+
+        <div class="scale-demo" aria-label="Escala tipográfica">
+          <div class="scale-demo__row"><span class="scale-demo__key">Display / 136</span><span style="font-family:var(--ux-font-display);font-size:clamp(2.2rem,5vw,4.2rem);line-height:1">DESPEGUE</span></div>
+          <div class="scale-demo__row"><span class="scale-demo__key">H1 / 72</span><span class="ux-h1">Tu base en Marte</span></div>
+          <div class="scale-demo__row"><span class="scale-demo__key">H2 / 48</span><span class="ux-h2">Cada sol cuenta</span></div>
+          <div class="scale-demo__row"><span class="scale-demo__key">H3 / 36</span><span class="ux-h3">Energía, aire, blindaje</span></div>
+          <div class="scale-demo__row"><span class="scale-demo__key">Body / 16</span><span style="max-width:680px;color:var(--ux-text-secondary)">Ninguna decisión es gratis. Ahorrar energía hoy puede costar aire mañana. La interfaz lo dice sin gritar.</span></div>
+          <div class="scale-demo__row"><span class="scale-demo__key">Mono / 12</span><span class="ux-mono" style="color:var(--ux-cyan-300)">DELAY 14M 22S · SITE JEZERO · SOL 014/030</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 03 FORMA Y BORDE ===================== -->
+    <section class="demo-section" id="forma">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">03</span><span class="section-index__line"></span><span class="section-index__label">Geometría de misión</span></div>
+          <h2 class="section-title">Bordes que parecen <em>paneles de cabina.</em></h2>
+          <p class="ux-lead">Chaflanes de 14 px, corchetes HUD, líneas de 1 px, órbitas punteadas, parches circulares y stickers torcidos. La forma correcta hace que una web parezca un artefacto espacial.</p>
+        </header>
+
+        <div class="shape-grid">
+          <article class="ux-panel ux-hud shape-card shape-card--wide" style="background:linear-gradient(135deg,rgba(11,61,145,.28),rgba(13,21,38,.9))">
+            <div>
+              <span class="ux-kicker">HUD / CHAFLÁN / CORCHETES</span>
+              <h3 class="ux-h3" style="margin-top:.5rem">Panel de control</h3>
+              <p style="color:var(--ux-text-muted);font-size:var(--ux-text-sm);max-width:440px;margin-top:.35rem">Superficie glass + esquinas técnicas + lectura mono. Úsalo para datos, misiones y estados del juego.</p>
+            </div>
+            <div class="ux-grid" style="--ux-cols:3;gap:var(--ux-space-4)">
+              <div class="ux-stat"><span class="ux-stat__value" style="font-size:2rem">82<small>%</small></span><span class="ux-stat__label">Energía</span></div>
+              <div class="ux-stat"><span class="ux-stat__value" style="font-size:2rem">21<small>%</small></span><span class="ux-stat__label">Oxígeno</span></div>
+              <div class="ux-stat"><span class="ux-stat__value" style="font-size:2rem">64<small>%</small></span><span class="ux-stat__label">Blindaje</span></div>
+            </div>
+            <div class="ux-meter ux-meter--energy"><div class="ux-meter__head"><span class="ux-meter__label">Energía</span><span class="ux-meter__value">82 / 100</span></div><div class="ux-meter__track"><div class="ux-meter__fill" style="--ux-value:82%"></div></div></div>
+          </article>
+
+          <article class="ux-panel shape-card shape-card--tall" style="align-items:center;justify-content:center;gap:1rem">
+            <div class="ux-patch" style="--ux-patch-size:180px">
+              <img src="../assets/svg/patch-junior-astronaut.svg" alt="Parche de misión Junior Astronaut Mission Trainer" width="400" height="400">
+            </div>
+            <div style="text-align:center">
+              <p class="ux-label">Parche de misión</p>
+              <p style="font-size:var(--ux-text-xs);color:var(--ux-text-faint);margin-top:.25rem">SVG propio · 400×400</p>
+            </div>
+          </article>
+
+          <article class="ux-panel ux-hud shape-card shape-card--third" style="align-items:center;justify-content:center">
+            <div class="ux-eclipse" style="--ux-eclipse-size:150px" aria-hidden="true"></div>
+            <div style="text-align:center">
+              <p class="ux-label">Eclipse</p>
+              <p style="font-size:var(--ux-text-xs);color:var(--ux-text-faint)">.ux-eclipse</p>
+            </div>
+          </article>
+
+          <article class="ux-panel shape-card shape-card--third" style="align-items:center;justify-content:center;background:var(--ux-grad-foil);color:#0a1020">
+            <span class="ux-hex-tile" style="background:rgba(4,6,12,.78)">HEX</span>
+            <div style="text-align:center">
+              <p class="ux-label" style="color:#0a1020">Foil de misión</p>
+              <p style="font-size:var(--ux-text-xs);color:#28374f">.ux-foil</p>
+            </div>
+          </article>
+
+          <article class="ux-panel shape-card shape-card--third" style="justify-content:space-between">
+            <div class="border-samples">
+              <div class="border-sample" style="border:var(--ux-border-hairline)">Hairline 1px</div>
+              <div class="border-sample" style="border:1px dashed rgba(143,163,191,.5)">Órbita punteada</div>
+              <div class="border-sample" style="border:1px solid rgba(252,61,33,.65);box-shadow:0 0 24px rgba(252,61,33,.14)">Señal / glow</div>
+              <div class="border-sample" style="border:1px solid rgba(217,164,65,.6);background:linear-gradient(90deg,rgba(217,164,65,.12),transparent)">Foil edge</div>
+            </div>
+            <p class="ux-label" style="margin-top:.5rem">Grosor · estilo · halo</p>
+          </article>
+
+          <article class="ux-panel shape-card shape-card--wide orbit-card">
+            <img src="../assets/svg/orbit-chart.svg" alt="Diagrama técnico de una órbita baja terrestre">
+          </article>
+
+          <article class="ux-panel shape-card shape-card--third" style="align-items:center;justify-content:center;gap:.75rem">
+            <div class="ux-sticker" style="--ux-sticker-size:150px">
+              <img src="../assets/svg/sticker-30-soles.svg" alt="Sticker de 30 soles" width="220" height="220">
+            </div>
+            <p class="ux-label">Sticker torcido</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 04 COMPONENTES ===================== -->
+    <section class="demo-section demo-section--alt" id="componentes">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">04</span><span class="section-index__line"></span><span class="section-index__label">Mission control</span></div>
+          <h2 class="section-title">Componentes listos para <em>despegar.</em></h2>
+          <p class="ux-lead">Botones, badges, pestañas, formularios, medidores, tablas y tarjetas. Todo con estados de foco visibles, targets de 44 px y movimiento reducido cuando el sistema lo pide.</p>
+        </header>
+
+        <!-- Botones y estados -->
+        <div class="ux-panel" style="padding:var(--ux-space-6);margin-bottom:var(--ux-space-5)">
+          <div class="ux-cluster" style="justify-content:space-between;margin-bottom:var(--ux-space-5)">
+            <h3 class="ux-panel__title">Botones y estados</h3>
+            <span class="ux-badge ux-badge--cyan"><span class="ux-status-dot"></span>8 variantes</span>
+          </div>
+          <div class="ux-cluster" style="gap:var(--ux-space-3)">
+            <button class="ux-btn ux-btn--primary"><span class="ux-icon ux-icon--rocket" aria-hidden="true"></span>Lanzar misión</button>
+            <button class="ux-btn ux-btn--secondary"><span class="ux-icon ux-icon--satellite" aria-hidden="true"></span>Órbita</button>
+            <button class="ux-btn ux-btn--outline">Outline</button>
+            <button class="ux-btn">Default</button>
+            <button class="ux-btn ux-btn--ghost">Ghost</button>
+            <button class="ux-btn ux-btn--hazard"><span class="ux-icon ux-icon--alert-triangle" aria-hidden="true"></span>Tormenta solar</button>
+            <button class="ux-btn ux-btn--icon" aria-label="Configuración" data-ux-tip="Configuración"><span class="ux-icon ux-icon--settings" aria-hidden="true"></span></button>
+            <button class="ux-btn ux-btn--primary" disabled>Deshabilitado</button>
+          </div>
+          <div class="ux-cluster" style="gap:var(--ux-space-2);margin-top:var(--ux-space-5)">
+            <span class="ux-badge ux-badge--ok"><span class="ux-status-dot ux-status-dot--live"></span>En vivo</span>
+            <span class="ux-badge ux-badge--red">Alerta</span>
+            <span class="ux-badge ux-badge--amber">Aviso</span>
+            <span class="ux-badge ux-badge--blue">Dato NASA</span>
+            <span class="ux-badge ux-badge--signal">Misión</span>
+            <span class="ux-chip">Snapshot</span>
+            <span class="ux-chip ux-chip--active">Live</span>
+            <span class="ux-kbd">Espacio</span>
+            <span class="ux-kbd">Esc</span>
+          </div>
+        </div>
+
+        <div class="dash">
+          <!-- Panel de recursos -->
+          <div class="ux-panel ux-hud">
+            <div class="ux-panel__head">
+              <div>
+                <p class="ux-eyebrow">Outpost Run · Sol 014</p>
+                <h3 class="ux-panel__title" style="margin-top:.3rem">Recursos de la base</h3>
+              </div>
+              <span class="ux-badge ux-badge--ok"><span class="ux-status-dot ux-status-dot--live"></span>Nominal</span>
+            </div>
+            <div class="ux-panel__body">
+              <div class="dash-meters">
+                <div class="ux-meter ux-meter--energy ux-meter--lg">
+                  <div class="ux-meter__head"><span class="ux-meter__label">Energía</span><span class="ux-meter__value">82 / 100</span></div>
+                  <div class="ux-meter__track"><div class="ux-meter__fill" style="--ux-value:82%"></div></div>
+                </div>
+                <div class="ux-meter ux-meter--air ux-meter--lg">
+                  <div class="ux-meter__head"><span class="ux-meter__label">Aire</span><span class="ux-meter__value">21 / 100</span></div>
+                  <div class="ux-meter__track"><div class="ux-meter__fill" style="--ux-value:21%"></div></div>
+                </div>
+                <div class="ux-meter ux-meter--shield ux-meter--lg">
+                  <div class="ux-meter__head"><span class="ux-meter__label">Blindaje</span><span class="ux-meter__value">64 / 100</span></div>
+                  <div class="ux-meter__track"><div class="ux-meter__fill" style="--ux-value:64%"></div></div>
+                </div>
+              </div>
+
+              <div class="dash-kpis" style="margin-top:var(--ux-space-6)">
+                <div class="ux-stat"><span class="ux-stat__value">14<small> m</small></span><span class="ux-stat__label">Retardo radio</span></div>
+                <div class="ux-stat"><span class="ux-stat__value">−63<small> °C</small></span><span class="ux-stat__label">Temperatura</span></div>
+                <div class="ux-stat"><span class="ux-stat__value">3.63<small>×</small></span><span class="ux-stat__label">Radiación ISS</span></div>
+              </div>
+            </div>
+            <div class="ux-panel__foot">
+              <div class="ux-cluster" style="justify-content:space-between">
+                <span class="ux-caption">Datos simulados para la maqueta</span>
+                <button class="ux-btn ux-btn--sm ux-btn--outline">Revisar consumo</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pestañas + formulario -->
+          <div class="dash__side">
+            <div class="ux-panel">
+              <div class="ux-tabs" role="tablist" aria-label="Panel de misión">
+                <button class="ux-tab" role="tab" aria-selected="true" aria-controls="tab-recursos" id="tab-btn-recursos">Recursos</button>
+                <button class="ux-tab" role="tab" aria-selected="false" aria-controls="tab-eventos" id="tab-btn-eventos">Eventos</button>
+                <button class="ux-tab" role="tab" aria-selected="false" aria-controls="tab-ajustes" id="tab-btn-ajustes">Ajustes</button>
+              </div>
+              <div class="ux-panel__body">
+                <div id="tab-recursos" role="tabpanel" aria-labelledby="tab-btn-recursos">
+                  <div class="ux-readout">
+                    <div class="ux-readout__row"><span class="ux-readout__key">Panel solar</span><span class="ux-readout__val ux-readout__val--ok">ONLINE</span></div>
+                    <div class="ux-readout__row"><span class="ux-readout__key">Reciclador</span><span class="ux-readout__val">94% EFF</span></div>
+                    <div class="ux-readout__row"><span class="ux-readout__key">Muro regolito</span><span class="ux-readout__val ux-readout__val--warn">MANTENIMIENTO</span></div>
+                    <div class="ux-readout__row"><span class="ux-readout__key">Invernadero</span><span class="ux-readout__val">+2 AIRE/SOL</span></div>
+                  </div>
+                </div>
+                <div id="tab-eventos" role="tabpanel" aria-labelledby="tab-btn-eventos" hidden>
+                  <div class="alert-stack">
+                    <div class="ux-alert ux-alert--warning"><span class="ux-icon ux-alert__icon ux-icon--sun" aria-hidden="true"></span><div><strong class="ux-alert__title">Llamarada solar M4.2</strong>Rayos X llegan en ~8 minutos. Resguarda la tripulación.</div></div>
+                    <div class="ux-alert ux-alert--danger"><span class="ux-icon ux-alert__icon ux-icon--wind" aria-hidden="true"></span><div><strong class="ux-alert__title">Tormenta de polvo</strong>Visibilidad reducida. Los paneles pierden 18% por sol.</div></div>
+                  </div>
+                </div>
+                <div id="tab-ajustes" role="tabpanel" aria-labelledby="tab-btn-ajustes" hidden>
+                  <div class="ux-stack" style="--ux-gap:1.25rem">
+                    <label class="ux-check"><input type="checkbox" checked> Mostrar glosario en pantalla</label>
+                    <label class="ux-check"><input type="checkbox"> Modo científico avanzado</label>
+                    <label class="ux-switch"><input type="checkbox" checked><span class="ux-switch__track" aria-hidden="true"></span> Anuncios de telemetría</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ux-panel ux-panel--signal">
+              <div class="ux-panel__body">
+                <p class="ux-eyebrow" style="color:var(--ux-red-300)">Siguiente paso</p>
+                <h3 class="ux-h4" style="margin:.4rem 0 .8rem">Elige una carta para el sol 015</h3>
+                <div class="form-demo">
+                  <div class="ux-field">
+                    <label class="ux-field__label" for="carta">Mejora de base</label>
+                    <select class="ux-select" id="carta">
+                      <option>Paneles solares · +12 energía</option>
+                      <option>Invernadero · +2 aire por sol</option>
+                      <option>Muro de regolito · +8 blindaje</option>
+                    </select>
+                  </div>
+                  <div class="ux-field">
+                    <label class="ux-field__label" for="energia">Energía asignada · <span id="energia-val">40%</span></label>
+                    <input class="ux-range" type="range" id="energia" min="0" max="100" value="40" style="--ux-range-value:40%">
+                  </div>
+                  <button class="ux-btn ux-btn--primary ux-btn--block"><span class="ux-icon ux-icon--check" aria-hidden="true"></span>Confirmar decisión</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards-grid" style="margin-top:var(--ux-space-5)">
+          <a class="ux-card" href="#imagenes">
+            <div class="ux-card__media">
+              <img src="../assets/img/perseverance-selfie.webp" alt="Selfi del rover Perseverance con el dron Ingenuity en Marte" loading="lazy">
+              <span class="ux-badge ux-badge--red ux-card__tag">Marte · Jezero</span>
+            </div>
+            <div class="ux-card__body">
+              <div class="ux-card__meta"><span>NASA/JPL</span><span>·</span><span>PIA24542</span></div>
+              <h3 class="ux-card__title">Perseverance + Ingenuity</h3>
+              <p class="ux-card__text">El rover y el primer dron en otro planeta, juntos en un autorretrato real.</p>
+              <div class="ux-card__foot"><span>Dato real</span><span class="ux-icon ux-icon--arrow-up-right" aria-hidden="true"></span></div>
+            </div>
+          </a>
+          <a class="ux-card" href="#imagenes">
+            <div class="ux-card__media">
+              <img src="../assets/img/apollo-17-panorama.webp" alt="Panorámica de la superficie lunar del Apollo 17" loading="lazy">
+              <span class="ux-badge ux-badge--blue ux-card__tag">Luna · Tauro-Litro</span>
+            </div>
+            <div class="ux-card__body">
+              <div class="ux-card__meta"><span>NASA</span><span>·</span><span>JSC2004E52772</span></div>
+              <h3 class="ux-card__title">Suelo lunar, 1972</h3>
+              <p class="ux-card__text">Una panorámica de Apolo 17: el lugar más silencioso que ha pisado la humanidad.</p>
+              <div class="ux-card__foot"><span>Archivo histórico</span><span class="ux-icon ux-icon--arrow-up-right" aria-hidden="true"></span></div>
+            </div>
+          </a>
+          <a class="ux-card" href="#imagenes">
+            <div class="ux-card__media">
+              <img src="../assets/img/artemis-ii-launch.webp" alt="Lanzamiento de Artemis II" loading="lazy">
+              <span class="ux-badge ux-badge--amber ux-card__tag">Tierra · KSC</span>
+            </div>
+            <div class="ux-card__body">
+              <div class="ux-card__meta"><span>NASA</span><span>·</span><span>2026</span></div>
+              <h3 class="ux-card__title">Artemis II despega</h3>
+              <p class="ux-card__text">La misión que devuelve humanos alrededor de la Luna. Pólvora, vapor y futuro.</p>
+              <div class="ux-card__foot"><span>Misión actual</span><span class="ux-icon ux-icon--arrow-up-right" aria-hidden="true"></span></div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Formulario + alertas + tabla -->
+        <div class="ux-grid" style="--ux-cols:2;margin-top:var(--ux-space-5);gap:var(--ux-space-5)">
+          <div class="ux-panel">
+            <div class="ux-panel__head"><h3 class="ux-panel__title">Solicitud de suministros</h3><span class="ux-badge ux-badge--cyan">Form</span></div>
+            <div class="ux-panel__body">
+              <form class="form-demo" onsubmit="return false">
+                <div class="form-row">
+                  <div class="ux-field"><label class="ux-field__label" for="nombre">Nombre de tripulante</label><input class="ux-input" id="nombre" placeholder="Ada Lovelace"></div>
+                  <div class="ux-field"><label class="ux-field__label" for="modulo">Módulo</label><select class="ux-select" id="modulo"><option>HDU · Hábitat</option><option>Laboratorio</option><option>Invernadero</option></select></div>
+                </div>
+                <div class="ux-field"><label class="ux-field__label" for="mensaje">Nota para control de misión</label><textarea class="ux-textarea" id="mensaje" placeholder="Necesitamos repuestos para el reciclador de agua…"></textarea></div>
+                <div class="ux-search"><span class="ux-icon ux-icon--search" aria-hidden="true"></span><input class="ux-input" placeholder="Buscar en el catálogo…" aria-label="Buscar en el catálogo"></div>
+                <div class="ux-cluster" style="justify-content:space-between">
+                  <label class="ux-switch"><input type="checkbox" checked><span class="ux-switch__track" aria-hidden="true"></span> Prioridad alta</label>
+                  <button class="ux-btn ux-btn--primary" type="submit"><span class="ux-icon ux-icon--arrow-up-right" aria-hidden="true"></span>Enviar</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div class="ux-stack" style="--ux-gap:1rem">
+            <div class="ux-panel">
+              <div class="ux-panel__head"><h3 class="ux-panel__title">Alertas del sistema</h3></div>
+              <div class="ux-panel__body">
+                <div class="alert-stack">
+                  <div class="ux-alert ux-alert--success"><span class="ux-icon ux-alert__icon ux-icon--check" aria-hidden="true"></span><div><strong class="ux-alert__title">Nominal</strong>Comunicaciones estables con el relay orbital.</div></div>
+                  <div class="ux-alert ux-alert--warning"><span class="ux-icon ux-alert__icon ux-icon--sun" aria-hidden="true"></span><div><strong class="ux-alert__title">Aviso solar</strong>CME detectado. Llegada estimada en 18 horas.</div></div>
+                  <div class="ux-alert ux-alert--danger"><span class="ux-icon ux-alert__icon ux-icon--shield" aria-hidden="true"></span><div><strong class="ux-alert__title">Blindaje bajo</strong>Si la tormenta golpea ahora, la dosis subirá 3.2 mSv.</div></div>
+                  <div class="ux-alert"><span class="ux-icon ux-alert__icon ux-icon--info" aria-hidden="true"></span><div><strong class="ux-alert__title">Dato simulado</strong>Este panel usa datos de juego, no mediciones en vivo.</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ux-panel">
+              <div class="ux-panel__head"><h3 class="ux-panel__title">Registro de eventos</h3><span class="ux-badge ux-badge--amber">DONKI</span></div>
+              <div class="ux-panel__body" style="padding:0">
+                <div class="ux-table-wrap" style="border:0;border-radius:0">
+                  <table class="ux-table">
+                    <thead><tr><th>Hora</th><th>Evento</th><th>Nivel</th></tr></thead>
+                    <tbody>
+                      <tr><td class="ux-data">02:14</td><td>Llamarada solar</td><td><span class="ux-badge ux-badge--amber">M4.2</span></td></tr>
+                      <tr><td class="ux-data">05:48</td><td>Partículas SEP</td><td><span class="ux-badge ux-badge--red">Alto</span></td></tr>
+                      <tr><td class="ux-data">11:02</td><td>Viento solar</td><td><span class="ux-badge ux-badge--ok">Nominal</span></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 05 EFECTOS ===================== -->
+    <section class="demo-section" id="efectos">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">05</span><span class="section-index__line"></span><span class="section-index__label">Texturas y movimiento</span></div>
+          <h2 class="section-title">El brillo justo, <em>sin marear.</em></h2>
+          <p class="ux-lead">Estrellas en CSS, grillas de blueprint, grano sutil, scanlines de CRT y foil metálico. Todos los efectos tienen versión estática: si el usuario pide menos movimiento, el kit lo respeta.</p>
+        </header>
+
+        <div class="effects-grid">
+          <article class="effect-card ux-starfield ux-noise ux-vignette">
+            <span class="effect-card__label">01 · Profundidad</span>
+            <span class="effect-card__title">Starfield + grano</span>
+          </article>
+          <article class="effect-card ux-grid-bg--blueprint ux-scanlines">
+            <span class="effect-card__label">02 · Precisión</span>
+            <span class="effect-card__title">Blueprint + scanlines</span>
+          </article>
+          <article class="effect-card foil-card ux-shine">
+            <span class="effect-card__label">03 · Celebración</span>
+            <span class="effect-card__title">Foil de parche</span>
+          </article>
+        </div>
+
+        <div class="ux-grid" style="--ux-cols:2;margin-top:var(--ux-space-5);gap:var(--ux-space-5)">
+          <div class="ux-panel ux-panel--chamfer" style="padding:var(--ux-space-6);background:linear-gradient(140deg,rgba(193,68,14,.24),rgba(10,16,32,.9));">
+            <p class="ux-eyebrow">Chaflán + gradiente</p>
+            <h3 class="ux-h3" style="margin:.6rem 0">Marte, en llamas</h3>
+            <p style="color:var(--ux-text-muted);font-size:var(--ux-text-sm);max-width:420px">El corte de esquina de 14 px es la firma visual de los paneles de este kit. Combínalo con un borde de 1 px y un halo del color de la misión.</p>
+            <div class="ux-cluster" style="margin-top:var(--ux-space-5)">
+              <span class="ux-badge ux-badge--red">Hierro oxidado</span>
+              <span class="ux-badge ux-badge--amber">Polvo</span>
+            </div>
+          </div>
+          <div class="ux-panel ux-panel--chamfer ux-crt" style="padding:var(--ux-space-6);background:rgba(4,6,12,.9)">
+            <p class="ux-eyebrow">CRT + telémetro</p>
+            <h3 class="ux-h3" style="margin:.6rem 0">Señal recibida</h3>
+            <div class="ux-readout" style="margin-top:var(--ux-space-4)">
+              <div class="ux-readout__row"><span class="ux-readout__key">Uplink</span><span class="ux-readout__val">14.2 dB</span></div>
+              <div class="ux-readout__row"><span class="ux-readout__key">Downlink</span><span class="ux-readout__val ux-readout__val--ok">NOMINAL</span></div>
+              <div class="ux-readout__row"><span class="ux-readout__key">Paquete</span><span class="ux-readout__val">0x4F2A</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== 06 IMÁGENES ===================== -->
+    <section class="demo-section demo-section--alt" id="imagenes">
+      <div class="ux-container">
+        <header class="section-head">
+          <div class="section-index"><span class="section-index__num">06</span><span class="section-index__line"></span><span class="section-index__label">Archivo NASA</span></div>
+          <h2 class="section-title">Imágenes reales, <em>crédito visible.</em></h2>
+          <p class="ux-lead">Ocho fotografías descargadas de la NASA Images API, optimizadas a WebP y con atribución. La NASA no patrocina ni respalda el proyecto: el crédito y la fecha son parte del diseño.</p>
+        </header>
+
+        <div class="gallery">
+          <figure class="span-2 row-2">
+            <img src="../assets/img/carina-nebula.webp" alt="Nebulosa de Carina captada por el telescopio James Webb" loading="lazy">
+            <figcaption><div><strong>Acantilados cósmicos</strong><span>JWST · Carina</span></div><span>NASA</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/img/earthrise-artemis.webp" alt="Amanecer terrestre visto desde la nave Orion" loading="lazy">
+            <figcaption><div><strong>Earthrise</strong><span>Artemis II · 2026</span></div><span>NASA</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/img/hubble-deep-field.webp" alt="Campo profundo del telescopio Hubble" loading="lazy">
+            <figcaption><div><strong>Campo profundo</strong><span>Hubble</span></div><span>NASA</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/img/mars-vista.webp" alt="Panorámica de la superficie de Marte" loading="lazy">
+            <figcaption><div><strong>Marte</strong><span>Curiosity</span></div><span>NASA</span></figcaption>
+          </figure>
+          <figure>
+            <img src="../assets/img/mission-control-2026.webp" alt="Sala de control de misión de la NASA" loading="lazy">
+            <figcaption><div><strong>Mission Control</strong><span>JSC · 2026</span></div><span>NASA</span></figcaption>
+          </figure>
+        </div>
+
+        <div class="gallery-band">
+          <img src="../assets/img/apollo-17-panorama.webp" alt="Panorámica del Apolo 17 en la superficie lunar" loading="lazy">
+          <div class="gallery-band__caption"><span>Apollo 17 · Panorama lunar · NASA</span><span>NASA/JSC</span></div>
+        </div>
+
+        <div class="ux-grid" style="--ux-cols:2;margin-top:var(--ux-space-5);gap:var(--ux-space-5)">
+          <div class="ux-panel ux-panel--inset" style="padding:var(--ux-space-5)">
+            <p class="ux-label">Atribución y licencia</p>
+            <p style="font-size:var(--ux-text-sm);color:var(--ux-text-muted);margin-top:.5rem">Las imágenes son de NASA y se usan según las <a href="https://www.nasa.gov/nasa-brand-center/images-and-media/" target="_blank" rel="noopener noreferrer">NASA Media Usage Guidelines</a>. No se usa el emblema, sello ni logotipo oficial como marca del proyecto. El archivo <code>assets/img/credits.json</code> guarda título, ID y URL de cada foto.</p>
+          </div>
+          <div class="ux-panel ux-panel--inset" style="padding:var(--ux-space-5)">
+            <p class="ux-label">Cómo usar una imagen</p>
+            <pre style="margin:.6rem 0 0;overflow:auto;font-family:var(--ux-font-mono);font-size:11px;line-height:1.7;color:var(--ux-lunar-300)">&lt;figure class="ux-card"&gt;
+  &lt;div class="ux-card__media"&gt;
+    &lt;img src="…" alt="…" loading="lazy"&gt;
+  &lt;/div&gt;
+  &lt;figcaption class="ux-caption"&gt;NASA / JPL&lt;/figcaption&gt;
+&lt;/figure&gt;</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="demo-footer">
+    <div class="ux-container">
+      <div class="ux-grid" style="--ux-cols:12;gap:var(--ux-space-8)">
+        <div class="ux-span-5">
+          <img class="footer-mark" src="../assets/svg/wordmark-outpost.svg" alt="Outpost Run" width="840" height="132">
+          <p style="margin-top:var(--ux-space-4);max-width:420px;color:var(--ux-text-muted);font-size:var(--ux-text-sm)">
+            ORBITAL UI es el kit visual de <strong>Outpost Run</strong>, un juego para explorar Marte y la Luna con datos reales de NASA y CSA. Hecho para NASA Space Apps 2026.
+          </p>
+          <div class="ux-cluster" style="margin-top:var(--ux-space-5)">
+            <span class="ux-badge ux-badge--red">NASA Space Apps 2026</span>
+            <span class="ux-badge">7–12 años</span>
+          </div>
+        </div>
+        <div class="ux-span-3">
+          <p class="ux-label">Índice</p>
+          <ul class="ux-stack" style="--ux-gap:.55rem;margin-top:var(--ux-space-3);font-size:var(--ux-text-sm)">
+            <li><a href="#paleta" style="text-decoration:none;color:var(--ux-text-muted)">01 · Paleta</a></li>
+            <li><a href="#tipografia" style="text-decoration:none;color:var(--ux-text-muted)">02 · Tipografía</a></li>
+            <li><a href="#forma" style="text-decoration:none;color:var(--ux-text-muted)">03 · Forma y borde</a></li>
+            <li><a href="#componentes" style="text-decoration:none;color:var(--ux-text-muted)">04 · Componentes</a></li>
+            <li><a href="#efectos" style="text-decoration:none;color:var(--ux-text-muted)">05 · Efectos</a></li>
+            <li><a href="#imagenes" style="text-decoration:none;color:var(--ux-text-muted)">06 · Imágenes</a></li>
+          </ul>
+        </div>
+        <div class="ux-span-4">
+          <p class="ux-label">Archivos</p>
+          <ul class="ux-stack" style="--ux-gap:.55rem;margin-top:var(--ux-space-3);font-size:var(--ux-text-sm)">
+            <li><a href="../css/ui-ux.css" style="text-decoration:none;color:var(--ux-text-muted)">css/ui-ux.css</a></li>
+            <li><a href="../css/tokens.css" style="text-decoration:none;color:var(--ux-text-muted)">css/tokens.css</a></li>
+            <li><a href="../README.md" style="text-decoration:none;color:var(--ux-text-muted)">README.md · guía de uso</a></li>
+            <li><a href="../research/fuentes.md" style="text-decoration:none;color:var(--ux-text-muted)">research/fuentes.md</a></li>
+            <li><a href="../assets/img/credits.json" style="text-decoration:none;color:var(--ux-text-muted)">assets/img/credits.json</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="ux-footer__legal" style="margin-top:var(--ux-space-10)">
+        <span>© 2026 Outpost Run · Kit bajo licencia MIT. Fuentes SIL OFL. Íconos Lucide ISC.</span>
+        <span>NASA y la CSA no patrocinan ni respaldan este proyecto. Las imágenes pertenecen a NASA.</span>
+      </div>
+    </div>
+  </footer>
+
+  <div class="demo-toast ux-toast" id="toast" role="status" aria-live="polite">Hex copiado</div>
+
+  <script src="./demo.js" defer></script>
+</body>
+</html>

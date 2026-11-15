@@ -1,0 +1,12 @@
+{
+  "name": "mcp-for-blender",
+  "author": {
+    "name": "Siddharth Ahuja",
+    "url": "https://github.com/ahujasid"
+  },
+  "homepage": "https://mcp-for-blender.com/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ahujasid/mcp-for-blender.git"
+  }
+}

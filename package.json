@@ -10,6 +10,7 @@
     "ingest": "node --env-file-if-exists=.env scripts/ingest.mjs",
     "check": "node scripts/check.mjs",
     "check:live": "node --env-file-if-exists=.env scripts/check.mjs --live",
+    "flow:plan": "node scripts/flow-prompts.mjs",
     "test": "node --test \"test/**/*.test.mjs\""
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-14T15:32:04.516Z",
+  "generatedAt": "2026-11-14T20:45:59.532Z",
   "params": {
     "days": 30,
     "end": "2026-11-14"
@@ -70,8 +70,9 @@
       }
     },
     "apod": {
-      "status": "error",
-      "error": "https://api.nasa.gov/planetary/apod?api_key=*** -> HTTP 500"
+      "status": "ok",
+      "ms": 14825,
+      "count": 1
     },
     "csa": {
       "status": "ok",

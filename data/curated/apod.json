@@ -1,18 +1,20 @@
 {
   "meta": {
     "generatedBy": "scripts/ingest.mjs",
-    "retrievedAt": "2026-11-14T14:36:04.793Z",
+    "retrievedAt": "2026-11-14T20:46:14.356Z",
     "mode": "snapshot",
     "source": "NASA APOD",
     "sourceUrl": "https://api.nasa.gov/",
-    "note": "Revisar 'copyright': algunas imágenes no son de dominio público."
+    "note": "Si apod.reusable es false, no usar la imagen en el juego."
   },
   "apod": {
     "date": "2026-11-14",
-    "title": "NASA Science",
+    "title": "Put on your red/blue glasses and gaze across the western Ocean of Storms on the surface of the Moon",
     "mediaType": "image",
-    "url": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
-    "hdurl": "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png",
-    "copyright": null
+    "url": "https://assets.science.nasa.gov/content/dam/science/cds/apod/apod/2026/june/eagle.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    "hdUrl": "https://assets.science.nasa.gov/content/dam/science/cds/apod/apod/2026/june/eagle.jpg/jcr:content/renditions/cq5dam.web.1280.1280.jpeg",
+    "copyright": null,
+    "reusable": true,
+    "explanation": "Put on your red/blue glasses and gaze across the western Ocean of Storms on the surface of the Moon. The 3D anaglyph shows Apollo 12 astronaut Pete Conrad visiting the Surveyor 3 spacecraft in November of 1969. Surveyor 3 had landedat the site on the inside slope of a small crater about 2 1/2 years earlier in April of 1967. Visible on the horizon beyond the far crater wall, Apollo 12's Lunar Modu…"
   }
 }

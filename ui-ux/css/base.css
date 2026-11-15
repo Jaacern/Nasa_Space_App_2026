@@ -1,0 +1,178 @@
+/* ============================================================================
+   ORBITAL UI · BASE
+   Todo el reset vive bajo .ux-root: puedes importar el kit en una web que ya
+   tiene estilos sin que se rompa el resto de la página.
+   ============================================================================ */
+
+.ux-root {
+  font-family: var(--ux-font-ui);
+  font-size: var(--ux-text-base);
+  line-height: var(--ux-leading-normal);
+  color: var(--ux-text);
+  background-color: var(--ux-bg);
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  accent-color: var(--ux-red-500);
+}
+
+.ux-root *,
+.ux-root *::before,
+.ux-root *::after {
+  box-sizing: border-box;
+}
+
+.ux-root :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+  margin: 0;
+}
+
+.ux-root :where(ul, ol) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ux-root :where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+.ux-root :where(img, svg, video, canvas) {
+  display: block;
+  max-width: 100%;
+}
+
+.ux-root :where(a) {
+  color: var(--ux-text-link);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.22em;
+  transition: color var(--ux-dur-fast) var(--ux-ease-out);
+}
+
+.ux-root :where(a:hover) {
+  color: var(--ux-white);
+}
+
+.ux-root :where(code, kbd, samp) {
+  font-family: var(--ux-font-mono);
+  font-size: 0.92em;
+}
+
+.ux-root :where(hr) {
+  height: 1px;
+  border: 0;
+  background: var(--ux-rule);
+}
+
+.ux-root :where(::selection) {
+  color: var(--ux-white);
+  background: rgba(252, 61, 33, 0.55);
+}
+
+.ux-root :where(:focus-visible) {
+  outline: none;
+  box-shadow: var(--ux-focus-ring);
+  border-radius: var(--ux-radius-sm);
+}
+
+.ux-root :where(button) {
+  cursor: pointer;
+}
+
+.ux-root :where(table) {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.ux-root :where(strong, b) {
+  font-weight: var(--ux-weight-semibold);
+  color: var(--ux-white);
+}
+
+.ux-root :where(small) {
+  font-size: var(--ux-text-xs);
+}
+
+.ux-root :where(abbr[title]) {
+  text-decoration: underline dotted var(--ux-steel-400);
+  cursor: help;
+}
+
+.ux-root :where(:disabled) {
+  cursor: not-allowed;
+}
+
+/* Scrollbar de cabina */
+.ux-root,
+.ux-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: var(--ux-steel-500) transparent;
+}
+
+.ux-root ::-webkit-scrollbar,
+.ux-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.ux-root ::-webkit-scrollbar-track,
+.ux-scroll::-webkit-scrollbar-track {
+  background: rgba(4, 6, 12, 0.6);
+}
+
+.ux-root ::-webkit-scrollbar-thumb,
+.ux-scroll::-webkit-scrollbar-thumb {
+  background: var(--ux-steel-500);
+  border: 2px solid var(--ux-void);
+  border-radius: var(--ux-radius-pill);
+}
+
+.ux-root ::-webkit-scrollbar-thumb:hover,
+.ux-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--ux-steel-400);
+}
+
+/* Accesibilidad */
+.ux-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.ux-skip-link {
+  position: fixed;
+  top: -100px;
+  left: var(--ux-space-4);
+  z-index: var(--ux-z-toast);
+  padding: var(--ux-space-3) var(--ux-space-5);
+  font-family: var(--ux-font-mono);
+  font-size: var(--ux-text-xs);
+  letter-spacing: var(--ux-tracking-wide);
+  text-transform: uppercase;
+  color: var(--ux-text-inverse);
+  background: var(--ux-cyan-300);
+  border-radius: var(--ux-radius-sm);
+  transition: top var(--ux-dur-base) var(--ux-ease-out);
+}
+
+.ux-skip-link:focus {
+  top: var(--ux-space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ux-root *,
+  .ux-root *::before,
+  .ux-root *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+}

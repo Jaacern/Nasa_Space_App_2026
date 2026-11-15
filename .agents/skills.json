@@ -1,0 +1,12 @@
+{
+  "entries": [
+    {
+      "path": ".agents/skills",
+      "exclude": ["references"]
+    },
+    {
+      "path": "roblox-blender/.claude/skills",
+      "exclude": ["references"]
+    }
+  ]
+}

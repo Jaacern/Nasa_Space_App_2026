@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 420" role="img" aria-labelledby="orbit-title">
+  <title id="orbit-title">Diagrama técnico de órbita baja terrestre</title>
+  <defs>
+    <radialGradient id="earth-fill" cx="38%" cy="32%" r="72%">
+      <stop offset="0" stop-color="#2A6BD6"/>
+      <stop offset=".55" stop-color="#0B3D91"/>
+      <stop offset="1" stop-color="#06152F"/>
+    </radialGradient>
+    <pattern id="small-grid" width="20" height="20" patternUnits="userSpaceOnUse">
+      <path d="M20 0H0V20" fill="none" stroke="#8FA3BF" stroke-opacity=".13" stroke-width=".7"/>
+    </pattern>
+  </defs>
+  <rect width="640" height="420" fill="transparent"/>
+  <rect width="640" height="420" fill="url(#small-grid)"/>
+
+  <!-- retícula / marcas -->
+  <g stroke="#8FA3BF" stroke-opacity=".35" stroke-width="1">
+    <path d="M24 210h20M596 210h20M320 24v20M320 376v20"/>
+    <circle cx="320" cy="210" r="2" fill="#FC3D21" stroke="none"/>
+  </g>
+
+  <!-- tierra -->
+  <circle cx="320" cy="210" r="74" fill="url(#earth-fill)" stroke="#38BDF8" stroke-opacity=".5" stroke-width="1.2"/>
+  <path d="M264 184c18-14 34-8 44 2s26 4 34 14-6 22-20 20-26 10-40 2-28-24-18-38z" fill="#2DD4A7" opacity=".28"/>
+  <path d="M286 246c16-6 34 0 40 10s-8 18-22 14-30-16-18-24z" fill="#2DD4A7" opacity=".2"/>
+  <circle cx="320" cy="210" r="90" fill="none" stroke="#38BDF8" stroke-opacity=".18" stroke-width="10"/>
+
+  <!-- órbita -->
+  <ellipse cx="320" cy="210" rx="236" ry="128" transform="rotate(-16 320 210)" fill="none" stroke="#F8FAFC" stroke-opacity=".5" stroke-width="1.2" stroke-dasharray="6 7"/>
+  <ellipse cx="320" cy="210" rx="196" ry="96" transform="rotate(-16 320 210)" fill="none" stroke="#FC3D21" stroke-opacity=".55" stroke-width="1"/>
+
+  <!-- satélite -->
+  <g transform="translate(498 128) rotate(18)">
+    <rect x="-13" y="-8" width="26" height="16" rx="2" fill="#F8FAFC"/>
+    <rect x="-34" y="-6" width="16" height="12" fill="#0B3D91" stroke="#38BDF8" stroke-width="1"/>
+    <rect x="18" y="-6" width="16" height="12" fill="#0B3D91" stroke="#38BDF8" stroke-width="1"/>
+    <path d="M0 8v10" stroke="#FC3D21" stroke-width="2"/>
+    <circle cx="0" cy="20" r="2.5" fill="#FC3D21"/>
+  </g>
+
+  <!-- etiquetas -->
+  <g font-family="'IBM Plex Mono', monospace" fill="#8FA3BF" font-size="10" letter-spacing="1.6">
+    <text x="40" y="44">ORBITAL PLATFORM / LEO</text>
+    <text x="40" y="62" fill="#F8FAFC">ALT 408 KM · INC 51.6°</text>
+    <text x="470" y="330" fill="#38BDF8">SAT-01</text>
+    <text x="470" y="344">SIGNAL NOMINAL</text>
+  </g>
+  <g stroke="#8FA3BF" stroke-opacity=".4">
+    <path d="M220 210h-74M320 210h-60" stroke-dasharray="2 4"/>
+    <path d="M320 210v66" stroke-dasharray="2 4"/>
+  </g>
+  <text x="250" y="202" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#8FA3BF" letter-spacing="1.2">R = 6 771 KM</text>
+  <text x="326" y="292" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#8FA3BF" letter-spacing="1.2">Δv →</text>
+
+  <!-- leyenda -->
+  <g font-family="'IBM Plex Mono', monospace" font-size="9" fill="#8FA3BF" letter-spacing="1.2">
+    <rect x="470" y="44" width="10" height="10" fill="#FC3D21"/>
+    <text x="488" y="53">TRAYECTORIA</text>
+    <rect x="470" y="66" width="10" height="10" fill="none" stroke="#38BDF8"/>
+    <text x="488" y="75">TELEMETRÍA</text>
+  </g>
+</svg>

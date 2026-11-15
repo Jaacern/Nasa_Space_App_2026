@@ -83,6 +83,8 @@ test("APOD: un video o una imagen con copyright no se marca como reutilizable", 
   assert.equal(vid.apod.url, null, "YouTube no pasa la lista de dominios");
   assert.equal(vid.apod.reusable, false);
   await assert.rejects(getApod({ fetchJson: async () => ({ ...base, date: "ayer" }) }), /contrato roto/);
+  const logo = { ...base, title: "NASA Science", url: "https://science.nasa.gov/wp-content/themes/nasa-child/assets/images/nasa-logo@2x.png" };
+  await assert.rejects(getApod({ fetchJson: async () => logo }), /marcador de posición/);
 });
 
 test("CSA: extrae secciones y enlaces, descarta ruido y dominios ajenos", () => {
