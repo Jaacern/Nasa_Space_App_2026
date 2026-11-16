@@ -1,6 +1,15 @@
 # Tráiler de ARES FORGE (demo oficial de 30 s)
 
-**Entregable vigente (máster final):** `ARES_FORGE_Trailer_4K60.mp4` (para YouTube) y `ARES_FORGE_Trailer_1080p60.mp4` (respaldo), ambos de 29,9 s y 60 fps, con rótulos animados y diseño sonoro; se generan con `render_master.py` y se copian al Escritorio. Cómo subir y entregar: [`SUBIR_Y_ENTREGAR.md`](SUBIR_Y_ENTREGAR.md).
+**Entregable vigente (v3, 15-11-2026 noche):** `ARES_FORGE_Trailer_4K60.mp4` (YouTube) y `ARES_FORGE_Trailer_1080p60.mp4`, 29,9 s a 60 fps. Montaje en Remotion: copia en [`remotion/Trailer.tsx`](remotion/Trailer.tsx) (se renderiza desde `video-core/src/ares/` del repositorio DEEPSEEK editor (entrada propia `src/ares/index.ts`, composición `AresTrailer`, medios en `public/ares/`). Acabado (loudnorm −14 LUFS, 4K, metadatos, copia al Escritorio): `python -B finish_remotion.py <render>`. Cómo subir y entregar: [`SUBIR_Y_ENTREGAR.md`](SUBIR_Y_ENTREGAR.md).
+
+Qué cambió en la v3:
+- Cortes secos sobre los golpes medidos de la música (5.49, 9.83, 12.42, 13.73, 15.97, 19.01, 20.92, 25.49 s), planos de largo variable y un montaje rápido de 4 planos.
+- Tarjeta negra de gancho ("YOUR SHIP WENT DOWN.", fuente Bangers del juego) y rótulos con el lenguaje del HUD (paneles navy con borde cian, etiquetas tecleadas), animados "en dos" e inclinados 1°; dos notas a mano (Permanent Marker) sobre las cartas y el celular.
+- Toma de celular regrabada a resolución completa (1736×864, modo táctil `EmuInput`) dentro de un marco de teléfono vectorial; antes era 668×346 del Device Simulator, reescalada.
+- Sin rótulo de IA sobre las tomas de Google Flow (decisión del equipo); la IA se declara en la tarjeta final, la descripción y los metadatos. Ver el aviso en `SUBIR_Y_ENTREGAR.md`.
+- Tarjeta final sobre fondo espacial (estrellas, nebulosa, limbo de Marte) con los integrantes: Gonzalo Maldonado, Javier Cerna y Cristóbal Palma.
+
+Versión v2 (ffmpeg, `render_master.py`) guardada como `*_v2.mp4` en esta carpeta.
 
 Versión anterior (reemplazada por la de 60 fps): `ARES_FORGE_trailer_30s_1080p.mp4`, de `render_trailer.py`.
 Especificación medida el 15-11-2026: 30,000 s (900 cuadros), 1920×1080, 30 fps, H.264 High, AAC 48 kHz estéreo, −13,1 LUFS integrado, pico −1,0 dBTP, sin cuadros negros.
