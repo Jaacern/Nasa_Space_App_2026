@@ -1,15 +1,13 @@
 # Tráiler de ARES FORGE (demo oficial de 30 s)
 
-**Entregable vigente (v3, 15-11-2026 noche):** `ARES_FORGE_Trailer_4K60.mp4` (YouTube) y `ARES_FORGE_Trailer_1080p60.mp4`, 29,9 s a 60 fps. Montaje en Remotion: copia en [`remotion/Trailer.tsx`](remotion/Trailer.tsx) (se renderiza desde `video-core/src/ares/` del repositorio DEEPSEEK editor (entrada propia `src/ares/index.ts`, composición `AresTrailer`, medios en `public/ares/`). Acabado (loudnorm −14 LUFS, 4K, metadatos, copia al Escritorio): `python -B finish_remotion.py <render>`. Cómo subir y entregar: [`SUBIR_Y_ENTREGAR.md`](SUBIR_Y_ENTREGAR.md).
+**Entregable vigente (v4, 15-11-2026 noche):** `ARES_FORGE_Trailer_4K60.mp4` (YouTube) y `ARES_FORGE_Trailer_1080p60.mp4`, 29,9 s a 60 fps (`1794` cuadros). Montaje en Remotion: copia en [`remotion/Trailer.tsx`](remotion/Trailer.tsx) (se renderiza desde `video-core/src/ares/` del repositorio DEEPSEEK editor, composición `AresTrailer`, medios en `public/ares/`). Acabado (`loudnorm` 2 pasadas lineal −14,05 LUFS / −1,60 dBTP, 4K, metadatos, copia al Escritorio): `python -B finish_remotion.py <render>`. Cómo subir y entregar: [`SUBIR_Y_ENTREGAR.md`](SUBIR_Y_ENTREGAR.md).
 
-Qué cambió en la v3:
-- Cortes secos sobre los golpes medidos de la música (5.49, 9.83, 12.42, 13.73, 15.97, 19.01, 20.92, 25.49 s), planos de largo variable y un montaje rápido de 4 planos.
-- Tarjeta negra de gancho ("YOUR SHIP WENT DOWN.", fuente Bangers del juego) y rótulos con el lenguaje del HUD (paneles navy con borde cian, etiquetas tecleadas), animados "en dos" e inclinados 1°; dos notas a mano (Permanent Marker) sobre las cartas y el celular.
-- Toma de celular regrabada a resolución completa (1736×864, modo táctil `EmuInput`) dentro de un marco de teléfono vectorial; antes era 668×346 del Device Simulator, reescalada.
-- Sin rótulo de IA sobre las tomas de Google Flow (decisión del equipo); la IA se declara en la tarjeta final, la descripción y los metadatos. Ver el aviso en `SUBIR_Y_ENTREGAR.md`.
-- Tarjeta final sobre fondo espacial (estrellas, nebulosa, limbo de Marte) con los integrantes: Gonzalo Maldonado, Javier Cerna y Cristóbal Palma.
+Qué cambió en la v4:
+- **Encuadre intacto de HUD (`safe`)**: escala `1.0` sin recorte ni sacudidas en los 9 planos con UI del juego (`loop`, `cards`, `boss`, `m1..m4`, `parts`, `data`).
+- **Inicios limpios y velocidad controlada**: `title.mp4` entra directo en la órbita limpia (`trimBefore={62}`) con scrim radial detrás del título; `cards.mp4` inicia en las cartas (`trimBefore={28}`, `playbackRate=0.54`) para no volver al combate; `phone.mp4` entra en combate limpio (`trimBefore={24}`) en marco horizontal `1736×864` sin recortar el HUD táctil ni chocar con la nota a mano.
+- **Rótulos y transiciones equilibradas**: paneles ortogonales a 60 fps reales con respaldo oscuro, etiqueta mono completa sin truncar, `TopScrim` en etiquetas superiores, `HudPanel` inferior en el despegue para despejar el cohete, micro-barridos luminosos (`Streak`) y destellos calibrados sobre los golpes medidos de `mix.wav`, más 2 líneas legales de mayor legibilidad en la tarjeta final.
 
-Versión v2 (ffmpeg, `render_master.py`) guardada como `*_v2.mp4` en esta carpeta.
+Versión v3 guardada como `*_v3.mp4` y v2 (ffmpeg, `render_master.py`) como `*_v2.mp4` en esta carpeta.
 
 Versión anterior (reemplazada por la de 60 fps): `ARES_FORGE_trailer_30s_1080p.mp4`, de `render_trailer.py`.
 Especificación medida el 15-11-2026: 30,000 s (900 cuadros), 1920×1080, 30 fps, H.264 High, AAC 48 kHz estéreo, −13,1 LUFS integrado, pico −1,0 dBTP, sin cuadros negros.

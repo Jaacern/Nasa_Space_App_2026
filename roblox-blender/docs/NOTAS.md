@@ -207,3 +207,9 @@ Cuidado con `time`: el director elige el jefe según el orden (`R.bossIdx`), no 
 - **Visuales:** `client/Ambience.luau` (bordes de cráter, manchas de regolito, guijarros, polvo en suspensión, nubes, profundidad de campo, sombras más nítidas; baja con la calidad). Líneas de zona discontinuas, lunas más pequeñas y altas, avisos que ya no tapan la barra del jefe.
 - **Captura:** `client/Autopilot.luau` (solo Studio): juega solo y ofrece cámaras de captura; atributos documentados en el propio archivo.
 - **Pendiente manual:** `Lighting.Technology = Future` (P-01) sigue sin poder ponerse por script (verificado: falta capacidad).
+
+## 14. Entrega final NASA Space Apps 2026 (15-11-2026)
+
+- Proyecto «Code or Die» enviado a jueceo el 15-11-2026 23:18 (-03). Demo: https://www.youtube.com/watch?v=4G94rIj2TbE. Proyecto: https://github.com/Jaacern/Nasa_Space_App_2026.
+- Uso de SI declarado: ideación, investigación, programación y redacción. Fuente NASA citada: https://science.nasa.gov/mars/.
+- Estado: selector de idioma (LangButton, Locale), tráiler v3 (Remotion) y documentación del envío incluidos en este commit. Pendientes humanos: P-01, P-12 y pruebas en dispositivos reales.

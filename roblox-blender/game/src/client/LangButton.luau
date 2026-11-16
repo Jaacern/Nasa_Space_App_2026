@@ -1,5 +1,5 @@
 --!strict
--- Botón de idioma (EN / ES) en el menú principal. Activa la traducción en vivo de Locale.
+-- Botón de idioma en el menú principal: recorre los idiomas instalados (Locale.list()). Activa la traducción en vivo de Locale.
 -- Visible solo mientras el menú principal está abierto.
 
 local GuiService = game:GetService("GuiService")
@@ -24,15 +24,22 @@ function LangButton.start()
 	local scale = Ui.new("UIScale", {})
 	scale.Parent = gui
 	local btn: TextButton
-	btn = Ui.button("ESPAÑOL", function()
-		Locale.set(if Locale.lang == "en" then "es" else "en")
-	end, { AnchorPoint = Vector2.new(1, 0), Size = UDim2.fromOffset(132, 44), TextSize = 17, FontFace = Ui.Fonts.monoBold, ZIndex = 5 }, "ghost")
+	btn = Ui.button("ENGLISH", function()
+		local list = Locale.list()
+		local idx = 1
+		for i, l in list do
+			if l.code == Locale.lang then
+				idx = i
+			end
+		end
+		Locale.set(list[idx % #list + 1].code)
+	end, { AnchorPoint = Vector2.new(1, 0), Size = UDim2.fromOffset(230, 44), TextSize = 17, FontFace = Ui.Fonts.monoBold, ZIndex = 5 }, "ghost")
 	btn.Name = "Lang"
 	btn.Parent = gui
-	-- El propio botón no se traduce: siempre ofrece el otro idioma.
+	-- El propio botón no se traduce: muestra el idioma activo; cada toque pasa al siguiente.
 	btn:SetAttribute("LocSkip", true)
 	local function label()
-		btn.Text = if Locale.lang == "en" then "ESPAÑOL" else "ENGLISH"
+		btn.Text = "◀ " .. Locale.name() .. " ▶"
 		btn:SetAttribute("LocSrc", btn.Text)
 		btn:SetAttribute("LocShown", btn.Text)
 	end

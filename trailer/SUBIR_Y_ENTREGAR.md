@@ -11,7 +11,7 @@ Equipo **Code or die** (Concepción, Chile): Gonzalo Maldonado, Javier Cerna y C
 | `ARES_FORGE_Trailer_4K60.mp4` | **El que se sube a YouTube.** 3840×2160, 60 fps. YouTube da más bitrate a los envíos 4K |
 | `ARES_FORGE_Trailer_1080p60.mp4` | Respaldo (Drive, proyector) |
 
-Ambos duran 29,9 s (la regla es "30 segundos o menos"). Montaje v3 en Remotion: `video-core/src/ares/Trailer.tsx` (repositorio DEEPSEEK editor); acabado con `trailer/finish_remotion.py`.
+Ambos duran 29,9 s (la regla es "30 segundos o menos"). Montaje v4 en Remotion: `video-core/src/ares/Trailer.tsx` (repositorio DEEPSEEK editor); acabado en 2 pasadas con `trailer/finish_remotion.py`.
 
 > **Ojo con la marca de IA.** La guía de envío pide marca visible en imágenes y videos hechos con IA. Por decisión del equipo, las dos tomas de Google Flow (caída inicial y despegue final) ya no llevan rótulo en pantalla; la IA se declara en la tarjeta final, en la descripción de YouTube y en los metadatos del archivo. Si se quiere eliminar el riesgo, se puede volver a poner una marca pequeña en esas dos tomas (cambio de una línea en `Trailer.tsx`).
 

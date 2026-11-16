@@ -1,14 +1,24 @@
 --!strict
--- Idioma de la interfaz (inglés por defecto, español opcional).
+-- Idioma de la interfaz (inglés por defecto; español, portugués, francés, alemán, italiano e indonesio opcionales).
 -- El código del juego escribe sus textos en español. Esta capa los traduce en vivo:
 -- vigila cada TextLabel/TextButton de la interfaz y, si el idioma es inglés, cambia el texto
--- por su traducción (LocaleEN.luau). El original se guarda en el atributo "LocSrc".
+-- por su traducción (LocaleEN.luau, LocalePT.luau...). El original se guarda en el atributo "LocSrc".
 -- Si falta una traducción, se deja el texto original (nunca rompe la interfaz).
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local Data = require(script.Parent.LocaleEN)
+-- Idiomas disponibles, en el orden en que los recorre el botón. Cada módulo LocaleXX devuelve
+-- { T = { [es] = traducción }, FORMATS = { { formatoEs, formatoXX } } } (LocaleEN usa la clave EN).
+local LANGS: { { code: string, name: string, mod: string? } } = {
+	{ code = "en", name = "ENGLISH", mod = "LocaleEN" },
+	{ code = "es", name = "ESPAÑOL", mod = nil },
+	{ code = "pt", name = "PORTUGUÊS", mod = "LocalePT" },
+	{ code = "fr", name = "FRANÇAIS", mod = "LocaleFR" },
+	{ code = "de", name = "DEUTSCH", mod = "LocaleDE" },
+	{ code = "it", name = "ITALIANO", mod = "LocaleIT" },
+	{ code = "id", name = "INDONESIA", mod = "LocaleID" },
+}
 
 local Locale = {}
 
@@ -16,7 +26,11 @@ Locale.lang = "en"
 Locale.changed = Instance.new("BindableEvent")
 
 -- Mayúsculas con acentos (string.upper no cambia los caracteres UTF-8 acentuados).
-local ACCENTS = { ["á"] = "Á", ["é"] = "É", ["í"] = "Í", ["ó"] = "Ó", ["ú"] = "Ú", ["ñ"] = "Ñ", ["ü"] = "Ü" }
+local ACCENTS = {
+	["á"] = "Á", ["é"] = "É", ["í"] = "Í", ["ó"] = "Ó", ["ú"] = "Ú", ["ñ"] = "Ñ", ["ü"] = "Ü",
+	["à"] = "À", ["â"] = "Â", ["ã"] = "Ã", ["ç"] = "Ç", ["è"] = "È", ["ê"] = "Ê", ["ë"] = "Ë",
+	["î"] = "Î", ["ï"] = "Ï", ["ô"] = "Ô", ["õ"] = "Õ", ["ù"] = "Ù", ["û"] = "Û", ["ä"] = "Ä", ["ö"] = "Ö", ["ì"] = "Ì", ["ò"] = "Ò",
+}
 local function upper(s: string): string
 	local out = string.upper(s)
 	for lo, up in ACCENTS do
@@ -26,22 +40,9 @@ local function upper(s: string): string
 end
 Locale.upper = upper
 
-local EN: { [string]: string } = {}
-for k, v in Data.EN do
-	EN[k] = v
-end
--- Variantes en mayúsculas (el HUD muestra nombres de zonas y piezas en mayúsculas).
-for k, v in Data.EN do
-	local uk = upper(k)
-	if EN[uk] == nil then
-		EN[uk] = upper(v)
-	end
-end
-
 -- Formatos -> patrones Lua anclados.
 type Fmt = { pat: string, en: string, kinds: { string } }
-local FORMATS: { Fmt } = {}
-local function compile(es: string, en: string)
+local function compile(list: { Fmt }, es: string, en: string)
 	local kinds = {}
 	local pat = ""
 	local i = 1
@@ -69,9 +70,9 @@ local function compile(es: string, en: string)
 			i += 1
 		end
 	end
-	-- En inglés todos los argumentos llegan como texto: cada especificador pasa a %s.
+	-- En la traducción todos los argumentos llegan como texto: cada especificador pasa a %s.
 	local enFmt = string.gsub(en, "%%[%d%.]*[df]", "%%s")
-	table.insert(FORMATS, { pat = "^" .. pat .. "$", en = enFmt, kinds = kinds })
+	table.insert(list, { pat = "^" .. pat .. "$", en = enFmt, kinds = kinds })
 end
 -- Mayúsculas sin tocar los especificadores (%d, %s...).
 local function upperFmt(s: string): string
@@ -79,17 +80,80 @@ local function upperFmt(s: string): string
 		return "%" .. w .. string.lower(k)
 	end))
 end
-for _, f in Data.FORMATS do
-	compile(f[1], f[2])
-	if upperFmt(f[1]) ~= f[1] then
-		compile(upperFmt(f[1]), upperFmt(f[2]))
+
+-- Tablas por idioma, construidas al primer uso.
+type Pack = { dict: { [string]: string }, formats: { Fmt } }
+local packs: { [string]: Pack } = {}
+local available: { { code: string, name: string } } = {}
+for _, l in LANGS do
+	if l.mod == nil or script.Parent:FindFirstChild(l.mod) then
+		table.insert(available, { code = l.code, name = l.name })
 	end
+end
+local function pack(code: string): Pack?
+	if packs[code] then
+		return packs[code]
+	end
+	local modName: string? = nil
+	for _, l in LANGS do
+		if l.code == code then
+			modName = l.mod
+		end
+	end
+	local m = modName and script.Parent:FindFirstChild(modName)
+	if not m then
+		return nil
+	end
+	local ok, data = pcall(require, m :: ModuleScript)
+	if not ok or type(data) ~= "table" then
+		warn("[Locale] no se pudo cargar " .. tostring(modName))
+		return nil
+	end
+	local src: { [string]: string } = (data :: any).T or (data :: any).EN or {}
+	local dict: { [string]: string } = {}
+	for k, v in src do
+		dict[k] = v
+	end
+	-- Variantes en mayúsculas (el HUD muestra nombres de zonas y piezas en mayúsculas).
+	for k, v in src do
+		local uk = upper(k)
+		if dict[uk] == nil then
+			dict[uk] = upper(v)
+		end
+	end
+	local formats: { Fmt } = {}
+	for _, f in (data :: any).FORMATS or {} do
+		compile(formats, f[1], f[2])
+		if upperFmt(f[1]) ~= f[1] then
+			compile(formats, upperFmt(f[1]), upperFmt(f[2]))
+		end
+	end
+	local p: Pack = { dict = dict, formats = formats }
+	packs[code] = p
+	return p
+end
+
+-- Idiomas con traducción instalada, en orden de ciclo.
+function Locale.list(): { { code: string, name: string } }
+	return available
+end
+function Locale.name(code: string?): string
+	for _, l in available do
+		if l.code == (code or Locale.lang) then
+			return l.name
+		end
+	end
+	return string.upper(code or Locale.lang)
 end
 
 local translate: (string, number?) -> string
 
 local function viaFormats(s: string, depth: number): string?
-	for _, f in FORMATS do
+	local p = pack(Locale.lang)
+	if not p then
+		return nil
+	end
+	for _, f in p.formats do
 		local caps = { string.match(s, f.pat) }
 		if #caps > 0 and caps[1] ~= nil then
 			for j, cap in caps do
@@ -112,7 +176,8 @@ translate = function(s: string, depth: number?): string
 	if Locale.lang == "es" or s == "" or d > 3 then
 		return s
 	end
-	local hit = EN[s]
+	local p = pack(Locale.lang)
+	local hit = p and p.dict[s]
 	if hit then
 		return hit
 	end
@@ -213,7 +278,13 @@ end
 
 -- Cambia el idioma y retraduce todo lo vigilado.
 function Locale.set(lang: string)
-	if lang ~= "en" and lang ~= "es" then
+	local ok = false
+	for _, l in available do
+		if l.code == lang then
+			ok = true
+		end
+	end
+	if not ok then
 		return
 	end
 	Locale.lang = lang
